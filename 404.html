@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<title>FFKIPAS</title>
+<script>
+(function () {
+  var path = location.pathname || "/";
+  // Ambil segmen path: /history -> history
+  var seg = path.replace(/^\/+|\/+$/g, "").split("/")[0] || "";
+  seg = seg.toLowerCase();
+  var map = {
+    download: "download",
+    topup: "topup",
+    "cek-akun": "accountCheck",
+    account: "accountCheck",
+    accountcheck: "accountCheck",
+    kalkulator: "pricecalc",
+    pricecalc: "pricecalc",
+    history: "history",
+    riwayat: "history",
+    faq: "faq",
+    home: "home"
+  };
+  var section = map[seg] || "";
+  try {
+    if (section) sessionStorage.setItem("spa_redirect", "/" + seg);
+  } catch (e) {}
+  // Query param lebih andal daripada sessionStorage saja
+  var q = section ? ("?go=" + encodeURIComponent(section)) : "";
+  location.replace("/" + q);
+})();
+</script>
+<meta http-equiv="refresh" content="0;url=/" />
+</head>
+<body>
+  <p><a href="/">Kembali ke beranda</a></p>
+</body>
+</html>

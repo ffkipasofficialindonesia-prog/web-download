@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FFKIPAS DOWNLOAD</title>
+<meta content="Official Download Center FFKIPAS" name="description"/>
+<meta content="FFKIPAS BY MUHLIS" property="og:title"/>
+<meta content="Download versi terbaru FFKIPAS" property="og:description"/>
+<meta content="assets/og-image.png" property="og:image"/>
+<meta content="website" property="og:type"/>
+<link href="assets/favicon.png" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Oxanium:wght@500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="style.css?v=20260909cek" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+<header class="header">
+    <a href="#" class="logo">
+        <img src="assets/logo.png" alt="FFKIPAS">
+    </a>
+    <div class="header-stats" id="headerStats" title="Statistik realtime">
+        <div class="hs-item">
+            <strong id="counter">0</strong>
+            <span>Download</span>
+        </div>
+        <div class="hs-sep" aria-hidden="true"></div>
+        <div class="hs-item">
+            <strong id="onlineCounter">—</strong>
+            <span><i class="online-live-dot" aria-hidden="true"></i> Online</span>
+        </div>
+        <div class="hs-sep" aria-hidden="true"></div>
+        <div class="hs-item">
+            <strong>100%</strong>
+            <span>Uptime</span>
+        </div>
+    </div>
+    <div class="header-actions">
+        <button class="glass-btn" id="searchBtn" title="Cari">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="glass-btn" id="menuBtn" title="Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+</header>
+
+<!-- SIDE MENU -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<nav class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+        <img src="assets/logo.png" alt="FFKIPAS">
+        <span>FFKIPAS</span>
+        <button class="menu-close" id="menuClose" type="button">×</button>
+    </div>
+    <a href="#home" class="side-link"><i class="fa-solid fa-house"></i> Beranda</a>
+    <a href="#download" class="side-link"><i class="fa-solid fa-download"></i> Download</a>
+    <a href="#topup" class="side-link"><i class="fa-solid fa-gem"></i> Top Up</a>
+    <a href="#history" class="side-link"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat</a>
+    <a href="#cekakun" class="side-link"><i class="fa-solid fa-user-check"></i> Cek Akun FF</a>
+    <a href="#faq" class="side-link"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <div class="side-menu-footer">
+        <a href="https://wa.me/6283138876438" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+        <a href="https://t.me/ini_muhlis2" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram</a>
+    </div>
+</nav>
+
+<!-- SEARCH PANEL -->
+<div class="search-overlay" id="searchOverlay"></div>
+<div class="search-panel" id="searchPanel">
+    <div class="search-panel-box">
+        <div class="search-panel-header">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="globalSearch" placeholder="Search..." autocomplete="off">
+            <button type="button" id="searchClose" class="search-close">×</button>
+        </div>
+        <div class="search-results" id="searchResults">
+            <button type="button" class="search-item" data-target="download">
+                <i class="fa-solid fa-download"></i>
+                <div>
+                    <strong>Download</strong>
+                    <span>Inject FFKIPAS, LocalConfig, MT Manager</span>
+                </div>
+            </button>
+            <button type="button" class="search-item" data-target="topup">
+                <i class="fa-solid fa-gem"></i>
+                <div>
+                    <strong>Top Up Game</strong>
+                    <span>Free Fire, MLBB, PUBG, Roblox</span>
+                </div>
+            </button>
+            <button type="button" class="search-item" data-target="history">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <div>
+                    <strong>Riwayat Transaksi</strong>
+                    <span>Lihat pesanan sebelumnya</span>
+                </div>
+            </button>
+            <button type="button" class="search-item" data-target="cekakun">
+                <i class="fa-solid fa-user-check"></i>
+                <div>
+                    <strong>Cek Akun FF</strong>
+                    <span>Nickname, rank, clan, prime, ban</span>
+                </div>
+            </button>
+            <button type="button" class="search-item" data-target="faq">
+                <i class="fa-solid fa-circle-question"></i>
+                <div>
+                    <strong>FAQ</strong>
+                    <span>Pertanyaan seputar FFKIPAS</span>
+                </div>
+            </button>
+        </div>
+        <div class="search-empty" id="searchEmpty" style="display:none">
+            Tidak ada hasil untuk pencarian ini
+        </div>
+    </div>
+</div>
+
+<section class="slider" id="home">
+    <video class="slide-video" id="heroVideo"
+        src="assets/slider/banner.mp4"
+        muted
+        playsinline
+        autoplay
+        loop
+        preload="metadata"
+        poster="assets/slider/download.png">
+    </video>
+</section>
+
+<section id="download">
+    <h2>DOWNLOAD</h2>
+    <div class="card-grid">
+        <div class="download-card">
+            <div class="icon">
+                <img src="assets/icon/ffkipas.png" alt="FFKIPAS">
+            </div>
+            <h3>INJECT FFKIPAS</h3>
+            <p>V 1.0</p>
+            <div class="card-btns">
+                <a class="btn-primary" href="https://move2link.co/muhlis">Download</a>
+                <button type="button" class="btn-howto open-download-howto">
+                    <i class="fa-solid fa-circle-info"></i> Cara Download
+                </button>
+            </div>
+        </div>
+        <div class="download-card">
+            <div class="icon">
+                <img src="assets/icon/localconfig.png" alt="JSON">
+            </div>
+            <h3>LOCALCONFIG</h3>
+            <p>V 3.0</p>
+            <div class="card-btns">
+                <a class="btn-primary" href="https://move2link.co/muhlis">Download</a>
+                <button type="button" class="btn-howto open-download-howto">
+                    <i class="fa-solid fa-circle-info"></i> Cara Download
+                </button>
+            </div>
+        </div>
+        <div class="download-card">
+            <div class="icon">
+                <img src="assets/icon/mtmanager.png" alt="MT Manager">
+            </div>
+            <h3>MT MANAGER</h3>
+            <p>Untuk LOCALCONFIG</p>
+            <div class="card-btns">
+                <a class="btn-primary" href="https://www.mediafire.com/file/yq1in0o2zk83izl/MT+Manager.apk/file">Download</a>
+                <button type="button" class="btn-howto open-download-howto">
+                    <i class="fa-solid fa-circle-info"></i> Cara Download
+                </button>
+            </div>
+        </div>
+        <div class="download-card vip-card">
+            <div class="icon">
+                <img src="assets/icon/ffkipas.png" alt="FFKIPAS VIP">
+            </div>
+            <h3>FFKIPAS VIP</h3>
+            <p>Akses VIP + Fitur Spesial</p>
+            <div class="card-btns">
+                <button type="button" class="btn-primary" id="openVipOrder">BELI FFKIPAS</button>
+                <button type="button" class="btn-howto" id="openVipHowTo">
+                    <i class="fa-solid fa-circle-info"></i> Cara Order VIP
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="topup">
+    <h2>TOP UP GAME</h2>
+    <p class="topup-desc">
+        TOPUP GAME FAVORITMU GRATIS DARI ADMIN MUHLIS.
+    </p>
+    <div class="topup-grid">
+        <div class="game-card" data-banner="assets/banner/freefire.webp" data-game="FREE FIRE">
+            <img src="assets/games/freefire.png" alt="Free Fire"/>
+            <h3>FREE FIRE</h3>
+            <button>TOP UP</button>
+        </div>
+        <div class="game-card" data-banner="assets/banner/mlbb.webp" data-game="MOBILE LEGENDS">
+            <img src="assets/games/mlbb.png" alt="Mobile Legends"/>
+            <h3>MOBILE LEGENDS</h3>
+            <button>TOP UP</button>
+        </div>
+        <div class="game-card" data-banner="assets/banner/pubg.webp" data-game="PUBG MOBILE">
+            <img src="assets/games/pubg.png" alt="PUBG Mobile"/>
+            <h3>PUBG MOBILE</h3>
+            <button>TOP UP</button>
+        </div>
+        <div class="game-card" data-banner="assets/banner/roblox.webp" data-game="ROBLOX">
+            <img src="assets/games/roblox.png" alt="Roblox"/>
+            <h3>ROBLOX</h3>
+            <button>TOP UP</button>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+
+
+<section id="cekakun">
+    <h2>CEK AKUN FF</h2>
+    <p class="cek-desc">Masukkan UID Free Fire untuk lihat nickname, rank, clan, prime & status ban.</p>
+    <div class="cek-box">
+        <div class="cek-form">
+            <input type="text" id="cekUidInput" inputmode="numeric" maxlength="20" placeholder="Masukkan UID Free Fire" autocomplete="off"/>
+            <button type="button" class="buy-btn" id="cekUidBtn">Cek Akun</button>
+        </div>
+        <div class="cek-loading" id="cekLoading" hidden>
+            <div class="cek-spin"></div>
+            <span>Mengambil data akun…</span>
+        </div>
+        <div class="cek-error" id="cekError" hidden></div>
+        <div class="cek-result" id="cekResult" hidden>
+            <div class="cek-head">
+                <div class="cek-nick-wrap">
+                    <span class="cek-label">Nickname</span>
+                    <strong id="cekNick">—</strong>
+                </div>
+                <div class="cek-id-wrap">
+                    <span class="cek-label">UID</span>
+                    <strong id="cekId">—</strong>
+                </div>
+            </div>
+            <div class="cek-grid">
+                <div class="cek-item"><span>Region</span><b id="cekRegion">—</b></div>
+                <div class="cek-item"><span>Level</span><b id="cekLevel">—</b></div>
+                <div class="cek-item"><span>Likes</span><b id="cekLikes">—</b></div>
+                <div class="cek-item"><span>Status Ban</span><b id="cekBan">—</b></div>
+            </div>
+            <div class="cek-ranks">
+                <div class="cek-rank-card">
+                    <img id="cekRankBrImg" src="" alt="BR Rank" hidden/>
+                    <div>
+                        <span class="cek-label">Rank BR</span>
+                        <strong id="cekRankBr">—</strong>
+                        <small id="cekRankBrMax"></small>
+                    </div>
+                </div>
+                <div class="cek-rank-card">
+                    <img id="cekRankCsImg" src="" alt="CS Rank" hidden/>
+                    <div>
+                        <span class="cek-label">Rank CS</span>
+                        <strong id="cekRankCs">—</strong>
+                        <small id="cekRankCsMax"></small>
+                    </div>
+                </div>
+                <div class="cek-rank-card">
+                    <img id="cekPrimeImg" src="" alt="Prime" hidden/>
+                    <div>
+                        <span class="cek-label">Prime</span>
+                        <strong id="cekPrime">—</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="cek-clan" id="cekClanBox" hidden>
+                <img src="assets/ff-rank/FF_UI_Clan_Icon_Glory.png" alt="Clan" class="cek-clan-icon"/>
+                <div>
+                    <span class="cek-label">Clan</span>
+                    <strong id="cekClanName">—</strong>
+                    <small id="cekClanMeta"></small>
+                </div>
+            </div>
+            <div class="cek-dates">
+                <div class="cek-item"><span>Akun Dibuat</span><b id="cekCreated">—</b></div>
+                <div class="cek-item"><span>Umur Akun</span><b id="cekAge">—</b></div>
+                <div class="cek-item"><span>Last Login</span><b id="cekLast">—</b></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="leaderboard">
+    <h2>TOP DOWNLOADER</h2>
+    <p class="lb-desc">Ranking user yang paling sering download (nama dari chat grup / Anonim)</p>
+    <div class="lb-list" id="lbList">
+        <div class="lb-empty">Belum ada data leaderboard.</div>
+    </div>
+</section>
+
+<section id="history">
+    <h2>Riwayat Transaksi</h2>
+    <div id="historyList"></div>
+</section>
+
+<section id="faq">
+    <h2>FAQ</h2>
+    <div class="faq-item">
+        <button>Apa itu FFKIPAS?</button>
+        <div>FFKIPAS ADALAH TOOLS UNTUK PEMAIN MENGGUNAKAN ITEM SEMUA GAME.</div>
+    </div>
+    <div class="faq-item">
+        <button>Apakah Aman?</button>
+        <div>YA FFKIPAS SANGAT MENJAGA KEAMANAN DATA PEMAIN.</div>
+    </div>
+</section>
+
+<footer>
+    <img src="assets/logo.png" alt="FFKIPAS"/>
+    <h3>MUHLIS DEV</h3>
+    <p>© 2026 FFKIPAS BY MUHLIS</p>
+</footer>
+
+<!-- TOPUP POPUP -->
+<div class="popup" id="popup">
+    <div class="popup-box">
+        <span class="close" id="closePopup">×</span>
+        <img class="popup-banner" id="popupBanner" src="assets/banner/freefire.webp" alt=""/>
+        <h2 id="popupTitle">FREE FIRE</h2>
+        <input id="uidInput" placeholder="Masukkan UID" type="text"/>
+        <input id="serverInput" placeholder="Masukkan Zone ID" type="text" style="display:none"/>
+        <div class="uid-check" id="uidCheck" aria-live="polite">
+          <div class="uid-check-inner">
+            <span class="uid-check-dot" aria-hidden="true"></span>
+            <div class="uid-check-text">
+              <span class="uid-check-status" id="uidCheckStatus"></span>
+              <strong class="uid-check-name" id="uidCheckName"></strong>
+            </div>
+          </div>
+        </div>
+        <h3>Pilih Nominal</h3>
+        <div class="diamond-grid" id="diamondGrid"></div>
+        <div class="custom-topup">
+            <h3>Nominal Bebas Top Up</h3>
+            <input type="number" id="customDiamond" placeholder="Masukkan jumlah Diamond / UC / Robux">
+            <button id="addCustomTopup">Tambah Nominal</button>
+        </div>
+        <h3>Metode Pembayaran</h3>
+        <div class="payment-grid">
+            <div class="pay-card" data-pay="QRIS">
+                <img src="assets/payment/qris.png" alt="QRIS"/>
+                <p>QRIS</p>
+            </div>
+            <div class="pay-card" data-pay="DANA">
+                <img src="assets/payment/dana.png" alt="DANA"/>
+                <p>DANA</p>
+            </div>
+            <div class="pay-card" data-pay="GoPay">
+                <img src="assets/payment/gopay.png" alt="GoPay"/>
+                <p>GoPay</p>
+            </div>
+        </div>
+        <div class="total-box">
+            <div class="order-summary">
+                <h3>Ringkasan Pesanan</h3>
+                <p>Game : <span id="summaryGame">-</span></p>
+                <p>UID : <span id="summaryUid">-</span></p>
+                <p>Nominal : <span id="summaryItem">-</span></p>
+                <p>Pembayaran : <span id="summaryPay">-</span></p>
+                <p>Total : <span id="summaryPrice">Rp0</span></p>
+            </div>
+            <h3>Total</h3>
+            <h2 id="totalPrice">Rp0</h2>
+        </div>
+        <button class="buy-btn" id="buyBtn">BELI SEKARANG</button>
+    </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="processing" id="processing">
+    <div class="processing-box">
+        <div class="proc-loader">
+            <div class="proc-ring proc-ring-1"></div>
+            <div class="proc-ring proc-ring-2"></div>
+            <div class="proc-core"><i class="fa-solid fa-bolt"></i></div>
+        </div>
+        <h2 id="loadingTitle">Memproses Pesanan...</h2>
+        <p id="loadingDesc">Mohon tunggu sebentar.</p>
+        <div class="proc-steps" id="procSteps">
+            <span class="proc-step active" data-s="1">Cek UID</span>
+            <span class="proc-step" data-s="2">Bayar</span>
+            <span class="proc-step" data-s="3">Invoice</span>
+        </div>
+        <div class="progress">
+            <div id="progressBar"><span class="progress-shine"></span></div>
+        </div>
+        <p id="progressText">0%</p>
+    </div>
+</div>
+
+<!-- INVOICE — Receipt style -->
+<div class="invoice" id="invoice">
+    <div class="invoice-box">
+        <div class="inv-paper">
+            <div class="inv-top">
+                <img src="assets/logo.png" class="invoice-brand" alt="FFKIPAS"/>
+                <div class="inv-brand-text">
+                    <h2>FFKIPAS</h2>
+                    <p>Official Top Up Receipt</p>
+                </div>
+                <span class="inv-stamp" id="invoiceStatus">Menunggu</span>
+            </div>
+            <div class="inv-meta">
+                <div><span>No. Invoice</span><strong id="invoiceNumber">-</strong></div>
+                <div><span>Tanggal</span><strong id="invoiceDate">-</strong></div>
+            </div>
+            <img id="invoiceLogo" src="" class="invoice-logo" alt="" style="display:none"/>
+            <div class="inv-divider"><span>DETAIL PESANAN</span></div>
+            <div class="inv-rows">
+                <div class="inv-row">
+                    <span><i class="fa-solid fa-gamepad inv-ico ico-game"></i> Game</span>
+                    <b id="invoiceGame">-</b>
+                </div>
+                <div class="inv-row">
+                    <span><i class="fa-solid fa-id-card inv-ico ico-uid"></i> UID / ID</span>
+                    <b id="invoiceUid">-</b>
+                </div>
+                <div class="inv-row">
+                    <span><i class="fa-solid fa-gem inv-ico ico-diamond"></i> Nominal</span>
+                    <b id="invoiceItem">-</b>
+                </div>
+                <div class="inv-row">
+                    <span><i class="fa-solid fa-wallet inv-ico ico-pay"></i> Pembayaran</span>
+                    <b id="invoicePay">-</b>
+                </div>
+            </div>
+            <div class="inv-total">
+                <span><i class="fa-solid fa-coins"></i> Total Bayar</span>
+                <strong id="invoicePrice">Rp0</strong>
+            </div>
+            <p class="inv-note">Simpan invoice ini sebagai bukti transaksi.</p>
+            <div class="inv-barcode" aria-hidden="true"></div>
+        </div>
+        <div class="inv-actions">
+            <button type="button" id="copyInvoice"><i class="fa-regular fa-copy"></i> Salin</button>
+            <button type="button" id="downloadInvoice"><i class="fa-solid fa-download"></i> Unduh</button>
+            <button type="button" id="closeInvoice" class="inv-close">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-shine" aria-hidden="true"></div>
+  <div class="toast-icon">✓</div>
+  <div class="toast-body">
+    <strong id="toastTitle">Berhasil</strong>
+    <span id="toastMsg">Pesanan berhasil dibuat</span>
+  </div>
+</div>
+
+<!-- Popunder -->
+<script src="https://pl29896660.effectivecpmnetwork.com/85/b5/c2/85b5c2fe6104b465c6e6f5bb4deb3a22.js"></script>
+<!-- Social Bar -->
+<script src="https://pl29896662.effectivecpmnetwork.com/20/06/c7/2006c7c18b1bd25a644a2f8799d58457.js"></script>
+
+
+<!-- CARA DOWNLOAD -->
+<div class="popup" id="downloadHowToPopup">
+    <div class="popup-box vip-howto-box">
+        <span class="close" id="closeDownloadHowTo">×</span>
+        <div class="vip-badge"><i class="fa-solid fa-download"></i> Cara Download</div>
+        <h2>Download FFKIPAS</h2>
+
+        <div class="tutorial-video-wrap">
+            <p class="tutorial-video-label">Video Tutorial</p>
+            <!-- Ganti file di assets/tutorial-download.mp4 ATAU isi data-youtube di bawah -->
+            <div class="tutorial-video-box" id="tutorialVideoBox"
+                 data-youtube="">
+                <video id="tutorialVideo"
+                    class="tutorial-video"
+                    controls
+                    playsinline
+                    preload="metadata"
+                    poster="assets/slider/download.png">
+                    <source src="assets/tutorial-download.mp4" type="video/mp4" />
+                    Browser kamu tidak mendukung video.
+                </video>
+                <!-- Kalau pakai YouTube: isi data-youtube="VIDEO_ID" di tutorialVideoBox, video di atas diganti iframe oleh script -->
+            </div>
+            <p class="tutorial-video-hint">Tonton dulu biar gak salah pasang</p>
+        </div>
+
+        <ol class="vip-howto-steps">
+            <li><strong>Pilih file</strong> — Inject FFKIPAS / LocalConfig / MT Manager.</li>
+            <li><strong>Klik Download</strong> — ikuti link (sfile / MediaFire).</li>
+            <li><strong>Selesaikan iklan</strong> — klik 3x sampai file terbuka (support admin).</li>
+            <li><strong>Install / pasang</strong> — Inject di HP; LocalConfig pakai <em>MT Manager</em>.</li>
+        </ol>
+        <p class="vip-howto-note">
+            <strong>Tips:</strong> Aktifkan “Izinkan dari sumber tidak dikenal” di pengaturan HP bila diminta.
+            Butuh akses VIP penuh? Order di kartu <strong>FFKIPAS VIP</strong>.
+        </p>
+        <button type="button" class="buy-btn" id="downloadHowToCloseBtn">Mengerti</button>
+    </div>
+</div>
+
+<!-- VIP HOW TO ORDER -->
+<div class="popup" id="vipHowToPopup">
+    <div class="popup-box vip-howto-box">
+        <span class="close" id="closeVipHowTo">×</span>
+        <div class="vip-badge"><i class="fa-solid fa-circle-info"></i> Cara Order</div>
+        <h2>Order FFKIPAS VIP</h2>
+        <ol class="vip-howto-steps">
+            <li><strong>Pilih paket</strong> (1–8 hari) & isi nama + kontak.</li>
+            <li><strong>Bayar QRIS</strong> sesuai nominal paket.</li>
+            <li><strong>Upload bukti TF</strong> — wajib, baru order masuk admin.</li>
+            <li><strong>Chat privat terbuka</strong> — tunggu admin verifikasi & proses (biasanya 5–15 menit).</li>
+        </ol>
+        <p class="vip-howto-note">Jam operasional: <strong>09.00 – 23.00 WIB</strong>. Di luar jam tetap bisa order; dibalas saat admin online.</p>
+        <button type="button" class="buy-btn" id="vipHowToBuy">Order Sekarang</button>
+    </div>
+</div>
+
+<!-- VIP ORDER POPUP -->
+<div class="popup" id="vipPopup">
+    <div class="popup-box vip-popup-box">
+        <span class="close" id="closeVipPopup">×</span>
+        <div class="vip-step" id="vipStepForm">
+            <div class="vip-badge"><i class="fa-solid fa-crown"></i> FFKIPAS VIP</div>
+            <h2>Order FFKIPAS VIP</h2>
+            <p class="vip-desc">Pilih paket, isi data, bayar QRIS + upload bukti TF. Chat privat terbuka setelah bukti terkirim.</p>
+            <div class="vip-pack-grid" id="vipPackGrid"></div>
+            <div class="vip-features-box" id="vipFeaturesBox">
+                <strong>Isi paket VIP:</strong>
+                <ul>
+                    <li>Akses FFKIPAS VIP penuh selama masa aktif</li>
+                    <li>Chat privat langsung dengan admin</li>
+                    <li>Prioritas proses & support</li>
+                    <li>Update fitur selama masa paket</li>
+                </ul>
+            </div>
+            <div class="vip-price-tag">Total: Rp<span id="vipPriceLabel">20.000</span></div>
+            <p class="vip-pack-selected" id="vipPackSelectedLabel">Paket: 1 Hari</p>
+            <div class="vip-coupon-row">
+                <input id="vipCouponInput" type="text" maxlength="20" placeholder="Kode kupon (opsional)" autocomplete="off"/>
+                <button type="button" id="vipCouponBtn">Pakai</button>
+            </div>
+            <p class="vip-coupon-msg" id="vipCouponMsg" style="display:none"></p>
+            <input id="vipNameInput" type="text" maxlength="24" placeholder="Nama panggilan kamu" autocomplete="off"/>
+            <input id="vipContactInput" type="text" maxlength="40" placeholder="No. WhatsApp / Telegram" autocomplete="off"/>
+            <input id="vipNoteInput" type="text" maxlength="80" placeholder="Catatan (opsional)" autocomplete="off"/>
+            <button type="button" class="buy-btn" id="vipContinueBtn">Lanjut ke Pembayaran QRIS</button>
+        </div>
+        <div class="vip-step" id="vipStepPay" style="display:none">
+            <div class="vip-badge"><i class="fa-solid fa-qrcode"></i> Pembayaran QRIS</div>
+            <h2>Scan QRIS</h2>
+            <p class="vip-order-meta">Order ID: <strong id="vipOrderIdLabel">-</strong></p>
+            <p class="vip-order-meta">Paket: <strong id="vipPayPackLabel">1 Hari</strong></p>
+            <p class="vip-order-meta">Total: <strong id="vipPayAmount">Rp20.000</strong> · QRIS</p>
+            <div class="vip-qris-wrap">
+                <img src="assets/payment/qris-vip.jpeg" alt="QRIS FFKIPAS VIP" id="vipQrisImg" class="vip-qris-img"/>
+            </div>
+            <p class="vip-pay-hint">Transfer dulu, lalu <strong>wajib upload bukti TF</strong>. Order baru masuk ke admin setelah bukti terkirim.</p>
+            <div class="vip-proof-box">
+                <input type="file" id="vipProofInput" accept="image/*" hidden>
+                <button type="button" class="vip-proof-btn" id="vipProofBtn">
+                    <i class="fa-solid fa-camera"></i>
+                    <span id="vipProofLabel">Upload Bukti Transfer</span>
+                </button>
+                <div class="vip-proof-preview" id="vipProofPreview" style="display:none">
+                    <img id="vipProofImg" src="" alt="Bukti TF">
+                    <button type="button" class="vip-proof-remove" id="vipProofRemove" title="Ganti">×</button>
+                </div>
+            </div>
+            <button type="button" class="buy-btn" id="vipPaidBtn" disabled>Kirim Bukti &amp; Buka Chat</button>
+            <button type="button" class="vip-back-btn" id="vipBackBtn">← Kembali</button>
+        </div>
+    </div>
+</div>
+
+<!-- VIP PRIVATE CHAT (1 room per order) -->
+<div class="group-chat-overlay" id="vipChatOverlay"></div>
+<div class="group-chat-panel vip-chat-panel" id="vipChatPanel">
+    <div class="gc-header">
+        <div class="gc-header-left">
+            <div class="gc-avatar vip-avatar"><i class="fa-solid fa-crown"></i></div>
+            <div>
+                <strong id="vipChatTitle">CHAT VIP</strong>
+                <span id="vipChatSub">Order privat</span>
+            </div>
+        </div>
+        <div class="gc-header-actions">
+            <button type="button" class="gc-close" id="vipChatClose" aria-label="Tutup">×</button>
+        </div>
+    </div>
+    <div class="vip-order-banner" id="vipOrderBanner">
+        <div class="vip-banner-row">
+            <span id="vipBannerText">Order VIP · menunggu verifikasi</span>
+            <button type="button" class="vip-copy-id" id="vipCopyOrderId" title="Salin Order ID">
+                <i class="fa-regular fa-copy"></i> Salin ID
+            </button>
+        </div>
+        <div class="vip-status-track" id="vipStatusTrack" aria-label="Status order">
+            <div class="vst-step" data-step="wait"><span class="vst-dot"></span><span class="vst-label">Menunggu verifikasi</span></div>
+            <div class="vst-line"></div>
+            <div class="vst-step" data-step="process"><span class="vst-dot"></span><span class="vst-label">Diproses</span></div>
+            <div class="vst-line"></div>
+            <div class="vst-step" data-step="done"><span class="vst-dot"></span><span class="vst-label">Selesai</span></div>
+        </div>
+    </div>
+    <div class="vip-admin-actions" id="vipAdminActions" style="display:none">
+        <button type="button" class="vip-act-btn process" id="vipBtnProcess" title="Tandai sedang diproses">
+            <i class="fa-solid fa-spinner"></i> Pesanan diproses
+        </button>
+        <button type="button" class="vip-act-btn done" id="vipBtnDone" title="Tandai selesai">
+            <i class="fa-solid fa-check"></i> Pesanan selesai
+        </button>
+    </div>
+    <div class="gc-messages" id="vipMessages">
+        <div class="gc-empty">Belum ada pesan.</div>
+    </div>
+    <form class="gc-input-bar" id="vipForm">
+        <input type="file" id="vipImageInput" accept="image/*" hidden>
+        <button type="button" id="vipImageBtn" title="Kirim gambar / bukti transfer"><i class="fa-solid fa-image"></i></button>
+        <input type="text" id="vipInput" maxlength="300" placeholder="Tulis pesan ke admin..." autocomplete="off">
+        <button type="submit" id="vipSend"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+</div>
+
+<!-- VIP ORDERS LIST (my private rooms) -->
+<div class="popup" id="vipListPopup">
+    <div class="popup-box vip-list-box">
+        <span class="close" id="closeVipList">×</span>
+        <h2 id="vipListTitle"><i class="fa-solid fa-crown"></i> Chat VIP Saya</h2>
+        <p class="vip-desc" id="vipListDesc">Setiap order punya ruang chat sendiri.</p>
+        <div class="vip-filter-bar" id="vipFilterBar" style="display:none">
+            <button type="button" class="vip-filter-btn active" data-filter="all">Aktif</button>
+            <button type="button" class="vip-filter-btn" data-filter="wait">Menunggu</button>
+            <button type="button" class="vip-filter-btn" data-filter="process">Diproses</button>
+            <button type="button" class="vip-filter-btn" data-filter="done">Selesai</button>
+            <button type="button" class="vip-filter-btn" data-filter="archived">Arsip</button>
+        </div>
+        <div id="vipOrdersList" class="vip-orders-list"></div>
+        <div class="vip-join-by-id" id="vipJoinById">
+            <input type="text" id="vipJoinIdInput" maxlength="24" placeholder="Kode Order (opsional)" autocomplete="off"/>
+            <button type="button" id="vipJoinIdBtn">Buka</button>
+        </div>
+        <button type="button" class="buy-btn" id="vipNewOrderFromList">+ Order VIP Baru</button>
+    </div>
+</div>
+
+<!-- GROUP CHAT ROOM -->
+<div class="group-chat-overlay" id="groupChatOverlay"></div>
+<div class="group-chat-panel" id="groupChatPanel">
+    <div class="gc-header">
+        <div class="gc-header-left">
+            <div class="gc-avatar"><i class="fa-solid fa-users"></i></div>
+            <div>
+                <strong>GRUP FFKIPAS ID</strong>
+                <span id="gcOnlineLabel">Online</span>
+            </div>
+        </div>
+        <div class="gc-header-actions">
+            <button type="button" class="gc-rename" id="gcRenameBtn" title="Ganti nama"><i class="fa-solid fa-pen"></i></button>
+            <button type="button" class="gc-close" id="groupChatClose" aria-label="Tutup">×</button>
+        </div>
+    </div>
+    <div class="gc-messages" id="gcMessages">
+        <div class="gc-empty" id="gcEmpty">Belum ada pesan. Jadi yang pertama!</div>
+    </div>
+    <div class="gc-name-bar" id="gcNameBar">
+        <div class="gc-profile-pick">
+            <input type="file" id="gcAvatarInput" accept="image/*" hidden>
+            <button type="button" id="gcAvatarBtn" title="Foto profil">
+                <img id="gcAvatarPreview" src="" alt="" style="display:none">
+                <i class="fa-solid fa-camera" id="gcAvatarIcon"></i>
+            </button>
+        </div>
+        <input type="text" id="gcNameInput" maxlength="16" placeholder="Nama panggilan kamu..." autocomplete="off">
+        <button type="button" id="gcSaveName">Masuk</button>
+    </div>
+    <div class="gc-reply-bar" id="gcReplyBar" style="display:none">
+        <div class="gc-reply-preview">
+            <i class="fa-solid fa-reply"></i>
+            <div class="gc-reply-info">
+                <strong id="gcReplyName">Nama</strong>
+                <span id="gcReplyText">Pesan...</span>
+            </div>
+        </div>
+        <button type="button" class="gc-reply-cancel" id="gcReplyCancel" title="Batal balas">×</button>
+    </div>
+    <form class="gc-input-bar" id="gcForm" style="display:none">
+        <input type="file" id="gcImageInput" accept="image/*" hidden>
+        <button type="button" id="gcImageBtn" title="Kirim gambar"><i class="fa-solid fa-image"></i></button>
+        <input type="text" id="gcInput" maxlength="200" placeholder="Tulis pesan..." autocomplete="off">
+        <button type="submit" id="gcSend"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+</div>
+
+
+<!-- Notif Saluran WA — simpel, bawah -->
+<div id="waJoinNotif" class="wa-bar" hidden>
+  <a href="https://whatsapp.com/channel/0029VbC3EOH9xVJZHfZ3qJ00" target="_blank" rel="noopener" id="waJoinBtn">Gabung Saluran WA FFKIPAS</a>
+  <button type="button" id="waJoinClose" aria-label="Tutup">×</button>
+</div>
+
+<div class="floating-chat">
+    <div class="chat-menu" id="chatMenu">
+        <div class="chat-menu-header">
+            <div class="chat-admin">
+                <div class="chat-avatar">
+                    <img src="assets/logo.png" alt="Admin">
+                    <span class="chat-online-dot" id="adminStatusDot"></span>
+                </div>
+                <div class="chat-admin-info">
+                    <strong>MUHLIS KIPAS</strong>
+                    <span id="adminStatusText" class="admin-status online">Online</span>
+                </div>
+            </div>
+        </div>
+        <div class="chat-menu-list">
+            <button type="button" class="chat-item chat-live" id="openGroupChat">
+                <div class="chat-item-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="chat-item-text">
+                    <strong>GRUP FFKIPAS ID</strong>
+                    <span>join grup ffkipas</span>
+                </div>
+                <i class="fa-solid fa-bolt chat-arrow"></i>
+            </button>
+            <button type="button" class="chat-item chat-vip" id="openVipChatsBtn">
+                <div class="chat-item-icon"><i class="fa-solid fa-crown"></i></div>
+                <div class="chat-item-text">
+                    <strong id="vipMenuLabel">Chat VIP Saya</strong>
+                    <span id="vipMenuSub">Order & support privat</span>
+                </div>
+                <i class="fa-solid fa-bolt chat-arrow"></i>
+            </button>
+            <a href="https://wa.me/6283138876438" target="_blank" class="chat-item chat-wa">
+                <div class="chat-item-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="chat-item-text">
+                    <strong>WhatsApp</strong>
+                    <span>Chat langsung admin</span>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square chat-arrow"></i>
+            </a>
+            <a href="https://t.me/ini_muhlis2" target="_blank" class="chat-item chat-tg">
+                <div class="chat-item-icon"><i class="fa-brands fa-telegram"></i></div>
+                <div class="chat-item-text">
+                    <strong>Telegram</strong>
+                    <span>Hubungi via Telegram</span>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square chat-arrow"></i>
+            </a>
+            <a href="https://whatsapp.com/channel/0029VbC3EOH9xVJZHfZ3qJ00" target="_blank" class="chat-item chat-ch">
+                <div class="chat-item-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="chat-item-text">
+                    <strong>Saluran WA</strong>
+                    <span>Update & info terbaru</span>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square chat-arrow"></i>
+            </a>
+        </div>
+        <div class="chat-menu-footer">
+            <i class="fa-solid fa-shield-halved"></i>
+            Respon cepat • 24 jam
+        </div>
+    </div>
+    <button id="chatToggle" title="GRUP FFKIPAS ID" type="button">
+        <i class="fa-solid fa-comments chat-icon-open"></i>
+        <i class="fa-solid fa-xmark chat-icon-close"></i>
+        <span class="chat-badge">99+</span>
+    </button>
+    <div class="chat-fab-label" id="chatFabLabel">GABUNG GRUP FFKIPAS</div>
+</div>
+
+
+<!-- Firebase (Group Chat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script src="script.js?v=20260909cek"></script>
+</body>
+</html>
