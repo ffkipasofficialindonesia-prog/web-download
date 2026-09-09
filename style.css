@@ -5306,11 +5306,16 @@ button.chat-item {
   border: 1px solid rgba(255, 160, 0, 0.2);
   text-align: center;
 }
-.cek-rank-card img {
-  width: 56px;
-  height: 56px;
+.cek-rank-card img,
+.cek-clan-icon,
+#cekPrimeImg,
+#cekRankBrImg,
+#cekRankCsImg {
+  width: 56px !important;
+  height: 56px !important;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(255, 123, 0, 0.3));
+  flex-shrink: 0;
 }
 .cek-rank-card strong {
   display: block;
@@ -5325,18 +5330,22 @@ button.chat-item {
 }
 .cek-clan {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: 8px;
+  padding: 12px 8px;
   border-radius: 14px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 180, 0, 0.2);
+  background: rgba(255, 123, 0, 0.06);
+  border: 1px solid rgba(255, 160, 0, 0.2);
   margin-bottom: 14px;
+  text-align: center;
 }
+.cek-clan > div { text-align: center; }
+
 .cek-clan[hidden] { display: none !important; }
 .cek-clan-icon {
-  width: 44px;
-  height: 44px;
+  width: 56px !important;
+  height: 56px !important;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -5353,4 +5362,98 @@ button.chat-item {
   .cek-ranks { grid-template-columns: 1fr; }
   .cek-rank-card { flex-direction: row; text-align: left; }
   .cek-grid { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* Cek akun — bio, likes, booyah, credit */
+.cek-bio {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.cek-bio p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: #ddd;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.cek-item-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cek-mini-icon {
+  width: 56px !important;
+  height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+  object-fit: contain !important;
+  flex-shrink: 0 !important;
+  filter: drop-shadow(0 4px 12px rgba(255, 123, 0, 0.3));
+}
+.cek-fa-icon {
+  width: 56px !important;
+  height: 56px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #ffc107;
+  flex-shrink: 0 !important;
+}
+.cek-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+@media (max-width: 520px) {
+  .cek-clan {
+    flex-direction: row !important;
+    text-align: left !important;
+  }
+  .cek-clan > div { text-align: left !important; }
+}
+
+
+/* ========== SEMUA ICON CEK AKUN = 56x56 ========== */
+#cekakun .cek-rank-card img,
+#cekakun #cekRankBrImg,
+#cekakun #cekRankCsImg,
+#cekakun #cekPrimeImg,
+#cekakun #cekClanImg,
+#cekakun .cek-clan-icon,
+#cekakun .cek-mini-icon,
+#cekakun img.cek-mini-icon {
+  width: 56px !important;
+  height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+  min-width: 56px !important;
+  min-height: 56px !important;
+  object-fit: contain !important;
+  flex-shrink: 0 !important;
+  filter: drop-shadow(0 4px 12px rgba(255, 123, 0, 0.3));
+}
+#cekakun .cek-item-icon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+}
+#cekakun .cek-clan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+@media (max-width: 520px) {
+  #cekakun .cek-rank-card,
+  #cekakun .cek-clan {
+    flex-direction: row !important;
+    text-align: left !important;
+    align-items: center !important;
+  }
+  #cekakun .cek-clan > div { text-align: left !important; }
 }

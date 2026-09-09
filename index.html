@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Oxanium:wght@500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link href="style.css?v=20260909cek" rel="stylesheet"/>
+<link href="style.css?v=20260909all56" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
@@ -250,10 +250,25 @@
                     <strong id="cekId">—</strong>
                 </div>
             </div>
+            <div class="cek-bio" id="cekBioBox">
+                <span class="cek-label">Bio</span>
+                <p id="cekBio">—</p>
+            </div>
             <div class="cek-grid">
+                <div class="cek-item cek-item-icon">
+                    <img src="assets/ff-rank/like-icon-ff.png" alt="Likes" class="cek-mini-icon"/>
+                    <div><span>Likes</span><b id="cekLikes">—</b></div>
+                </div>
+                <div class="cek-item cek-item-icon">
+                    <img src="assets/ff-rank/booyahpas.png" alt="Booyah" class="cek-mini-icon"/>
+                    <div><span>Booyah Pass</span><b id="cekBooyah">—</b></div>
+                </div>
+                <div class="cek-item cek-item-icon">
+                    <img src="assets/ff-rank/creditscor.png" alt="Credit Score" class="cek-mini-icon"/>
+                    <div><span>Credit Score</span><b id="cekCredit">—</b></div>
+                </div>
                 <div class="cek-item"><span>Region</span><b id="cekRegion">—</b></div>
                 <div class="cek-item"><span>Level</span><b id="cekLevel">—</b></div>
-                <div class="cek-item"><span>Likes</span><b id="cekLikes">—</b></div>
                 <div class="cek-item"><span>Status Ban</span><b id="cekBan">—</b></div>
             </div>
             <div class="cek-ranks">
@@ -281,8 +296,8 @@
                     </div>
                 </div>
             </div>
-            <div class="cek-clan" id="cekClanBox" hidden>
-                <img src="assets/ff-rank/FF_UI_Clan_Icon_Glory.png" alt="Clan" class="cek-clan-icon"/>
+            <div class="cek-clan cek-rank-card" id="cekClanBox" hidden>
+                <img src="assets/ff-rank/FF_UI_Clan_Icon_Glory.png" alt="Clan" class="cek-clan-icon" id="cekClanImg"/>
                 <div>
                     <span class="cek-label">Clan</span>
                     <strong id="cekClanName">—</strong>
@@ -786,6 +801,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<script src="script.js?v=20260909cek"></script>
+<script src="script.js?v=20260909all56"></script>
 </body>
 </html>

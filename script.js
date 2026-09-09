@@ -4226,12 +4226,33 @@ function initCekAkunFf() {
       const csMax = mapFfRank(info.CsMaxRank);
       const pr = mapFfPrime(prime.PrimeLevel);
 
+      const social = data.SocialInfo || {};
+      const credit = data.CreditScoreInfo || {};
+
       document.getElementById("cekNick").textContent = info.Nickname || "—";
       document.getElementById("cekId").textContent = info.AccountId || uid;
       document.getElementById("cekRegion").textContent = info.Region || "—";
       document.getElementById("cekLevel").textContent = info.Level != null ? String(info.Level) : "—";
       document.getElementById("cekLikes").textContent = info.Likes != null
         ? Number(info.Likes).toLocaleString("id-ID") : "—";
+
+      const bioEl = document.getElementById("cekBio");
+      const bioText = (social.Signature || "").trim();
+      if (bioEl) bioEl.textContent = bioText || "Tidak ada bio";
+
+      const seasonId = info.SeasonId;
+      const booyahEl = document.getElementById("cekBooyah");
+      if (booyahEl) {
+        booyahEl.textContent = seasonId != null && seasonId !== ""
+          ? ("Season " + seasonId)
+          : "—";
+      }
+
+      const creditEl = document.getElementById("cekCredit");
+      if (creditEl) {
+        const sc = credit.CreditScore;
+        creditEl.textContent = sc != null ? String(sc) : "—";
+      }
 
       const banEl = document.getElementById("cekBan");
       banEl.textContent = ban.text;
