@@ -635,7 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const popup = document.getElementById("popup");
     const closePopup = document.getElementById("closePopup");
     const popupTitle = document.getElementById("popupTitle");
-    const popupBanner = document.getElementById("popupBanner");
+    const popupBanner = null; // banner dihapus
     const summaryGame = document.getElementById("summaryGame");
     const summaryUid = document.getElementById("summaryUid");
     const summaryItem = document.getElementById("summaryItem");
@@ -751,7 +751,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = gameItems[game];
         if (!data) return;
 
-        if (popupBanner) popupBanner.src = data.banner;
+        // banner dihapus
         if (uidInput) uidInput.placeholder = data.uid;
 
         diamondGrid.innerHTML = "";
@@ -860,7 +860,7 @@ document.addEventListener("DOMContentLoaded", () => {
             popup.classList.add("active");
             if (popupTitle) popupTitle.textContent = card.dataset.game || "";
             if (summaryGame) summaryGame.textContent = card.dataset.game || "";
-            if (popupBanner && card.dataset.banner) popupBanner.src = card.dataset.banner;
+            // banner dihapus
             activeTopupGame = card.dataset.game || "";
             if (uidInput) uidInput.value = "";
             if (serverInput) serverInput.value = "";

@@ -1494,11 +1494,12 @@ POPUP TOPUP
 }
 
 .popup-banner {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(255, 123, 0, 0.2);
+  display: none !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
 }
 
 .popup-box h2 {
@@ -2812,13 +2813,13 @@ FLOATING CHAT — Premium
 .chat-menu {
   width: 280px;
   background: linear-gradient(165deg, #1a1a1a 0%, #111 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 123, 0, 0.55) !important;
   border-radius: 18px;
   overflow: hidden;
   box-shadow:
     0 24px 55px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
-    0 0 35px rgba(255, 123, 0, 0.1);
+    0 0 0 1px rgba(255, 123, 0, 0.15) inset,
+    0 0 30px rgba(255, 123, 0, 0.22) !important;
   opacity: 0;
   visibility: hidden;
   transform: translateY(14px) scale(0.95);
@@ -5456,4 +5457,14 @@ button.chat-item {
   align-items: center;
   gap: 10px;
   min-height: auto;
+}
+
+/* CHAT MENU OUTER ORANGE BORDER */
+.floating-chat .chat-menu,
+.chat-menu {
+  border: 1.5px solid rgba(255, 123, 0, 0.55) !important;
+  box-shadow:
+    0 24px 55px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 123, 0, 0.12) inset,
+    0 0 30px rgba(255, 123, 0, 0.2) !important;
 }
