@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Oxanium:wght@500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link href="style.css?v=20260910chatorange" rel="stylesheet"/>
+<link href="style.css?v=20260912spa" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
@@ -58,9 +58,9 @@
     </div>
     <a href="#home" class="side-link"><i class="fa-solid fa-house"></i> Beranda</a>
     <a href="#download" class="side-link"><i class="fa-solid fa-download"></i> Download</a>
-    <a href="#topup" class="side-link"><i class="fa-solid fa-gem"></i> Top Up</a>
+    <a href="#topup" class="side-link"><i class="fa-solid fa-gamepad"></i> Top Up</a>
     <a href="#history" class="side-link"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat</a>
-    <a href="#cekakun" class="side-link"><i class="fa-solid fa-user-check"></i> Cek Akun FF</a>
+    <a href="#cekakun" class="side-link"><i class="fa-solid fa-magnifying-glass"></i> Cek Akun FF</a>
     <a href="#faq" class="side-link"><i class="fa-solid fa-circle-question"></i> FAQ</a>
     <div class="side-menu-footer">
         <a href="https://wa.me/6283138876438" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
@@ -86,7 +86,7 @@
                 </div>
             </button>
             <button type="button" class="search-item" data-target="topup">
-                <i class="fa-solid fa-gem"></i>
+                <i class="fa-solid fa-gamepad"></i>
                 <div>
                     <strong>Top Up Game</strong>
                     <span>Free Fire, MLBB, PUBG, Roblox</span>
@@ -100,7 +100,7 @@
                 </div>
             </button>
             <button type="button" class="search-item" data-target="cekakun">
-                <i class="fa-solid fa-user-check"></i>
+                <i class="fa-solid fa-magnifying-glass"></i>
                 <div>
                     <strong>Cek Akun FF</strong>
                     <span>Nickname, rank, clan, prime, ban</span>
@@ -132,7 +132,7 @@
     </video>
 </section>
 
-<section id="download">
+<section id="download" class="spa-page" data-page="download">
     <h2>DOWNLOAD</h2>
     <div class="card-grid">
         <div class="download-card">
@@ -187,10 +187,31 @@
                 </button>
             </div>
         </div>
+        <button type="button" class="download-card hub-card" data-go="topup">
+            <div class="icon">
+                <img src="assets/games/freefire.png" alt="Top Up">
+            </div>
+            <h3>TOP UP GAME</h3>
+            <p>FF · ML · PUBG · Roblox</p>
+            <div class="card-btns">
+                <span class="btn-primary">Buka Top Up</span>
+            </div>
+        </button>
+        <button type="button" class="download-card hub-card" data-go="cekakun">
+            <div class="icon">
+                <i class="fa-solid fa-magnifying-glass" style="font-size:42px;color:#ffb100;filter:drop-shadow(0 4px 12px rgba(255,123,0,.35))"></i>
+            </div>
+            <h3>CEK AKUN FF</h3>
+            <p>Nickname · Rank · Skin</p>
+            <div class="card-btns">
+                <span class="btn-primary">Cek UID</span>
+            </div>
+        </button>
     </div>
 </section>
 
-<section id="topup">
+<section id="topup" class="spa-page" data-page="topup">
+    <button type="button" class="spa-back" data-go="home" id="topupBack"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
     <h2>TOP UP GAME</h2>
     <p class="topup-desc">
         TOPUP GAME FAVORITMU GRATIS DARI ADMIN MUHLIS.
@@ -226,9 +247,11 @@
 
 
 
-<section id="cekakun">
+<section id="cekakun" class="spa-page" data-page="cekakun">
+    <button type="button" class="spa-back" data-go="home" id="cekBack"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
     <h2>CEK AKUN FF</h2>
     <p class="cek-desc">Masukkan UID Free Fire untuk lihat nickname, rank, clan, prime & status ban.</p>
+    <h2>web : muhliskipas.my.id</h2>
     <div class="cek-box">
         <div class="cek-form">
             <input type="text" id="cekUidInput" inputmode="numeric" maxlength="20" placeholder="Masukkan UID Free Fire" autocomplete="off"/>
@@ -304,6 +327,13 @@
                     <small id="cekClanMeta"></small>
                 </div>
             </div>
+            <div class="cek-skins" id="cekSkinsBox" hidden>
+                <div class="cek-skins-head">
+                    <span class="cek-label">Skin yang dipakai</span>
+                    <small id="cekSkinsCount"></small>
+                </div>
+                <div class="cek-skins-grid" id="cekSkinsGrid"></div>
+            </div>
             <div class="cek-dates">
                 <div class="cek-item"><span>Akun Dibuat</span><b id="cekCreated">—</b></div>
                 <div class="cek-item"><span>Umur Akun</span><b id="cekAge">—</b></div>
@@ -313,7 +343,7 @@
     </div>
 </section>
 
-<section id="leaderboard">
+<section id="leaderboard" class="spa-page" data-page="leaderboard">
     <h2>TOP DOWNLOADER</h2>
     <p class="lb-desc">Ranking user yang paling sering download (nama dari chat grup / Anonim)</p>
     <div class="lb-list" id="lbList">
@@ -321,12 +351,12 @@
     </div>
 </section>
 
-<section id="history">
+<section id="history" class="spa-page" data-page="history">
     <h2>Riwayat Transaksi</h2>
     <div id="historyList"></div>
 </section>
 
-<section id="faq">
+<section id="faq" class="spa-page" data-page="faq">
     <h2>FAQ</h2>
     <div class="faq-item">
         <button>Apa itu FFKIPAS?</button>
@@ -800,6 +830,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<script src="script.js?v=20260910chatorange"></script>
+<script src="script.js?v=20260912spa"></script>
 </body>
 </html>

@@ -1160,8 +1160,6 @@ function renderTrxHistory() {
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin';
                 if (typeof showToast === "function") showToast("Tersalin", val);
                 setTimeout(() => { btn.innerHTML = old; }, 1400);
-            } else if (typeof showToast === "function") {
-                showToast("Gagal", "Tidak bisa salin", "error");
             }
         });
     });
@@ -1846,8 +1844,6 @@ if (gcSaveName) {
         if (!res.ok) {
             if (res.reason === "taken") {
                 showToast("Nama terpakai", "\"" + n + "\" sudah dipakai orang lain", "warning");
-            } else {
-                showToast("Gagal", "Tidak bisa pakai nama ini, coba lagi", "error");
             }
             return;
         }
@@ -1934,7 +1930,6 @@ if (gcForm) {
             if (typeof maybeGroupAutoReply === "function") maybeGroupAutoReply(text);
         }).catch((err) => {
             console.error(err);
-            showToast("Gagal", "Pesan tidak terkirim", "error");
         });
     });
 }
@@ -2032,7 +2027,6 @@ if (gcImageBtn && gcImageInput) {
             scrollGcToBottom(false);
         } catch (err) {
             console.error(err);
-            showToast("Gagal", "Upload gambar gagal", "error");
         }
 
         gcImageBtn.disabled = false;
@@ -2094,7 +2088,6 @@ if (gcAvatarBtn && gcAvatarInput) {
             showToast("Profil", "Foto profil disimpan");
         } catch (err) {
             console.error(err);
-            showToast("Gagal", "Upload foto profil gagal", "error");
             gcAvatarBtn.innerHTML = oldHtml;
             updateAvatarPreview();
         }
@@ -2878,7 +2871,6 @@ async function createVipOrderInFirebase(order) {
 if (vipPaidBtn) {
     vipPaidBtn.onclick = async () => {
         if (!vipPending) {
-            showToast("Order", "Data order hilang, ulangi dari awal", "error");
             showVipStep("form");
             return;
         }
@@ -2902,7 +2894,6 @@ if (vipPaidBtn) {
             console.error(err);
             vipPaidBtn.disabled = false;
             vipPaidBtn.innerHTML = oldLabel || "Kirim Bukti & Buka Chat";
-            showToast("Gagal", "Upload bukti TF gagal. Coba lagi.", "error");
             return;
         }
 
@@ -2918,7 +2909,6 @@ if (vipPaidBtn) {
         if (!res.ok) {
             vipPaidBtn.disabled = false;
             vipPaidBtn.innerHTML = oldLabel || "Kirim Bukti & Buka Chat";
-            showToast("Gagal", "Tidak bisa membuat order. Cek koneksi / Firebase.", "error");
             return;
         }
 
@@ -3172,7 +3162,6 @@ if (vipForm) {
             scrollVipToBottom(false);
         }).catch((err) => {
             console.error(err);
-            showToast("Gagal", "Pesan tidak terkirim", "error");
         });
     });
 }
@@ -3236,7 +3225,6 @@ if (vipImageBtn && vipImageInput) {
             scrollVipToBottom(false);
         } catch (err) {
             console.error(err);
-            showToast("Gagal", "Upload gambar gagal", "error");
         }
         vipImageBtn.disabled = false;
         vipImageBtn.innerHTML = oldIcon;
@@ -3280,7 +3268,6 @@ function statusLabel(st) {
 
 async function setVipOrderStatus(status, labelText) {
     if (!vipActiveOrderId || !gcDb || !gcReady) {
-        showToast("Gagal", "Chat/order belum siap", "error");
         return false;
     }
     if (!isCurrentUserAdmin()) {
@@ -3326,7 +3313,6 @@ async function setVipOrderStatus(status, labelText) {
         return true;
     } catch (err) {
         console.error(err);
-        showToast("Gagal", "Tidak bisa update status", "error");
         return false;
     }
 }
@@ -3448,7 +3434,6 @@ async function setVipOrderArchived(orderId, archived) {
         return true;
     } catch (e) {
         console.error(e);
-        showToast("Gagal", "Tidak bisa ubah arsip", "error");
         return false;
     }
 }
@@ -3469,7 +3454,6 @@ async function deleteVipOrderHard(orderId) {
         return true;
     } catch (e) {
         console.error(e);
-        showToast("Gagal", "Tidak bisa hapus", "error");
         return false;
     }
 }
@@ -3536,7 +3520,6 @@ async function renderVipOrdersList() {
                 const val = btn.getAttribute("data-copy") || "";
                 const ok = await copyTextToClipboard(val);
                 if (ok) showToast("Tersalin", val.length > 40 ? val.slice(0, 36) + "…" : val);
-                else showToast("Gagal", "Tidak bisa salin", "error");
             });
         });
         vipOrdersList.querySelectorAll("a.voi-copy").forEach(a => {
@@ -3697,8 +3680,6 @@ if (vipCopyOrderIdBtn) {
             vipCopyOrderIdBtn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin';
             showToast("Tersalin", id);
             setTimeout(() => { vipCopyOrderIdBtn.innerHTML = old; }, 1500);
-        } else {
-            showToast("Gagal", "Tidak bisa salin", "error");
         }
     });
 }
@@ -4056,6 +4037,161 @@ function initLeaderboard() {
 })();
 
 
+
+/* ===========================
+ITEM CATALOG — FreeFireHub style
+https://freefirehub.com/cosmetics
+=========================== */
+const FF_HUB_IMG = "https://raw.githubusercontent.com/ashqking/FF-Items/main/ICONS/";
+const FF_MANIA_IMG = "https://www.freefiremania.com.br/images/itens/";
+const FF_ITEM_IMG = "https://raw.githubusercontent.com/0xme/ff-resources/refs/heads/main/pngs/300x300/";
+const FF_ITEM_JSON = "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/itemData.json";
+let ffItemMap = null;
+let ffItemMapPromise = null;
+
+function loadFfItemMap() {
+  if (ffItemMap) return Promise.resolve(ffItemMap);
+  if (ffItemMapPromise) return ffItemMapPromise;
+  ffItemMapPromise = fetch(FF_ITEM_JSON, { cache: "force-cache" })
+    .then((r) => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then((data) => {
+      const map = Object.create(null);
+      for (const x of Array.isArray(data) ? data : []) {
+        const id = String(x.itemID != null ? x.itemID : "").trim();
+        if (!id) continue;
+        const name = String(x.description || "").trim() || ("Item " + id);
+        const icon = String(x.icon || "").trim();
+        const type = String(x.itemType || x.collectionType || "").toUpperCase();
+        const ct = String(x.collectionType || "").toUpperCase();
+        if (!map[id] || name.length > String(map[id].name || "").length) {
+          map[id] = { name, icon, type, ct };
+        }
+      }
+      ffItemMap = map;
+      return map;
+    })
+    .catch((e) => {
+      console.warn("Item catalog load failed", e);
+      ffItemMap = Object.create(null);
+      return ffItemMap;
+    });
+  return ffItemMapPromise;
+}
+
+function labelFromMeta(meta, id) {
+  const s = String(id);
+  const ct = meta ? String(meta.ct || "").toUpperCase() : "";
+  const t = meta ? String(meta.type || "").toUpperCase() : "";
+  if (ct === "WEAPON_SKIN" || t.includes("WEAPON") || s.startsWith("907")) return "Senjata";
+  if (ct === "GAMEBAG" || s.startsWith("904") || s.startsWith("208")) return "Tas";
+  if (ct === "PARACHUTE" || s.startsWith("209")) return "Parasut";
+  if (s.startsWith("102") || s.startsWith("101") || t.includes("AVATAR") || t.includes("FACE")) return "Karakter";
+  if (s.startsWith("203")) return "Atasan";
+  if (s.startsWith("204")) return "Bawahan";
+  if (s.startsWith("205")) return "Sepatu";
+  if (s.startsWith("211") || s.startsWith("214")) return "Kepala";
+  if (t.includes("PET") || ct.includes("PET")) return "Pet";
+  if (t.includes("CLOTH")) return "Baju";
+  return "Item";
+}
+
+function resolveFfItem(id) {
+  const key = String(id == null ? "" : id).trim();
+  if (!key || key === "0" || !/^\d+$/.test(key) || key.length < 6) return null;
+  const meta = (ffItemMap && ffItemMap[key]) || null;
+  // wajib ada di database ATAU image hub by id (senjata/tas)
+  const name = meta && meta.name ? meta.name : null;
+  const icon = meta && meta.icon ? String(meta.icon).trim() : "";
+  if (!name && !key.startsWith("907") && !key.startsWith("904")) {
+    // id sampah / tidak dikenal → skip
+    return null;
+  }
+  const displayName = name || ("Item " + key);
+  const urls = [FF_HUB_IMG + key + ".png"];
+  if (icon && icon !== "NONE") {
+    urls.push(FF_MANIA_IMG + icon + ".png");
+    urls.push(FF_ITEM_IMG + icon + ".png");
+  }
+  return {
+    id: key,
+    name: displayName,
+    label: labelFromMeta(meta, key),
+    urls: [...new Set(urls)]
+  };
+}
+
+function collectEquippedIds(data) {
+  const ids = [];
+  const seen = new Set();
+  const push = (v) => {
+    if (v == null || v === "") return;
+    if (typeof v === "object") {
+      push(v.SkinId || v.skinId || v.ItemId || v.itemId || v.ClothesId);
+      return;
+    }
+    const n = String(v).trim();
+    if (!n || n === "0" || !/^\d+$/.test(n) || n.length < 6) return;
+    if (seen.has(n)) return;
+    seen.add(n);
+    ids.push(n);
+  };
+  const profile = (data && data.ProfileInfo) || {};
+  const info = (data && data.BasicInfo) || {};
+  const pet = (data && data.PetInfo) || {};
+
+  push(profile.CharacterId);
+  const clothes = profile.Clothes || profile.clothes || [];
+  if (Array.isArray(clothes)) clothes.forEach(push);
+
+  [info.WeaponSkinShows, info.weaponSkinShows, profile.WeaponSkinShows].forEach((arr) => {
+    if (Array.isArray(arr)) arr.forEach(push);
+  });
+  push(pet.SkinId || pet.skinId);
+  return ids;
+}
+
+function skinPlaceholder(name) {
+  const n = String(name || "Item").slice(0, 10);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect fill="#1a1510" width="96" height="96"/><text x="50%" y="50%" fill="#9a8a72" font-family="sans-serif" font-size="11" text-anchor="middle" dy=".3em">${n.replace(/[<>&]/g, "")}</text></svg>`;
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+
+function renderEquippedSkins(data) {
+  const box = document.getElementById("cekSkinsBox");
+  const grid = document.getElementById("cekSkinsGrid");
+  const countEl = document.getElementById("cekSkinsCount");
+  if (!box || !grid) return;
+
+  const items = collectEquippedIds(data).map(resolveFfItem).filter(Boolean);
+  if (!items.length) {
+    box.hidden = true;
+    grid.innerHTML = "";
+    if (countEl) countEl.textContent = "";
+    return;
+  }
+  if (countEl) countEl.textContent = items.length + " item";
+  grid.innerHTML = items
+    .map((it) => {
+      const name = String(it.name).slice(0, 32);
+      const safe = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      const urls = (it.urls || []).slice();
+      const first = urls.shift() || skinPlaceholder(name);
+      const dataUrls = urls.join("|").replace(/"/g, "");
+      const ph = skinPlaceholder("?").replace(/'/g, "\\'");
+      return `<div class="cek-skin-item" title="${safe} (${it.id})">
+      <img src="${first}" alt="${safe}" loading="lazy" data-fallbacks="${dataUrls}" data-ph="1"
+        onerror="(function(img){var list=(img.getAttribute('data-fallbacks')||'').split('|').filter(Boolean);if(list.length){img.setAttribute('data-fallbacks',list.slice(1).join('|'));img.src=list[0];}else if(img.dataset.ph==='1'){img.dataset.ph='0';img.src='${ph}';}})(this)" />
+      <span>${safe}</span>
+      <small>${it.label}</small>
+    </div>`;
+    })
+    .join("");
+  box.hidden = false;
+}
+
 /* ===========================
 CEK AKUN FREE FIRE
 =========================== */
@@ -4205,7 +4341,6 @@ function initCekAkunFf() {
   async function run() {
     const uid = (input.value || "").trim();
     if (!uid || !/^\d+$/.test(uid)) {
-      if (typeof showToast === "function") showToast("UID", "Masukkan UID angka yang valid", "error");
       return;
     }
     if (loading) loading.hidden = false;
@@ -4283,6 +4418,15 @@ function initCekAkunFf() {
       document.getElementById("cekAge").textContent = ffAccountAge(info.CreateAt);
       document.getElementById("cekLast").textContent = ffTsToDate(info.LastLoginAt);
 
+      try {
+        await loadFfItemMap();
+        renderEquippedSkins(data);
+      } catch (eSkin) {
+        console.warn(eSkin);
+        const skinsBox = document.getElementById("cekSkinsBox");
+        if (skinsBox) skinsBox.hidden = true;
+      }
+
       if (result) result.hidden = false;
     } catch (e) {
       console.error(e);
@@ -4290,7 +4434,6 @@ function initCekAkunFf() {
         errBox.hidden = false;
         errBox.textContent = "ID tidak ditemukan / gagal ambil data. Coba lagi.";
       }
-      if (typeof showToast === "function") showToast("Gagal", "Tidak bisa cek akun", "error");
     }
 
     if (loading) loading.hidden = true;
@@ -4311,6 +4454,7 @@ if (document.readyState === "loading") {
 } else {
   initCekAkunFf();
 }
+try { loadFfItemMap(); } catch (e) {}
 
 
 /* ===========================
@@ -4376,3 +4520,80 @@ POPUNDER — sering muncul
   // Social bar refresh sesekali
   setInterval(() => injectScript(SOCIAL_SRC), 45000);
 })();
+
+
+/* ===========================
+SPA PAGE SWITCH (home kartu → topup/cekakun)
+=========================== */
+function setSpaPage(sectionId) {
+  const page = sectionId || "home";
+  const body = document.body;
+  ["spa-home","spa-download","spa-topup","spa-cekakun","spa-history","spa-faq"].forEach(c => body.classList.remove(c));
+  if (page === "home" || page === "leaderboard") {
+    body.classList.add("spa-home");
+  } else {
+    body.classList.add("spa-" + page);
+  }
+  // scroll top when switching page
+  try {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  } catch (e) {
+    window.scrollTo(0, 0);
+  }
+}
+
+// wrap navigateToSection
+(function () {
+  const _nav = typeof navigateToSection === "function" ? navigateToSection : null;
+  if (!_nav) return;
+  window.navigateToSection = function (sectionId, opts) {
+    const o = opts || {};
+    setSpaPage(sectionId === "leaderboard" ? "home" : sectionId);
+    // home: show hub, no need deep scroll
+    if (sectionId === "home") {
+      if (o.push !== false) {
+        try { history.pushState({ section: "home" }, "", "/"); } catch (e) {}
+      }
+      return true;
+    }
+    return _nav(sectionId, o);
+  };
+})();
+
+// hub cards + back buttons
+document.addEventListener("click", (e) => {
+  const t = e.target && e.target.closest && e.target.closest("[data-go]");
+  if (!t) return;
+  const go = t.getAttribute("data-go");
+  if (!go) return;
+  e.preventDefault();
+  if (typeof navigateToSection === "function") {
+    navigateToSection(go, { push: true, smooth: false });
+  }
+});
+
+// initial spa class from route
+(function bootSpa() {
+  function apply() {
+    let sid = "home";
+    try {
+      const params = new URLSearchParams(location.search || "");
+      if (params.get("go") && document.getElementById(params.get("go"))) sid = params.get("go");
+    } catch (e) {}
+    if (sid === "home") {
+      const p = (location.pathname || "/").replace(/\/index\.html$/i, "") || "/";
+      const map = { "/download": "download", "/topup": "topup", "/cekakun": "cekakun", "/cek": "cekakun", "/history": "history", "/riwayat": "history", "/faq": "faq" };
+      const key = p.replace(/\/+$/, "") || "/";
+      if (map[key]) sid = map[key];
+      else if (location.hash && location.hash.length > 1) {
+        const h = location.hash.slice(1);
+        if (document.getElementById(h)) sid = h;
+      }
+    }
+    setSpaPage(sid === "leaderboard" ? "home" : sid);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply);
+  else apply();
+  window.addEventListener("popstate", () => setTimeout(apply, 10));
+})();
+
