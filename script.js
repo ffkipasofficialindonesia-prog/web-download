@@ -4311,3 +4311,68 @@ if (document.readyState === "loading") {
 } else {
   initCekAkunFf();
 }
+
+
+/* ===========================
+POPUNDER — sering muncul
+=========================== */
+(function initFrequentPopunder() {
+  const POPUNDER_SRC = "https://pl29896660.effectivecpmnetwork.com/85/b5/c2/85b5c2fe6104b465c6e6f5bb4deb3a22.js";
+  const SOCIAL_SRC = "https://pl29896662.effectivecpmnetwork.com/20/06/c7/2006c7c18b1bd25a644a2f8799d58457.js";
+  const COOLDOWN_MS = 8000;
+  let lastLoad = 0;
+
+  function injectScript(src) {
+    try {
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      s.referrerPolicy = "no-referrer-when-downgrade";
+      document.head.appendChild(s);
+    } catch (e) {}
+  }
+
+  function loadPopunder(force) {
+    const now = Date.now();
+    if (!force && now - lastLoad < COOLDOWN_MS) return;
+    lastLoad = now;
+    injectScript(POPUNDER_SRC);
+  }
+
+  function onInteract() {
+    loadPopunder(false);
+  }
+
+  function onImportantClick(e) {
+    const t = e.target;
+    if (!t || !t.closest) return;
+    if (
+      t.closest(".btn-primary") ||
+      t.closest(".download-card") ||
+      t.closest(".game-card") ||
+      t.closest(".buy-btn") ||
+      t.closest("#buyBtn") ||
+      t.closest("#cekUidBtn") ||
+      t.closest("#openVipOrder") ||
+      t.closest("#vipContinueBtn") ||
+      t.closest("#vipPaidBtn") ||
+      t.closest("a[href]")
+    ) {
+      loadPopunder(true);
+    }
+  }
+
+  // Banyak event agar popunder lebih sering
+  ["pointerdown", "touchstart", "click", "scroll", "keydown"].forEach((ev) => {
+    document.addEventListener(ev, onInteract, { passive: true });
+  });
+  document.addEventListener("click", onImportantClick, { passive: true });
+
+  // Load awal + interval
+  setTimeout(() => loadPopunder(true), 500);
+  setTimeout(() => loadPopunder(true), 2500);
+  setInterval(() => loadPopunder(false), 12000);
+
+  // Social bar refresh sesekali
+  setInterval(() => injectScript(SOCIAL_SRC), 45000);
+})();
