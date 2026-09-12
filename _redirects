@@ -1,0 +1,8 @@
+# Cloudflare Pages — SPA routes (status 200 = rewrite, bukan redirect)
+/download    /index.html   200
+/topup       /index.html   200
+/cekakun    /index.html   200
+/history     /index.html   200
+/riwayat     /index.html   200
+/faq         /index.html   200
+/home        /index.html   200
