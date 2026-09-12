@@ -4311,11 +4311,21 @@ async function cekFfBan(uid) {
 
 async function cekFfFullInfo(uid) {
   const url = "https://danger-player-info.vercel.app/accinfo?uid=" + encodeURIComponent(uid) + "&key=DANGERxINFO";
-  const r = await fetch(url);
-  if (!r.ok) throw new Error("HTTP " + r.status);
-  const data = await r.json();
-  if (!data || !data.BasicInfo) throw new Error("ID tidak ditemukan");
-  return data;
+  const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), 12000) : null;
+  try {
+    const r = await fetch(url, {
+      method: "GET",
+      signal: ctrl ? ctrl.signal : undefined,
+      cache: "no-store"
+    });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    if (!data || !data.BasicInfo) throw new Error("ID tidak ditemukan");
+    return data;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 function setCekImg(el, file) {
@@ -4338,31 +4348,40 @@ function initCekAkunFf() {
   const result = document.getElementById("cekResult");
   if (!btn || !input) return;
 
+  // preload catalog di background biar skin cepat
+  try { loadFfItemMap(); } catch (e) {}
+
   async function run() {
     const uid = (input.value || "").trim();
     if (!uid || !/^\d+$/.test(uid)) {
+      if (typeof showToast === "function") showToast("UID", "Masukkan UID angka yang valid", "error");
       return;
     }
     if (loading) loading.hidden = false;
     if (errBox) { errBox.hidden = true; errBox.textContent = ""; }
     if (result) result.hidden = true;
+    const skinsBox = document.getElementById("cekSkinsBox");
+    if (skinsBox) skinsBox.hidden = true;
     btn.disabled = true;
 
     try {
-      const data = await cekFfFullInfo(uid);
+      // parallel: info akun + ban sekaligus
+      const [data, ban] = await Promise.all([
+        cekFfFullInfo(uid),
+        cekFfBan(uid).catch(() => ({ text: "Tidak bisa cek", ok: null }))
+      ]);
+
       const info = data.BasicInfo || {};
       const clan = data.ClanBasicInfo || {};
       const prime = info.PrimeInfo || {};
-      const ban = await cekFfBan(uid);
+      const social = data.SocialInfo || {};
+      const credit = data.CreditScoreInfo || {};
 
       const br = mapFfRank(info.Rank);
       const brMax = mapFfRank(info.MaxRank);
       const cs = mapFfRank(info.CsRank);
       const csMax = mapFfRank(info.CsMaxRank);
       const pr = mapFfPrime(prime.PrimeLevel);
-
-      const social = data.SocialInfo || {};
-      const credit = data.CreditScoreInfo || {};
 
       document.getElementById("cekNick").textContent = info.Nickname || "—";
       document.getElementById("cekId").textContent = info.AccountId || uid;
@@ -4372,26 +4391,22 @@ function initCekAkunFf() {
         ? Number(info.Likes).toLocaleString("id-ID") : "—";
 
       const bioEl = document.getElementById("cekBio");
-      const bioText = (social.Signature || "").trim();
-      if (bioEl) bioEl.textContent = bioText || "Tidak ada bio";
+      if (bioEl) bioEl.textContent = (social.Signature || "").trim() || "Tidak ada bio";
 
-      const seasonId = info.SeasonId;
       const booyahEl = document.getElementById("cekBooyah");
       if (booyahEl) {
-        booyahEl.textContent = seasonId != null && seasonId !== ""
-          ? ("Season " + seasonId)
-          : "—";
+        const seasonId = info.SeasonId;
+        booyahEl.textContent = seasonId != null && seasonId !== "" ? ("Season " + seasonId) : "—";
       }
 
       const creditEl = document.getElementById("cekCredit");
-      if (creditEl) {
-        const sc = credit.CreditScore;
-        creditEl.textContent = sc != null ? String(sc) : "—";
-      }
+      if (creditEl) creditEl.textContent = credit.CreditScore != null ? String(credit.CreditScore) : "—";
 
       const banEl = document.getElementById("cekBan");
-      banEl.textContent = ban.text;
-      banEl.className = ban.ok === false ? "ban-yes" : (ban.ok === true ? "ban-no" : "");
+      if (banEl) {
+        banEl.textContent = ban.text;
+        banEl.className = ban.ok === false ? "ban-yes" : (ban.ok === true ? "ban-no" : "");
+      }
 
       document.getElementById("cekRankBr").textContent = br.name;
       document.getElementById("cekRankBrMax").textContent = brMax.name !== br.name ? ("Max: " + brMax.name) : "";
@@ -4410,7 +4425,7 @@ function initCekAkunFf() {
         document.getElementById("cekClanName").textContent = clan.ClanName;
         document.getElementById("cekClanMeta").textContent =
           "Lv." + (clan.ClanLevel || "-") + " · " + (clan.MemberNum || "-") + "/" + (clan.Capacity || "-") + " member";
-      } else {
+      } else if (clanBox) {
         clanBox.hidden = true;
       }
 
@@ -4418,16 +4433,19 @@ function initCekAkunFf() {
       document.getElementById("cekAge").textContent = ffAccountAge(info.CreateAt);
       document.getElementById("cekLast").textContent = ffTsToDate(info.LastLoginAt);
 
-      try {
-        await loadFfItemMap();
-        renderEquippedSkins(data);
-      } catch (eSkin) {
-        console.warn(eSkin);
-        const skinsBox = document.getElementById("cekSkinsBox");
-        if (skinsBox) skinsBox.hidden = true;
-      }
-
+      // tampilkan info utama dulu (cepat), skin menyusul
+      if (loading) loading.hidden = true;
       if (result) result.hidden = false;
+      btn.disabled = false;
+
+      // skin async — tidak nahan tampilan
+      loadFfItemMap()
+        .then(() => renderEquippedSkins(data))
+        .catch((eSkin) => {
+          console.warn(eSkin);
+          if (skinsBox) skinsBox.hidden = true;
+        });
+      return;
     } catch (e) {
       console.error(e);
       if (errBox) {
