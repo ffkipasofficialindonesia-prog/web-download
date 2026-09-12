@@ -1,39 +1,24 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FFKIPAS</title>
 <script>
-(function () {
-  var path = location.pathname || "/";
-  // Ambil segmen path: /history -> history
-  var seg = path.replace(/^\/+|\/+$/g, "").split("/")[0] || "";
-  seg = seg.toLowerCase();
-  var map = {
-    download: "download",
-    topup: "topup",
-    "cek-akun": "accountCheck",
-    account: "accountCheck",
-    accountcheck: "accountCheck",
-    kalkulator: "pricecalc",
-    pricecalc: "pricecalc",
-    history: "history",
-    riwayat: "history",
-    faq: "faq",
-    home: "home"
-  };
-  var section = map[seg] || "";
+  // Simpan path asli (misal "/cekakun") sebelum redirect ke root.
+  // index.html (lewat script.js -> applyRouteFromLocation) baca ini
+  // lagi dan nampilin section yang benar tanpa harus ada file/route
+  // sungguhan di server untuk path tersebut.
   try {
-    if (section) sessionStorage.setItem("spa_redirect", "/" + seg);
+    sessionStorage.setItem(
+      "spa_redirect",
+      location.pathname + location.search + location.hash
+    );
   } catch (e) {}
-  // Query param lebih andal daripada sessionStorage saja
-  var q = section ? ("?go=" + encodeURIComponent(section)) : "";
-  location.replace("/" + q);
-})();
+  location.replace("/");
 </script>
-<meta http-equiv="refresh" content="0;url=/" />
 </head>
 <body>
-  <p><a href="/">Kembali ke beranda</a></p>
+  Mengalihkan...
 </body>
 </html>

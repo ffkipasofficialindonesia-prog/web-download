@@ -85,7 +85,9 @@ body {
 /* Background diam total saat di-scroll, walau di HP/iOS.
    background-attachment:fixed tidak reliable di mobile Safari & sebagian
    Android, jadi background dipisah jadi layer sendiri yang position:fixed
-   penuh viewport. Rasio dioptimalkan untuk layar HP potret (9:16). */
+   penuh viewport. background-size:contain dipakai (bukan cover) supaya
+   gambar background selalu tampil utuh & responsive, tidak kepotong di
+   ukuran layar apapun — dari HP potret 9:16 sampai desktop lebar. */
 body::before {
   content: "";
   position: fixed;
@@ -98,7 +100,7 @@ body::before {
     radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 123, 0, 0.12), transparent),
     linear-gradient(rgba(6, 6, 6, 0.85), rgba(6, 6, 6, 0.92)),
     url("assets/bg.webp");
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   z-index: -1;
@@ -662,6 +664,7 @@ DOWNLOAD SECTION
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 58px;
   margin-bottom: 18px;
 }
 
@@ -3132,6 +3135,10 @@ RESPONSIVE
   .download-card {
     padding: 22px 14px 18px;
     border-radius: 18px;
+  }
+
+  .download-card .icon {
+    height: 48px;
   }
 
   .download-card .icon img {
