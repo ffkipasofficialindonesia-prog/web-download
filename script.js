@@ -4457,6 +4457,61 @@ function setCekImg(el, file) {
   el.onerror = () => { el.hidden = true; };
 }
 
+/** Pasang gambar icon dari ff-resources (nama file didapat manual dari
+ *  Trash Mode ItemID2) ke elemen <img>. Kalau gambarnya gagal dimuat
+ *  (nama file salah / file dipindah), icon otomatis disembunyikan lagi
+ *  supaya nggak nyisain gambar rusak — teksnya tetap kelihatan normal. */
+function setEnumIcon(imgEl, filename) {
+  if (!imgEl) return;
+  if (!filename) {
+    imgEl.hidden = true;
+    imgEl.removeAttribute("src");
+    return;
+  }
+  imgEl.onerror = function () {
+    imgEl.hidden = true;
+  };
+  imgEl.src = FF_ITEM_IMG + filename + ".png";
+  imgEl.hidden = false;
+}
+
+function genderIconFile(g) {
+  const s = String(g || "").toLowerCase();
+  if (s.includes("female") || s.includes("woman") || s.includes("perempuan") || s.includes("wanita")) {
+    return "UI_Icon_GenderWoman";
+  }
+  if (s.includes("male") || s.includes("man") || s.includes("laki") || s.includes("pria")) {
+    return "UI_Icon_GenderMan";
+  }
+  return null;
+}
+
+function modeIconFile(m) {
+  const s = String(m || "").toUpperCase();
+  if (s.includes("BR") || s.includes("ROYALE")) return "FF_UI_Mode_BR";
+  if (s.includes("CS") || s.includes("CLASH") || s.includes("SQUAD")) return "FF_UI_Mode_CS";
+  if (s.includes("ENTERTAINMENT") || s.includes("AMUSE")) return "FF_UI_Mode_Amuse";
+  if (!s) return null; // belum ada data sama sekali -> jangan tampil icon
+  return "FF_UI_Mode_Unlimited"; // selain 3 mode di atas -> default
+}
+
+function timeActiveIconFile(t) {
+  const s = String(t || "").toUpperCase();
+  if (s.includes("MORNING")) return "FF_UI_Active_Morning";
+  if (s.includes("NOON") || s.includes("AFTERNOON") || s.includes("SORE")) return "FF_UI_Active_Noon";
+  if (s.includes("NIGHT")) return "FF_UI_Active_Night";
+  if (s.includes("UNLIMITED") || s.includes("FLEXIBLE")) return "FF_UI_Active_Unlimited";
+  return null;
+}
+
+function timeOnlineIconFile(t) {
+  const s = String(t || "").toUpperCase();
+  // Dikonfirmasi user langsung dari Trash Mode ItemID2.
+  if (s.includes("WEEKEND")) return "FF_UI_Online_Playday";
+  if (s.includes("WORKDAY") || s.includes("WEEKDAY")) return "FF_UI_Online_Workday";
+  return null;
+}
+
 function initCekAkunFf() {
   const input = document.getElementById("cekUidInput");
   const btn = document.getElementById("cekUidBtn");
@@ -4504,34 +4559,14 @@ function initCekAkunFf() {
 
       const genderEl = document.getElementById("cekGender");
       if (genderEl) genderEl.textContent = stripEnumPrefix(social.Gender) || "—";
-      const genderIconEl = document.getElementById("cekGenderIcon");
-      if (genderIconEl) {
-        const g = String(social.Gender || "").trim().toLowerCase();
-        let genderIcon = "fa-mars-and-venus"; // default: belum diketahui
-        if (g.includes("female") || g.includes("perempuan") || g.includes("wanita")) {
-          genderIcon = "fa-venus";
-        } else if (g.includes("male") || g.includes("laki") || g.includes("pria")) {
-          genderIcon = "fa-mars";
-        }
-        genderIconEl.className = "fa-solid " + genderIcon + " cek-fa-icon";
-      }
+      setEnumIcon(document.getElementById("cekGenderIcon"), genderIconFile(social.Gender));
 
       const langEl = document.getElementById("cekLanguage");
       if (langEl) langEl.textContent = stripEnumPrefix(social.Language) || "—";
 
       const modeEl = document.getElementById("cekModePrefer");
       if (modeEl) modeEl.textContent = stripEnumPrefix(social.ModePrefer) || "—";
-      const modeIconEl = document.getElementById("cekModePreferIcon");
-      if (modeIconEl) {
-        const m = String(social.ModePrefer || "").trim().toUpperCase();
-        let modeIcon = "fa-gamepad"; // default: belum diketahui
-        if (m.includes("BR") || m.includes("ROYALE")) {
-          modeIcon = "fa-crosshairs";
-        } else if (m.includes("CS") || m.includes("CLASH") || m.includes("SQUAD")) {
-          modeIcon = "fa-people-group";
-        }
-        modeIconEl.className = "fa-solid " + modeIcon + " cek-fa-icon";
-      }
+      setEnumIcon(document.getElementById("cekModePreferIcon"), modeIconFile(social.ModePrefer));
 
       const rankShowEl = document.getElementById("cekRankShow");
       if (rankShowEl) {
@@ -4544,12 +4579,14 @@ function initCekAkunFf() {
         timeActiveEl.textContent = social.TimeActive != null && social.TimeActive !== ""
           ? stripEnumPrefix(social.TimeActive) : "—";
       }
+      setEnumIcon(document.getElementById("cekTimeActiveIcon"), timeActiveIconFile(social.TimeActive));
 
       const timeOnlineEl = document.getElementById("cekTimeOnline");
       if (timeOnlineEl) {
         timeOnlineEl.textContent = social.TimeOnline != null && social.TimeOnline !== ""
           ? stripEnumPrefix(social.TimeOnline) : "—";
       }
+      setEnumIcon(document.getElementById("cekTimeOnlineIcon"), timeOnlineIconFile(social.TimeOnline));
 
       const seasonId = info.SeasonId;
       const booyahEl = document.getElementById("cekBooyah");
