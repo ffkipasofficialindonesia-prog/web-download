@@ -4044,6 +4044,19 @@ https://freefirehub.com/cosmetics
 =========================== */
 // Free Fire assets: gunakan sumber yang sama dengan ItemID2 milik 0xMe.
 const FF_ITEM_IMG = "https://raw.githubusercontent.com/0xme/ff-resources/refs/heads/main/pngs/300x300/";
+// Asset SKIN FF baru — gambar skin diambil langsung berdasarkan Item ID.
+// Icon Gender/Mode/Time tetap memakai FF_ITEM_IMG (0xMe).
+const FF_SKIN_IMG = "https://ffitems.devhubx.org/items/";
+let ffAssetPreconnected = false;
+function preconnectFfAssets() {
+  if (ffAssetPreconnected || !document.head) return;
+  ffAssetPreconnected = true;
+  const link = document.createElement("link");
+  link.rel = "preconnect";
+  link.href = "https://ffitems.devhubx.org";
+  link.crossOrigin = "";
+  document.head.appendChild(link);
+}
 const FF_ITEM_JSON = "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/itemData.json";
 const FF_ITEM_CDN_JSON = "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/cdn.json";
 const FF_ITEM_LIST_JSON = "https://raw.githubusercontent.com/0xme/ff-resources/refs/heads/main/pngs/300x300/list.json";
@@ -4148,33 +4161,17 @@ function resolveFfItem(id) {
 
   const meta = (ffItemMap && ffItemMap[key]) || null;
   const name = meta && meta.name ? meta.name : null;
-  const icon = meta && meta.icon ? String(meta.icon).trim() : "";
 
-  // Hanya tampilkan item yang dikenal oleh ItemID2 atau punya CDN mapping.
+  // Metadata 0xMe tetap dipakai agar nama/kategori item tidak hilang.
   if (!name && !ffItemCdnMap?.[key] && !key.startsWith("907") && !key.startsWith("904")) {
     return null;
   }
 
   const displayName = name || ("Item " + key);
-  const urls = [];
 
-  // Prioritas sama seperti ItemID2: icon dari ff-resources 0xMe.
-  if (icon && icon !== "NONE" && (!ffItemList || ffItemList.has(icon + ".png"))) {
-    urls.push(FF_ITEM_IMG + icon + ".png");
-  }
-
-  // Fallback CDN dari ItemID2 untuk item yang tidak memiliki icon di list.
-  const cdnUrl = ffItemCdnMap && ffItemCdnMap[key];
-  if (cdnUrl) urls.push(cdnUrl);
-
-  // Jika icon tidak terdaftar, tetap coba path 0xMe berdasarkan nama icon.
-  if (icon && icon !== "NONE" && !urls.length) {
-    urls.push(FF_ITEM_IMG + icon + ".png");
-  }
-
-  if (!urls.length) {
-    urls.push(FF_ITEM_IMG + "UI_EPFP_unknown.png");
-  }
+  // GAMBAR SKIN/ITEM sekarang dari ffitems.devhubx.org berdasarkan Item ID.
+  // Tidak mengubah icon Gender, Bahasa, Mode, Rank, Time Active, Time Online.
+  const urls = [FF_SKIN_IMG + encodeURIComponent(key)];
 
   return {
     id: key,
@@ -4183,6 +4180,7 @@ function resolveFfItem(id) {
     urls: [...new Set(urls)]
   };
 }
+
 function collectEquippedIds(data) {
   const ids = [];
   const seen = new Set();
@@ -4270,6 +4268,38 @@ function skinPlaceholder(name) {
   const n = String(name || "Item").slice(0, 10);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect fill="#1a1510" width="96" height="96"/><text x="50%" y="50%" fill="#9a8a72" font-family="sans-serif" font-size="11" text-anchor="middle" dy=".3em">${n.replace(/[<>&]/g, "")}</text></svg>`;
   return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+
+function renderEquippedSkinsFast(data) {
+  const box = document.getElementById("cekSkinsBox");
+  const grid = document.getElementById("cekSkinsGrid");
+  const countEl = document.getElementById("cekSkinsCount");
+  if (!box || !grid) return;
+
+  const ids = collectEquippedIds(data);
+  if (!ids.length) {
+    box.hidden = true;
+    grid.innerHTML = "";
+    if (countEl) countEl.textContent = "";
+    return;
+  }
+
+  if (countEl) countEl.textContent = ids.length + " item";
+  const seen = new Set();
+  grid.innerHTML = ids.map((id) => {
+    if (seen.has(id)) return "";
+    seen.add(id);
+    const safeId = String(id).replace(/[^0-9]/g, "");
+    const url = FF_SKIN_IMG + encodeURIComponent(safeId);
+    return `<div class="cek-skin-item" title="Item ${safeId}">
+      <img src="${url}" alt="Item ${safeId}" loading="eager" decoding="async" fetchpriority="high"
+        referrerpolicy="no-referrer"
+        onerror="this.onerror=null;this.src='${skinPlaceholder("?").replace(/'/g, "\\'")}'" />
+      <span>Item ${safeId}</span>
+      <small>Skin</small>
+    </div>`;
+  }).join("");
+  box.hidden = false;
 }
 
 function renderEquippedSkins(data) {
@@ -4520,29 +4550,28 @@ function initCekAkunFf() {
   const result = document.getElementById("cekResult");
   if (!btn || !input) return;
 
+  preconnectFfAssets();
+
   async function run() {
     const uid = (input.value || "").trim();
-    if (!uid || !/^\d+$/.test(uid)) {
-      return;
-    }
+    if (!uid || !/^\d+$/.test(uid)) return;
+
     if (loading) loading.hidden = false;
     if (errBox) { errBox.hidden = true; errBox.textContent = ""; }
     if (result) result.hidden = true;
     btn.disabled = true;
 
     try {
+      // Jalur utama: cukup tunggu data akun. Jangan tunggu ban / database skin.
       const data = await cekFfFullInfo(uid);
       const info = data.BasicInfo || {};
       const clan = data.ClanBasicInfo || {};
       const prime = info.PrimeInfo || {};
-      const ban = await cekFfBan(uid);
-
       const br = mapFfRank(info.Rank);
       const brMax = mapFfRank(info.MaxRank);
       const cs = mapFfRank(info.CsRank);
       const csMax = mapFfRank(info.CsMaxRank);
       const pr = mapFfPrime(prime.PrimeLevel);
-
       const social = data.SocialInfo || {};
       const credit = data.CreditScoreInfo || {};
 
@@ -4554,8 +4583,7 @@ function initCekAkunFf() {
         ? Number(info.Likes).toLocaleString("id-ID") : "—";
 
       const bioEl = document.getElementById("cekBio");
-      const bioText = (social.Signature || "").trim();
-      if (bioEl) bioEl.textContent = bioText || "Tidak ada bio";
+      if (bioEl) bioEl.textContent = ((social.Signature || "").trim()) || "Tidak ada bio";
 
       const genderEl = document.getElementById("cekGender");
       if (genderEl) genderEl.textContent = stripEnumPrefix(social.Gender) || "—";
@@ -4588,23 +4616,21 @@ function initCekAkunFf() {
       }
       setEnumIcon(document.getElementById("cekTimeOnlineIcon"), timeOnlineIconFile(social.TimeOnline));
 
-      const seasonId = info.SeasonId;
       const booyahEl = document.getElementById("cekBooyah");
       if (booyahEl) {
-        booyahEl.textContent = seasonId != null && seasonId !== ""
-          ? ("Season " + seasonId)
-          : "—";
+        booyahEl.textContent = info.SeasonId != null && info.SeasonId !== ""
+          ? ("Season " + info.SeasonId) : "—";
       }
 
       const creditEl = document.getElementById("cekCredit");
-      if (creditEl) {
-        const sc = credit.CreditScore;
-        creditEl.textContent = sc != null ? String(sc) : "—";
-      }
+      if (creditEl) creditEl.textContent = credit.CreditScore != null ? String(credit.CreditScore) : "—";
 
+      // Jangan menunggu cek ban. Tampilkan hasil utama sekarang.
       const banEl = document.getElementById("cekBan");
-      banEl.textContent = ban.text;
-      banEl.className = ban.ok === false ? "ban-yes" : (ban.ok === true ? "ban-no" : "");
+      if (banEl) {
+        banEl.textContent = "Sedang cek...";
+        banEl.className = "";
+      }
 
       document.getElementById("cekRankBr").textContent = br.name;
       document.getElementById("cekRankBrMax").textContent = brMax.name !== br.name ? ("Max: " + brMax.name) : "";
@@ -4622,7 +4648,8 @@ function initCekAkunFf() {
         clanBox.hidden = false;
         document.getElementById("cekClanName").textContent = clan.ClanName;
         document.getElementById("cekClanMeta").textContent =
-          "Lv." + (clan.ClanLevel || "-") + " · " + (clan.MemberNum || "-") + "/" + (clan.Capacity || "-") + " member";
+          "Lv." + (clan.ClanLevel || "-") + " · " +
+          (clan.MemberNum || "-") + "/" + (clan.Capacity || "-") + " member";
       } else {
         clanBox.hidden = true;
       }
@@ -4631,26 +4658,32 @@ function initCekAkunFf() {
       document.getElementById("cekAge").textContent = ffAccountAge(info.CreateAt);
       document.getElementById("cekLast").textContent = ffTsToDate(info.LastLoginAt);
 
-      try {
-        await loadFfItemMap();
-        renderEquippedSkins(data);
-      } catch (eSkin) {
-        console.warn(eSkin);
-        const skinsBox = document.getElementById("cekSkinsBox");
-        if (skinsBox) skinsBox.hidden = true;
-      }
+      // Skin tampil dulu berdasarkan ID, tanpa menunggu database 0xMe.
+      renderEquippedSkinsFast(data);
 
       if (result) result.hidden = false;
+      if (loading) loading.hidden = true;
+      btn.disabled = false;
+
+      // Proses tambahan berjalan setelah hasil utama sudah tampil.
+      Promise.allSettled([
+        cekFfBan(uid).then((ban) => {
+          if (!banEl) return;
+          banEl.textContent = ban.text;
+          banEl.className = ban.ok === false ? "ban-yes" : (ban.ok === true ? "ban-no" : "");
+        }),
+        loadFfItemMap().then(() => renderEquippedSkins(data))
+      ]).catch(() => {});
+
     } catch (e) {
       console.error(e);
       if (errBox) {
         errBox.hidden = false;
         errBox.textContent = "ID tidak ditemukan / gagal ambil data. Coba lagi.";
       }
+      if (loading) loading.hidden = true;
+      btn.disabled = false;
     }
-
-    if (loading) loading.hidden = true;
-    btn.disabled = false;
   }
 
   btn.addEventListener("click", run);
@@ -4667,7 +4700,7 @@ if (document.readyState === "loading") {
 } else {
   initCekAkunFf();
 }
-try { loadFfItemMap(); } catch (e) {}
+// Item catalog dimuat setelah hasil UID tampil agar klik Cek UID tidak tertahan.
 
 
 /* ===========================
