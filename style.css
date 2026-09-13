@@ -5298,6 +5298,8 @@ button.chat-item {
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  min-width: 0;
 }
 .cek-item span {
   display: block;
@@ -5308,6 +5310,9 @@ button.chat-item {
 .cek-item b {
   font-size: 14px;
   color: #fff;
+  display: block;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .cek-item b.ban-no { color: #00c853; }
 .cek-item b.ban-yes { color: #ff5252; }
@@ -5410,6 +5415,10 @@ button.chat-item {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+.cek-item-icon > div {
+  min-width: 0;
+  overflow: hidden;
 }
 .cek-mini-icon {
   width: 32px !important;

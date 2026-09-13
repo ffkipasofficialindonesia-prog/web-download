@@ -4042,45 +4042,88 @@ function initLeaderboard() {
 ITEM CATALOG — FreeFireHub style
 https://freefirehub.com/cosmetics
 =========================== */
-const FF_HUB_IMG = "https://raw.githubusercontent.com/ashqking/FF-Items/main/ICONS/";
-const FF_MANIA_IMG = "https://www.freefiremania.com.br/images/itens/";
+// Free Fire assets: gunakan sumber yang sama dengan ItemID2 milik 0xMe.
 const FF_ITEM_IMG = "https://raw.githubusercontent.com/0xme/ff-resources/refs/heads/main/pngs/300x300/";
 const FF_ITEM_JSON = "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/itemData.json";
+const FF_ITEM_CDN_JSON = "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/cdn.json";
+const FF_ITEM_LIST_JSON = "https://raw.githubusercontent.com/0xme/ff-resources/refs/heads/main/pngs/300x300/list.json";
+
 let ffItemMap = null;
 let ffItemMapPromise = null;
+let ffItemCdnMap = null;
+let ffItemList = null;
 
 function loadFfItemMap() {
-  if (ffItemMap) return Promise.resolve(ffItemMap);
+  if (ffItemMap && ffItemCdnMap && ffItemList) {
+    return Promise.resolve(ffItemMap);
+  }
   if (ffItemMapPromise) return ffItemMapPromise;
-  ffItemMapPromise = fetch(FF_ITEM_JSON, { cache: "force-cache" })
-    .then((r) => {
-      if (!r.ok) throw new Error("HTTP " + r.status);
+
+  ffItemMapPromise = Promise.all([
+    fetch(FF_ITEM_JSON, { cache: "force-cache" }).then((r) => {
+      if (!r.ok) throw new Error("itemData HTTP " + r.status);
+      return r.json();
+    }),
+    fetch(FF_ITEM_CDN_JSON, { cache: "force-cache" }).then((r) => {
+      if (!r.ok) throw new Error("cdn HTTP " + r.status);
+      return r.json();
+    }),
+    fetch(FF_ITEM_LIST_JSON, { cache: "force-cache" }).then((r) => {
+      if (!r.ok) throw new Error("icon list HTTP " + r.status);
       return r.json();
     })
-    .then((data) => {
+  ])
+    .then(([data, cdnData, listData]) => {
       const map = Object.create(null);
+
       for (const x of Array.isArray(data) ? data : []) {
         const id = String(x.itemID != null ? x.itemID : "").trim();
         if (!id) continue;
+
         const name = String(x.description || "").trim() || ("Item " + id);
         const icon = String(x.icon || "").trim();
         const type = String(x.itemType || x.collectionType || "").toUpperCase();
         const ct = String(x.collectionType || "").toUpperCase();
+
         if (!map[id] || name.length > String(map[id].name || "").length) {
           map[id] = { name, icon, type, ct };
         }
       }
+
+      const cdnMap = Object.create(null);
+      if (Array.isArray(cdnData)) {
+        for (const obj of cdnData) {
+          if (!obj || typeof obj !== "object") continue;
+          for (const [id, url] of Object.entries(obj)) {
+            if (id && url) cdnMap[String(id)] = String(url);
+          }
+        }
+      } else if (cdnData && typeof cdnData === "object") {
+        for (const [id, url] of Object.entries(cdnData)) {
+          if (id && url) cdnMap[String(id)] = String(url);
+        }
+      }
+
       ffItemMap = map;
+      ffItemCdnMap = cdnMap;
+      ffItemList = new Set(
+        (Array.isArray(listData) ? listData : [])
+          .map((x) => String(x || "").trim())
+          .filter(Boolean)
+      );
+
       return map;
     })
     .catch((e) => {
-      console.warn("Item catalog load failed", e);
+      console.warn("0xMe ItemID2 asset catalog load failed", e);
       ffItemMap = Object.create(null);
+      ffItemCdnMap = Object.create(null);
+      ffItemList = new Set();
       return ffItemMap;
     });
+
   return ffItemMapPromise;
 }
-
 function labelFromMeta(meta, id) {
   const s = String(id);
   const ct = meta ? String(meta.ct || "").toUpperCase() : "";
@@ -4094,6 +4137,7 @@ function labelFromMeta(meta, id) {
   if (s.startsWith("205")) return "Sepatu";
   if (s.startsWith("211") || s.startsWith("214")) return "Kepala";
   if (t.includes("PET") || ct.includes("PET")) return "Pet";
+  if (t.includes("BANNER") || ct.includes("BANNER")) return "Banner";
   if (t.includes("CLOTH")) return "Baju";
   return "Item";
 }
@@ -4101,20 +4145,37 @@ function labelFromMeta(meta, id) {
 function resolveFfItem(id) {
   const key = String(id == null ? "" : id).trim();
   if (!key || key === "0" || !/^\d+$/.test(key) || key.length < 6) return null;
+
   const meta = (ffItemMap && ffItemMap[key]) || null;
-  // wajib ada di database ATAU image hub by id (senjata/tas)
   const name = meta && meta.name ? meta.name : null;
   const icon = meta && meta.icon ? String(meta.icon).trim() : "";
-  if (!name && !key.startsWith("907") && !key.startsWith("904")) {
-    // id sampah / tidak dikenal → skip
+
+  // Hanya tampilkan item yang dikenal oleh ItemID2 atau punya CDN mapping.
+  if (!name && !ffItemCdnMap?.[key] && !key.startsWith("907") && !key.startsWith("904")) {
     return null;
   }
+
   const displayName = name || ("Item " + key);
-  const urls = [FF_HUB_IMG + key + ".png"];
-  if (icon && icon !== "NONE") {
-    urls.push(FF_MANIA_IMG + icon + ".png");
+  const urls = [];
+
+  // Prioritas sama seperti ItemID2: icon dari ff-resources 0xMe.
+  if (icon && icon !== "NONE" && (!ffItemList || ffItemList.has(icon + ".png"))) {
     urls.push(FF_ITEM_IMG + icon + ".png");
   }
+
+  // Fallback CDN dari ItemID2 untuk item yang tidak memiliki icon di list.
+  const cdnUrl = ffItemCdnMap && ffItemCdnMap[key];
+  if (cdnUrl) urls.push(cdnUrl);
+
+  // Jika icon tidak terdaftar, tetap coba path 0xMe berdasarkan nama icon.
+  if (icon && icon !== "NONE" && !urls.length) {
+    urls.push(FF_ITEM_IMG + icon + ".png");
+  }
+
+  if (!urls.length) {
+    urls.push(FF_ITEM_IMG + "UI_EPFP_unknown.png");
+  }
+
   return {
     id: key,
     name: displayName,
@@ -4122,7 +4183,6 @@ function resolveFfItem(id) {
     urls: [...new Set(urls)]
   };
 }
-
 function collectEquippedIds(data) {
   const ids = [];
   const seen = new Set();
@@ -4150,7 +4210,60 @@ function collectEquippedIds(data) {
     if (Array.isArray(arr)) arr.forEach(push);
   });
   push(pet.SkinId || pet.skinId);
+  push(info.BannerId || info.bannerId);
+  push(info.AvatarId || info.avatarId);
   return ids;
+}
+
+/** Kumpulin skill yang lagi dipakai (beda pool ID dari item kosmetik,
+ *  jadi di-resolve pakai resolveFfSkill, bukan resolveFfItem). */
+function collectEquippedSkills(data) {
+  const profile = (data && data.ProfileInfo) || {};
+  const list = profile.EquippedSkills || profile.equippedSkills || [];
+  const out = [];
+  const seen = new Set();
+  if (Array.isArray(list)) {
+    list.forEach((s) => {
+      if (s == null) return;
+      const raw = typeof s === "object" ? (s.SkillId != null ? s.SkillId : s.skillId) : s;
+      const id = String(raw == null ? "" : raw).trim();
+      if (!id || id === "0" || !/^\d+$/.test(id) || seen.has(id)) return;
+      seen.add(id);
+      out.push(id);
+    });
+  }
+  return out;
+}
+
+/** Resolve skill ID -> nama + gambar, pakai sumber asset yang sama
+ *  persis dengan resolveFfItem (itemData.json + cdn.json + list.json
+ *  dari ItemID2 0xMe) — tanpa syarat panjang ID minimal 6 digit seperti
+ *  resolveFfItem, karena ID skill/talent FF sering lebih pendek. Kalau
+ *  nggak ketemu di database, tetap tampil dengan nama "Skill <id>"
+ *  (bukan disembunyikan) — skill yang dipakai tetap info berguna walau
+ *  namanya belum ada di database publik ini. */
+function resolveFfSkill(id) {
+  const key = String(id == null ? "" : id).trim();
+  if (!key || key === "0" || !/^\d+$/.test(key)) return null;
+
+  const meta = (ffItemMap && ffItemMap[key]) || null;
+  const name = meta && meta.name ? meta.name : ("Skill " + key);
+  const icon = meta && meta.icon ? String(meta.icon).trim() : "";
+  const urls = [];
+
+  if (icon && icon !== "NONE" && (!ffItemList || ffItemList.has(icon + ".png"))) {
+    urls.push(FF_ITEM_IMG + icon + ".png");
+  }
+  const cdnUrl = ffItemCdnMap && ffItemCdnMap[key];
+  if (cdnUrl) urls.push(cdnUrl);
+  if (icon && icon !== "NONE" && !urls.length) {
+    urls.push(FF_ITEM_IMG + icon + ".png");
+  }
+  if (!urls.length) {
+    urls.push(FF_ITEM_IMG + "UI_EPFP_unknown.png");
+  }
+
+  return { id: key, name, label: "Skill", urls: [...new Set(urls)] };
 }
 
 function skinPlaceholder(name) {
@@ -4166,14 +4279,16 @@ function renderEquippedSkins(data) {
   if (!box || !grid) return;
 
   const items = collectEquippedIds(data).map(resolveFfItem).filter(Boolean);
-  if (!items.length) {
+  const skills = collectEquippedSkills(data).map(resolveFfSkill).filter(Boolean);
+  const all = items.concat(skills);
+  if (!all.length) {
     box.hidden = true;
     grid.innerHTML = "";
     if (countEl) countEl.textContent = "";
     return;
   }
-  if (countEl) countEl.textContent = items.length + " item";
-  grid.innerHTML = items
+  if (countEl) countEl.textContent = all.length + " item";
+  grid.innerHTML = all
     .map((it) => {
       const name = String(it.name).slice(0, 32);
       const safe = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -4257,6 +4372,18 @@ function mapFfPrime(level) {
   return { name: "Prime " + s, file: "prime-" + s + ".png" };
 }
 
+/** Beberapa field SocialInfo dari API balikannya masih format enum
+ *  mentah, misal "Gender_FEMALE" atau "TimeOnline_WEEKEND" — bukan
+ *  cuma "FEMALE"/"WEEKEND" saja. Potong prefix "Xxx_" di depan biar
+ *  yang tampil cuma bagian isinya: lebih singkat (nggak luber di
+ *  kotak) dan nggak dobel sama label yang udah ada di atasnya. */
+function stripEnumPrefix(value) {
+  const s = String(value == null ? "" : value).trim();
+  if (!s) return "";
+  const m = s.match(/^[A-Za-z]+_(.+)$/);
+  return m ? m[1] : s;
+}
+
 function ffTsToDate(ts) {
   try {
     const d = new Date(Number(ts) * 1000);
@@ -4311,21 +4438,11 @@ async function cekFfBan(uid) {
 
 async function cekFfFullInfo(uid) {
   const url = "https://danger-player-info.vercel.app/accinfo?uid=" + encodeURIComponent(uid) + "&key=DANGERxINFO";
-  const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
-  const timer = ctrl ? setTimeout(() => ctrl.abort(), 12000) : null;
-  try {
-    const r = await fetch(url, {
-      method: "GET",
-      signal: ctrl ? ctrl.signal : undefined,
-      cache: "no-store"
-    });
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const data = await r.json();
-    if (!data || !data.BasicInfo) throw new Error("ID tidak ditemukan");
-    return data;
-  } finally {
-    if (timer) clearTimeout(timer);
-  }
+  const r = await fetch(url);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const data = await r.json();
+  if (!data || !data.BasicInfo) throw new Error("ID tidak ditemukan");
+  return data;
 }
 
 function setCekImg(el, file) {
@@ -4348,40 +4465,31 @@ function initCekAkunFf() {
   const result = document.getElementById("cekResult");
   if (!btn || !input) return;
 
-  // preload catalog di background biar skin cepat
-  try { loadFfItemMap(); } catch (e) {}
-
   async function run() {
     const uid = (input.value || "").trim();
     if (!uid || !/^\d+$/.test(uid)) {
-      if (typeof showToast === "function") showToast("UID", "Masukkan UID angka yang valid", "error");
       return;
     }
     if (loading) loading.hidden = false;
     if (errBox) { errBox.hidden = true; errBox.textContent = ""; }
     if (result) result.hidden = true;
-    const skinsBox = document.getElementById("cekSkinsBox");
-    if (skinsBox) skinsBox.hidden = true;
     btn.disabled = true;
 
     try {
-      // parallel: info akun + ban sekaligus
-      const [data, ban] = await Promise.all([
-        cekFfFullInfo(uid),
-        cekFfBan(uid).catch(() => ({ text: "Tidak bisa cek", ok: null }))
-      ]);
-
+      const data = await cekFfFullInfo(uid);
       const info = data.BasicInfo || {};
       const clan = data.ClanBasicInfo || {};
       const prime = info.PrimeInfo || {};
-      const social = data.SocialInfo || {};
-      const credit = data.CreditScoreInfo || {};
+      const ban = await cekFfBan(uid);
 
       const br = mapFfRank(info.Rank);
       const brMax = mapFfRank(info.MaxRank);
       const cs = mapFfRank(info.CsRank);
       const csMax = mapFfRank(info.CsMaxRank);
       const pr = mapFfPrime(prime.PrimeLevel);
+
+      const social = data.SocialInfo || {};
+      const credit = data.CreditScoreInfo || {};
 
       document.getElementById("cekNick").textContent = info.Nickname || "—";
       document.getElementById("cekId").textContent = info.AccountId || uid;
@@ -4391,22 +4499,75 @@ function initCekAkunFf() {
         ? Number(info.Likes).toLocaleString("id-ID") : "—";
 
       const bioEl = document.getElementById("cekBio");
-      if (bioEl) bioEl.textContent = (social.Signature || "").trim() || "Tidak ada bio";
+      const bioText = (social.Signature || "").trim();
+      if (bioEl) bioEl.textContent = bioText || "Tidak ada bio";
 
+      const genderEl = document.getElementById("cekGender");
+      if (genderEl) genderEl.textContent = stripEnumPrefix(social.Gender) || "—";
+      const genderIconEl = document.getElementById("cekGenderIcon");
+      if (genderIconEl) {
+        const g = String(social.Gender || "").trim().toLowerCase();
+        let genderIcon = "fa-mars-and-venus"; // default: belum diketahui
+        if (g.includes("female") || g.includes("perempuan") || g.includes("wanita")) {
+          genderIcon = "fa-venus";
+        } else if (g.includes("male") || g.includes("laki") || g.includes("pria")) {
+          genderIcon = "fa-mars";
+        }
+        genderIconEl.className = "fa-solid " + genderIcon + " cek-fa-icon";
+      }
+
+      const langEl = document.getElementById("cekLanguage");
+      if (langEl) langEl.textContent = stripEnumPrefix(social.Language) || "—";
+
+      const modeEl = document.getElementById("cekModePrefer");
+      if (modeEl) modeEl.textContent = stripEnumPrefix(social.ModePrefer) || "—";
+      const modeIconEl = document.getElementById("cekModePreferIcon");
+      if (modeIconEl) {
+        const m = String(social.ModePrefer || "").trim().toUpperCase();
+        let modeIcon = "fa-gamepad"; // default: belum diketahui
+        if (m.includes("BR") || m.includes("ROYALE")) {
+          modeIcon = "fa-crosshairs";
+        } else if (m.includes("CS") || m.includes("CLASH") || m.includes("SQUAD")) {
+          modeIcon = "fa-people-group";
+        }
+        modeIconEl.className = "fa-solid " + modeIcon + " cek-fa-icon";
+      }
+
+      const rankShowEl = document.getElementById("cekRankShow");
+      if (rankShowEl) {
+        rankShowEl.textContent = social.RankShow != null && social.RankShow !== ""
+          ? stripEnumPrefix(social.RankShow) : "—";
+      }
+
+      const timeActiveEl = document.getElementById("cekTimeActive");
+      if (timeActiveEl) {
+        timeActiveEl.textContent = social.TimeActive != null && social.TimeActive !== ""
+          ? stripEnumPrefix(social.TimeActive) : "—";
+      }
+
+      const timeOnlineEl = document.getElementById("cekTimeOnline");
+      if (timeOnlineEl) {
+        timeOnlineEl.textContent = social.TimeOnline != null && social.TimeOnline !== ""
+          ? stripEnumPrefix(social.TimeOnline) : "—";
+      }
+
+      const seasonId = info.SeasonId;
       const booyahEl = document.getElementById("cekBooyah");
       if (booyahEl) {
-        const seasonId = info.SeasonId;
-        booyahEl.textContent = seasonId != null && seasonId !== "" ? ("Season " + seasonId) : "—";
+        booyahEl.textContent = seasonId != null && seasonId !== ""
+          ? ("Season " + seasonId)
+          : "—";
       }
 
       const creditEl = document.getElementById("cekCredit");
-      if (creditEl) creditEl.textContent = credit.CreditScore != null ? String(credit.CreditScore) : "—";
+      if (creditEl) {
+        const sc = credit.CreditScore;
+        creditEl.textContent = sc != null ? String(sc) : "—";
+      }
 
       const banEl = document.getElementById("cekBan");
-      if (banEl) {
-        banEl.textContent = ban.text;
-        banEl.className = ban.ok === false ? "ban-yes" : (ban.ok === true ? "ban-no" : "");
-      }
+      banEl.textContent = ban.text;
+      banEl.className = ban.ok === false ? "ban-yes" : (ban.ok === true ? "ban-no" : "");
 
       document.getElementById("cekRankBr").textContent = br.name;
       document.getElementById("cekRankBrMax").textContent = brMax.name !== br.name ? ("Max: " + brMax.name) : "";
@@ -4425,7 +4586,7 @@ function initCekAkunFf() {
         document.getElementById("cekClanName").textContent = clan.ClanName;
         document.getElementById("cekClanMeta").textContent =
           "Lv." + (clan.ClanLevel || "-") + " · " + (clan.MemberNum || "-") + "/" + (clan.Capacity || "-") + " member";
-      } else if (clanBox) {
+      } else {
         clanBox.hidden = true;
       }
 
@@ -4433,19 +4594,16 @@ function initCekAkunFf() {
       document.getElementById("cekAge").textContent = ffAccountAge(info.CreateAt);
       document.getElementById("cekLast").textContent = ffTsToDate(info.LastLoginAt);
 
-      // tampilkan info utama dulu (cepat), skin menyusul
-      if (loading) loading.hidden = true;
-      if (result) result.hidden = false;
-      btn.disabled = false;
+      try {
+        await loadFfItemMap();
+        renderEquippedSkins(data);
+      } catch (eSkin) {
+        console.warn(eSkin);
+        const skinsBox = document.getElementById("cekSkinsBox");
+        if (skinsBox) skinsBox.hidden = true;
+      }
 
-      // skin async — tidak nahan tampilan
-      loadFfItemMap()
-        .then(() => renderEquippedSkins(data))
-        .catch((eSkin) => {
-          console.warn(eSkin);
-          if (skinsBox) skinsBox.hidden = true;
-        });
-      return;
+      if (result) result.hidden = false;
     } catch (e) {
       console.error(e);
       if (errBox) {
