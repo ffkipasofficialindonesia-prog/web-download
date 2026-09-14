@@ -4342,57 +4342,71 @@ CEK AKUN FREE FIRE
 =========================== */
 const FF_RANK_BASE = "assets/ff-rank/";
 
-/** Map rank ID API → { name, file } */
+/** Map rank ID API Free Fire → { name, file }
+ * ID resmi client FF:
+ * 301-303 Bronze I-III | 304-306 Silver I-III | 307-310 Gold I-IV
+ * 311-314 Platinum I-IV | 315-318 Diamond I-IV
+ * 319 Heroic | 320 Elite Heroic | 321 Master | 322 Elite Master
+ * 323-324 GM1 | 325-326 GM2 | 327+ GM3
+ */
 function mapFfRank(rankId) {
   const n = Number(rankId) || 0;
   if (!n) return { name: "Unranked", file: null };
 
-  // Format 301 = tier 3, step 1 (umum di API FF)
-  let tier, step;
-  if (n >= 100) {
-    tier = Math.floor(n / 100);
-    step = n % 100;
-    if (step === 0) { tier -= 1; step = 99; }
-  } else {
-    // sequential 1–36
-    const seq = [
-      ["Bronze", 3, "bronze"],
-      ["Silver", 3, "silver"],
-      ["Gold", 4, "gold"],
-      ["Platinum", 5, "platinum"],
-      ["Diamond", 5, "diamond"],
-      ["Heroic", 5, "heroic"],
-      ["Master", 5, "master"],
-      ["Grandmaster", 6, "grandmaster"]
-    ];
-    let left = n;
-    for (const [label, max, key] of seq) {
-      if (left <= max) {
-        const file = key === "silver" && left === 3 ? "siler3.png" : key + left + ".png";
-        return { name: label + " " + left, file: file };
-      }
-      left -= max;
-    }
-    return { name: "Grandmaster", file: "grandmaster6.png" };
-  }
-
-  const tiers = [
-    null,
-    ["Bronze", 3, "bronze"],
-    ["Silver", 3, "silver"],
-    ["Gold", 4, "gold"],
-    ["Platinum", 5, "platinum"],
-    ["Diamond", 5, "diamond"],
-    ["Heroic", 5, "heroic"],
-    ["Master", 5, "master"],
-    ["Grandmaster", 6, "grandmaster"]
+  const table = [
+    [301, "Bronze 1", "bronze1.png"],
+    [302, "Bronze 2", "bronze2.png"],
+    [303, "Bronze 3", "bronze3.png"],
+    [304, "Silver 1", "silver1.png"],
+    [305, "Silver 2", "silver2.png"],
+    [306, "Silver 3", "siler3.png"],
+    [307, "Gold 1", "gold1.png"],
+    [308, "Gold 2", "gold2.png"],
+    [309, "Gold 3", "gold3.png"],
+    [310, "Gold 4", "gold4.png"],
+    [311, "Platinum 1", "platinum1.png"],
+    [312, "Platinum 2", "platinum2.png"],
+    [313, "Platinum 3", "platinum3.png"],
+    [314, "Platinum 4", "platinum4.png"],
+    [315, "Diamond 1", "diamond1.png"],
+    [316, "Diamond 2", "diamond2.png"],
+    [317, "Diamond 3", "diamond3.png"],
+    [318, "Diamond 4", "diamond4.png"],
+    [319, "Heroic", "heroic1.png"],
+    [320, "Elite Heroic", "heroic2.png"],
+    [321, "Master", "master1.png"],
+    [322, "Elite Master", "master2.png"],
+    [323, "Grandmaster 1", "grandmaster1.png"],
+    [324, "Grandmaster 1", "grandmaster1.png"],
+    [325, "Grandmaster 2", "grandmaster2.png"],
+    [326, "Grandmaster 2", "grandmaster2.png"],
+    [327, "Grandmaster 3", "grandmaster3.png"],
+    [328, "Grandmaster 3", "grandmaster3.png"],
+    [329, "Grandmaster 3", "grandmaster4.png"],
+    [330, "Grandmaster 3", "grandmaster5.png"]
   ];
-  if (tier < 1) tier = 1;
-  if (tier > 8) tier = 8;
-  const [label, max, key] = tiers[tier];
-  const s = Math.min(Math.max(step, 1), max);
-  const file = key === "silver" && s === 3 ? "siler3.png" : key + s + ".png";
-  return { name: label + " " + s, file: file };
+
+  for (const [id, name, file] of table) {
+    if (n === id) return { name, file };
+  }
+  if (n < 301) return { name: "Bronze 1", file: "bronze1.png" };
+  if (n > 330) return { name: "Grandmaster 3", file: "grandmaster6.png" };
+
+  let best = table[0];
+  for (const row of table) {
+    if (row[0] <= n) best = row;
+  }
+  return { name: best[1], file: best[2] };
+}
+
+/** CS: rank + bintang dari CsRankingPoints */
+function mapFfCsRank(rankId, rankingPoints) {
+  const base = mapFfRank(rankId);
+  const pts = Number(rankingPoints);
+  if (Number.isFinite(pts) && pts > 0) {
+    return { name: base.name + " · ★" + pts, file: base.file };
+  }
+  return base;
 }
 
 function mapFfPrime(level) {
@@ -4569,8 +4583,8 @@ function initCekAkunFf() {
       const prime = info.PrimeInfo || {};
       const br = mapFfRank(info.Rank);
       const brMax = mapFfRank(info.MaxRank);
-      const cs = mapFfRank(info.CsRank);
-      const csMax = mapFfRank(info.CsMaxRank);
+      const cs = mapFfCsRank(info.CsRank, info.CsRankingPoints);
+      const csMax = mapFfCsRank(info.CsMaxRank, info.CsRankingPoints);
       const pr = mapFfPrime(prime.PrimeLevel);
       const social = data.SocialInfo || {};
       const credit = data.CreditScoreInfo || {};
@@ -4579,8 +4593,10 @@ function initCekAkunFf() {
       document.getElementById("cekId").textContent = info.AccountId || uid;
       document.getElementById("cekRegion").textContent = info.Region || "—";
       document.getElementById("cekLevel").textContent = info.Level != null ? String(info.Level) : "—";
+      setEnumIcon(document.getElementById("cekLevelIcon"), "FF_UI_Prime_Privileges_19");
       document.getElementById("cekLikes").textContent = info.Likes != null
         ? Number(info.Likes).toLocaleString("id-ID") : "—";
+      setEnumIcon(document.getElementById("cekLikesIcon"), "FF_UI_Ingame_AfterMatch_Like_01");
 
       const bioEl = document.getElementById("cekBio");
       if (bioEl) bioEl.textContent = ((social.Signature || "").trim()) || "Tidak ada bio";
@@ -4617,27 +4633,60 @@ function initCekAkunFf() {
       setEnumIcon(document.getElementById("cekTimeOnlineIcon"), timeOnlineIconFile(social.TimeOnline));
 
       const booyahEl = document.getElementById("cekBooyah");
+      // Cek apakah akun punya / sudah buka Booyah Pass (Elite Pass)
+      const hasBp = !!(
+        info.HasElitePass === true || info.has_elitepass === true ||
+        info.ElitePass === true || info.ElitePass === 1 ||
+        info.BooyahPass === true || info.BooyahPass === 1 ||
+        info.hasBooyahPass === true ||
+        (data.PassInfo && (data.PassInfo.HasPass || data.PassInfo.IsActive || data.PassInfo.ElitePass)) ||
+        (info.PassInfo && (info.PassInfo.HasPass || info.PassInfo.IsActive))
+      );
+      // Teks cuma Season — status aktif/belum cukup dari icon (BP01 belum, BP02 sudah)
       if (booyahEl) {
         booyahEl.textContent = info.SeasonId != null && info.SeasonId !== ""
           ? ("Season " + info.SeasonId) : "—";
       }
+      setEnumIcon(document.getElementById("cekBooyahIcon"), hasBp ? "UI_BooyahPass_BP02" : "UI_BooyahPass_BP01");
 
       const creditEl = document.getElementById("cekCredit");
-      if (creditEl) creditEl.textContent = credit.CreditScore != null ? String(credit.CreditScore) : "—";
+      const creditScore = credit.CreditScore != null ? Number(credit.CreditScore) : null;
+      if (creditEl) creditEl.textContent = creditScore != null && Number.isFinite(creditScore) ? String(creditScore) : "—";
+      // 95–100 → Icon01 (baik), di bawah 95 → Icon02
+      if (creditScore != null && Number.isFinite(creditScore)) {
+        const creditIcon = creditScore >= 95 ? "FF_UI_CreditScore_Icon01" : "FF_UI_CreditScore_Icon02";
+        setEnumIcon(document.getElementById("cekCreditIcon"), creditIcon);
+      } else {
+        setEnumIcon(document.getElementById("cekCreditIcon"), "FF_UI_CreditScore_Icon01");
+      }
 
       // Jangan menunggu cek ban. Tampilkan hasil utama sekarang.
       const banEl = document.getElementById("cekBan");
       if (banEl) {
         banEl.textContent = "Sedang cek...";
         banEl.className = "";
+        setEnumIcon(document.getElementById("cekBanIcon"), "FF_Icon_Ingame_Ban");
       }
 
       document.getElementById("cekRankBr").textContent = br.name;
-      document.getElementById("cekRankBrMax").textContent = brMax.name !== br.name ? ("Max: " + brMax.name) : "";
+      {
+        const parts = [];
+        if (brMax.name && brMax.name !== br.name) parts.push("Max: " + brMax.name);
+        if (info.RankingPoints != null && info.RankingPoints !== "") {
+          parts.push(Number(info.RankingPoints).toLocaleString("id-ID") + " RP");
+        }
+        document.getElementById("cekRankBrMax").textContent = parts.join(" · ");
+      }
       setCekImg(document.getElementById("cekRankBrImg"), br.file);
 
       document.getElementById("cekRankCs").textContent = cs.name;
-      document.getElementById("cekRankCsMax").textContent = csMax.name !== cs.name ? ("Max: " + csMax.name) : "";
+      {
+        const parts = [];
+        if (csMax.name && !String(cs.name).includes("★") && csMax.name.split(" ·")[0] !== cs.name.split(" ·")[0]) {
+          parts.push("Max: " + csMax.name.split(" ·")[0]);
+        }
+        document.getElementById("cekRankCsMax").textContent = parts.join(" · ");
+      }
       setCekImg(document.getElementById("cekRankCsImg"), cs.file);
 
       document.getElementById("cekPrime").textContent = pr.name;
@@ -4671,6 +4720,7 @@ function initCekAkunFf() {
           if (!banEl) return;
           banEl.textContent = ban.text;
           banEl.className = ban.ok === false ? "ban-yes" : (ban.ok === true ? "ban-no" : "");
+          setEnumIcon(document.getElementById("cekBanIcon"), "FF_Icon_Ingame_Ban");
         }),
         loadFfItemMap().then(() => renderEquippedSkins(data))
       ]).catch(() => {});
