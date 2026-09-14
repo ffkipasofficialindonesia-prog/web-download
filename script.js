@@ -4556,6 +4556,8 @@ function timeOnlineIconFile(t) {
   return null;
 }
 
+
+
 function initCekAkunFf() {
   const input = document.getElementById("cekUidInput");
   const btn = document.getElementById("cekUidBtn");
@@ -4573,6 +4575,8 @@ function initCekAkunFf() {
     if (loading) loading.hidden = false;
     if (errBox) { errBox.hidden = true; errBox.textContent = ""; }
     if (result) result.hidden = true;
+    const capBox = document.getElementById("cekCaptainBox");
+    if (capBox) capBox.hidden = true;
     btn.disabled = true;
 
     try {
@@ -4701,6 +4705,35 @@ function initCekAkunFf() {
           (clan.MemberNum || "-") + "/" + (clan.Capacity || "-") + " member";
       } else {
         clanBox.hidden = true;
+      }
+
+      // CaptainBasicInfo — hanya jika akun = kapten clan
+      const captain = data.CaptainBasicInfo || {};
+      const captainBox = document.getElementById("cekCaptainBox");
+      if (captainBox) {
+        if (captain && captain.AccountId) {
+          captainBox.hidden = false;
+          const cn = document.getElementById("cekCaptainName");
+          const cm = document.getElementById("cekCaptainMeta");
+          if (cn) cn.textContent = captain.Nickname || "—";
+          if (cm) {
+            const parts = [];
+            if (captain.AccountId) parts.push("UID " + captain.AccountId);
+            if (captain.Level != null) parts.push("Lv." + captain.Level);
+            if (captain.Region) parts.push(captain.Region);
+            if (captain.Likes != null) parts.push(Number(captain.Likes).toLocaleString("id-ID") + " likes");
+            cm.textContent = parts.join(" · ");
+          }
+          // icon clan yang sama
+          const capImg = document.getElementById("cekCaptainImg");
+          if (capImg) {
+            capImg.src = "assets/ff-rank/FF_UI_Clan_Icon_Glory.png";
+            capImg.hidden = false;
+            capImg.onerror = () => { capImg.hidden = true; };
+          }
+        } else {
+          captainBox.hidden = true;
+        }
       }
 
       document.getElementById("cekCreated").textContent = ffTsToDate(info.CreateAt);

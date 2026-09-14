@@ -5681,3 +5681,24 @@ body.spa-download #download {
   padding-top: 100px;
 }
 
+
+
+/* Cek akun — diamond / badge / title / captain */
+.cek-extra-grid {
+  margin-bottom: 14px;
+}
+.cek-sub {
+  display: block;
+  font-size: 11px;
+  color: #ffc107;
+  margin-top: 2px;
+  font-weight: 600;
+}
+.cek-captain {
+  border-color: rgba(255, 193, 7, 0.35) !important;
+  background: rgba(255, 193, 7, 0.06) !important;
+}
+.cek-captain .cek-label {
+  color: #ffc107;
+}
+
