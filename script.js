@@ -4855,13 +4855,17 @@ if (document.readyState === "loading") {
 
 
 /* ===========================
-POPUNDER — sering muncul
+POPUNDER + SMARTLINK — CPM boost
 =========================== */
 (function initFrequentPopunder() {
   const POPUNDER_SRC = "https://pl29896660.effectivecpmnetwork.com/85/b5/c2/85b5c2fe6104b465c6e6f5bb4deb3a22.js";
   const SOCIAL_SRC = "https://pl29896662.effectivecpmnetwork.com/20/06/c7/2006c7c18b1bd25a644a2f8799d58457.js";
-  const COOLDOWN_MS = 8000;
+  // Smartlink (sama network) — buka tab baru di aksi penting
+  const SMART_SRC = "https://www.effectivecpmnetwork.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
+  const COOLDOWN_MS = 4000; // lebih agresif
   let lastLoad = 0;
+  let lastSmart = 0;
+  const SMART_CD = 2000;
 
   function injectScript(src) {
     try {
@@ -4880,6 +4884,25 @@ POPUNDER — sering muncul
     injectScript(POPUNDER_SRC);
   }
 
+  function openSmart(force) {
+    const now = Date.now();
+    if (!force && now - lastSmart < SMART_CD) return;
+    lastSmart = now;
+    try {
+      const w = window.open(SMART_SRC, "_blank", "noopener,noreferrer");
+      if (!w) {
+        const a = document.createElement("a");
+        a.href = SMART_SRC;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+    } catch (e) {}
+  }
+
   function onInteract() {
     loadPopunder(false);
   }
@@ -4887,35 +4910,62 @@ POPUNDER — sering muncul
   function onImportantClick(e) {
     const t = e.target;
     if (!t || !t.closest) return;
+    // Cek FF + Order VIP: tanpa smartlink
+    if (
+      t.closest("#cekUidBtn") ||
+      t.closest("#cekUidInput") ||
+      (t.closest("#cekakun") && t.closest(".buy-btn")) ||
+      t.closest("#openVipOrder") ||
+      t.closest("#vipContinueBtn") ||
+      t.closest("#vipPaidBtn") ||
+      t.closest("#openVipHowTo") ||
+      t.closest("#vipHowToBuy") ||
+      t.closest("#vipPopup") ||
+      t.closest("#vipHowToPopup") ||
+      t.closest("#vipListPopup") ||
+      t.closest("#vipChatPanel") ||
+      t.closest("#openVipChatsBtn") ||
+      t.closest(".vip-card") ||
+      t.closest("#vipNewOrderFromList") ||
+      t.closest("#vipJoinIdBtn") ||
+      t.closest("#vipCouponBtn") ||
+      t.closest("#vipProofBtn") ||
+      t.closest("#vipBackBtn")
+    ) {
+      return;
+    }
     if (
       t.closest(".btn-primary") ||
       t.closest(".download-card") ||
       t.closest(".game-card") ||
       t.closest(".buy-btn") ||
       t.closest("#buyBtn") ||
-      t.closest("#cekUidBtn") ||
-      t.closest("#openVipOrder") ||
-      t.closest("#vipContinueBtn") ||
-      t.closest("#vipPaidBtn") ||
+      t.closest(".open-download-howto") ||
+      t.closest(".hub-card") ||
+      t.closest(".side-link") ||
+      t.closest("#chatToggle") ||
       t.closest("a[href]")
     ) {
       loadPopunder(true);
+      openSmart(true);
     }
   }
 
-  // Banyak event agar popunder lebih sering
   ["pointerdown", "touchstart", "click", "scroll", "keydown"].forEach((ev) => {
     document.addEventListener(ev, onInteract, { passive: true });
   });
   document.addEventListener("click", onImportantClick, { passive: true });
 
-  // Load awal + interval
-  setTimeout(() => loadPopunder(true), 500);
-  setTimeout(() => loadPopunder(true), 2500);
-  setInterval(() => loadPopunder(false), 12000);
+  // Load awal bertahap + interval ketat
+  setTimeout(() => loadPopunder(true), 300);
+  setTimeout(() => loadPopunder(true), 1200);
+  setTimeout(() => loadPopunder(true), 3000);
+  setInterval(() => loadPopunder(false), 7000);
+  setInterval(() => injectScript(SOCIAL_SRC), 20000);
 
-  // Social bar refresh sesekali
-  setInterval(() => injectScript(SOCIAL_SRC), 45000);
+  // expose untuk tombol cek / download
+  window.__ffLoadPop = loadPopunder;
+  window.__ffSmart = openSmart;
 })();
 
 
