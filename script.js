@@ -4411,9 +4411,20 @@ function mapFfCsRank(rankId, rankingPoints) {
 
 function mapFfPrime(level) {
   const lv = Number(level) || 0;
-  if (lv < 1) return { name: "Tidak aktif", file: null };
+
+  // Prime belum terbuka -> badge 0.
+  if (lv < 1) {
+    return {
+      name: "Tidak aktif",
+      file: "https://raw.githubusercontent.com/0xme/ff-resources/refs/heads/main/pngs/300x300/FF_UI_PrimeBadage0.png"
+    };
+  }
+
   const s = Math.min(lv, 8);
-  return { name: "Prime " + s, file: "prime-" + s + ".png" };
+  return {
+    name: "Prime " + s,
+    file: "https://raw.githubusercontent.com/0xme/ff-resources/refs/heads/main/pngs/300x300/FF_UI_PrimeBadage" + s + ".png"
+  };
 }
 
 /** Beberapa field SocialInfo dari API balikannya masih format enum
@@ -4541,8 +4552,16 @@ function setCekImg(el, file) {
     el.removeAttribute("src");
     return;
   }
+
   el.hidden = false;
-  el.src = FF_RANK_BASE + file;
+
+  // Prime memakai asset URL langsung dari repository ItemID2/ff-resources.
+  // Rank tetap memakai folder lokal assets/ff-rank/ seperti sebelumnya.
+  const src = /^https?:\/\//i.test(String(file))
+    ? String(file)
+    : FF_RANK_BASE + file;
+
+  el.src = src;
   el.onerror = () => { el.hidden = true; };
 }
 
