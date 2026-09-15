@@ -4399,12 +4399,12 @@ function mapFfRank(rankId) {
   return { name: best[1], file: best[2] };
 }
 
-/** CS: rank + bintang dari CsRankingPoints */
+/** CS: rank + poin dari CsRankingPoints */
 function mapFfCsRank(rankId, rankingPoints) {
   const base = mapFfRank(rankId);
   const pts = Number(rankingPoints);
   if (Number.isFinite(pts) && pts > 0) {
-    return { name: base.name + " · ★" + pts, file: base.file };
+    return { name: base.name + " · " + pts, file: base.file };
   }
   return base;
 }
@@ -4426,6 +4426,51 @@ function stripEnumPrefix(value) {
   if (!s) return "";
   const m = s.match(/^[A-Za-z]+_(.+)$/);
   return m ? m[1] : s;
+}
+
+/** Cari field secara rekursif di seluruh JSON API, nggak peduli field
+ *  itu ada di BasicInfo, ProfileInfo, SocialInfo, atau object lain di
+ *  manapun nestingnya. targetKeys berisi beberapa kemungkinan nama
+ *  field (case-insensitive) — dipakai karena kita nggak tau pasti nama
+ *  field asli dari API buat data seperti versi OB. */
+function cariField(obj, targetKeys) {
+  const wanted = new Set(targetKeys.map((k) => String(k).toLowerCase()));
+  if (Array.isArray(obj)) {
+    for (const item of obj) {
+      const hasil = cariField(item, targetKeys);
+      if (hasil != null) return hasil;
+    }
+    return null;
+  }
+  if (obj && typeof obj === "object") {
+    for (const key of Object.keys(obj)) {
+      if (wanted.has(String(key).toLowerCase())) {
+        const v = obj[key];
+        if (v != null && v !== "") return v;
+      }
+    }
+    for (const key of Object.keys(obj)) {
+      const hasil = cariField(obj[key], targetKeys);
+      if (hasil != null) return hasil;
+    }
+  }
+  return null;
+}
+
+/** Format value hasil cariField supaya bisa ditampilkan sebagai teks
+ *  biasa, baik itu angka, list, atau object. */
+function formatValue(value) {
+  if (value == null || value === "") return "—";
+  if (Array.isArray(value)) {
+    if (!value.length) return "—";
+    return value.map((x) => String(x)).join(", ");
+  }
+  if (typeof value === "object") {
+    const keys = Object.keys(value);
+    if (!keys.length) return "—";
+    return keys.map((k) => k + ": " + value[k]).join(" | ");
+  }
+  return stripEnumPrefix(value) || String(value);
 }
 
 function ffTsToDate(ts) {
@@ -4635,6 +4680,29 @@ function initCekAkunFf() {
           ? stripEnumPrefix(social.TimeOnline) : "—";
       }
       setEnumIcon(document.getElementById("cekTimeOnlineIcon"), timeOnlineIconFile(social.TimeOnline));
+
+      // Versi OB — nama field aslinya belum pasti, jadi dicari rekursif
+      // ke seluruh JSON pakai beberapa kandidat nama sekaligus.
+      const obEl = document.getElementById("cekObVersion");
+      if (obEl) {
+        obEl.textContent = formatValue(
+          cariField(data, [
+            "OB", "OBVersion", "ObVersion", "GameVersion", "ClientVersion", "Version",
+            "ReleaseVersion", "AppVersion", "ClientOB", "ClientVer", "AndroidVersion", "PkgVersion"
+          ])
+        );
+      }
+      setEnumIcon(document.getElementById("cekObIcon"), "FF_UI_CreditScore_Robot");
+
+      // Ranking Point — pakai RankingPoints yang sama dengan yang
+      // dipakai di kartu Rank BR (info.RankingPoints).
+      const rpEl = document.getElementById("cekRankingPoint");
+      if (rpEl) {
+        rpEl.textContent = info.RankingPoints != null && info.RankingPoints !== ""
+          ? Number(info.RankingPoints).toLocaleString("id-ID")
+          : "—";
+      }
+      setEnumIcon(document.getElementById("cekRankingPointIcon"), "UI_Lobby_Btn_Ranking-list");
 
       const booyahEl = document.getElementById("cekBooyah");
       // Cek apakah akun punya / sudah buka Booyah Pass (Elite Pass)
