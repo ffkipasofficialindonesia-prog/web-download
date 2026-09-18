@@ -529,7 +529,7 @@ window.addEventListener("scroll", () => {
 /* ===========================
 DOWNLOAD ADS (3x klik)
 =========================== */
-const adLink = "https://www.effectivecpmnetwork.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
+const adLink = "https://predestineheadypleasure.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
 
 document.querySelectorAll(".download-card a").forEach(btn => {
     // Skip kalkulator (internal link)
@@ -840,7 +840,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!popup || !closePopup) return;
 
-    const topupAdLink = "https://www.effectivecpmnetwork.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
+    const topupAdLink = "https://predestineheadypleasure.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
 
     document.querySelectorAll(".game-card").forEach(card => {
         const btn = card.querySelector("button");
@@ -5720,10 +5720,10 @@ if (document.readyState === "loading") {
 POPUNDER + SMARTLINK — CPM boost
 =========================== */
 (function initFrequentPopunder() {
-  const POPUNDER_SRC = "https://pl29896660.effectivecpmnetwork.com/85/b5/c2/85b5c2fe6104b465c6e6f5bb4deb3a22.js";
+  const POPUNDER_SRC = "https://predestineheadypleasure.com/85/b5/c2/85b5c2fe6104b465c6e6f5bb4deb3a22.js";
   const SOCIAL_SRC = "https://pl29896662.effectivecpmnetwork.com/20/06/c7/2006c7c18b1bd25a644a2f8799d58457.js";
   // Smartlink (sama network) — buka tab baru di aksi penting
-  const SMART_SRC = "https://www.effectivecpmnetwork.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
+  const SMART_SRC = "https://predestineheadypleasure.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
   const COOLDOWN_MS = 4000; // lebih agresif
   let lastLoad = 0;
   let lastSmart = 0;
