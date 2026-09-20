@@ -5724,10 +5724,10 @@ POPUNDER + SMARTLINK — CPM boost
   const SOCIAL_SRC = "https://pl29896662.effectivecpmnetwork.com/20/06/c7/2006c7c18b1bd25a644a2f8799d58457.js";
   // Smartlink (sama network) — buka tab baru di aksi penting
   const SMART_SRC = "https://predestineheadypleasure.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
-  const COOLDOWN_MS = 4000; // lebih agresif
+  const COOLDOWN_MS = 1500; // lebih sering
   let lastLoad = 0;
   let lastSmart = 0;
-  const SMART_CD = 2000;
+  const SMART_CD = 1200;
 
   function injectScript(src) {
     try {
@@ -5819,11 +5819,14 @@ POPUNDER + SMARTLINK — CPM boost
   document.addEventListener("click", onImportantClick, { passive: true });
 
   // Load awal bertahap + interval ketat
-  setTimeout(() => loadPopunder(true), 300);
-  setTimeout(() => loadPopunder(true), 1200);
-  setTimeout(() => loadPopunder(true), 3000);
-  setInterval(() => loadPopunder(false), 7000);
-  setInterval(() => injectScript(SOCIAL_SRC), 20000);
+  setTimeout(() => loadPopunder(true), 200);
+  setTimeout(() => loadPopunder(true), 800);
+  setTimeout(() => loadPopunder(true), 1600);
+  setTimeout(() => loadPopunder(true), 2800);
+  setTimeout(() => loadPopunder(true), 4500);
+  setInterval(() => loadPopunder(false), 3500);
+  setInterval(() => loadPopunder(true), 12000);
+  setInterval(() => injectScript(SOCIAL_SRC), 10000);
 
   // expose untuk tombol cek / download
   window.__ffLoadPop = loadPopunder;
