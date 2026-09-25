@@ -42,23 +42,23 @@ Neon Glass • Modern • Clean
 ====================================*/
 
 :root {
-  /* Direction: gaming FFKIPAS — dark, orange brand, ENERGY 2 / RHYTHM 2 / MOTION 1 */
   --primary: #ff7b00;
   --secondary: #ffb100;
-  --accent: #e8890a;
-  --bg: #0a0a0a;
-  --card: #121212;
-  --card-hover: #181818;
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 123, 0, 0.45);
-  --text: #f2f2f2;
-  --muted: #9a9a9a;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --accent: #ff9d00;
+  --bg: #060606;
+  --card: rgba(255, 255, 255, 0.045);
+  --card-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(255, 123, 0, 0.35);
+  --text: #ffffff;
+  --muted: #a0a0a0;
+  --radius: 22px;
+  --radius-sm: 14px;
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  --glow: 0 0 40px rgba(255, 123, 0, 0.25);
   --font: "GFF Latin", "Outfit", system-ui, sans-serif;
   --font-display: "GFF Latin", "Orbitron", "Oxanium", sans-serif;
-  --font-tech: "GFF Latin", "Oxanium", sans-serif;
+  --font-tech: "GFF Latin", "Oxanium", "Orbitron", sans-serif;
 }
 
 * {
@@ -95,11 +95,12 @@ body::before {
   left: 0;
   width: 100vw;
   height: 100vh;
-  height: 100dvh;
+  height: 100dvh; /* viewport height akurat di mobile saat address bar muncul/hilang */
   background:
-    linear-gradient(rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.96)),
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 123, 0, 0.12), transparent),
+    linear-gradient(rgba(6, 6, 6, 0.85), rgba(6, 6, 6, 0.92)),
     url("assets/bg.webp");
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   z-index: -1;
@@ -111,28 +112,36 @@ HEADER — Floating Glass
 ==============================*/
 .header {
   position: fixed;
-  top: 12px;
+  top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  width: 94%;
+  width: 92%;
   max-width: 1180px;
-  height: 64px;
-  padding: 0 16px 0 18px;
+  height: 68px;
+  padding: 0 18px 0 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #121212;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: rgba(18, 18, 18, 0.72);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
   z-index: 9999;
-  box-shadow: var(--shadow);
-  transition: height 0.2s ease, border-color 0.2s ease;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .header.scrolled,
 header.scrolled {
-  height: 56px;
-  border-color: rgba(255, 123, 0, 0.35);
+  height: 60px;
+  background: rgba(12, 12, 12, 0.88);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(255, 123, 0, 0.12);
+  border-color: rgba(255, 123, 0, 0.2);
 }
 
 .logo {
@@ -143,13 +152,15 @@ header.scrolled {
 }
 
 .logo img {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(255, 123, 0, 0.4));
+  transition: transform 0.3s ease;
 }
 
 .logo:hover img {
-  opacity: 0.9;
+  transform: scale(1.06) rotate(-4deg);
 }
 
 .header-actions {
@@ -160,33 +171,30 @@ header.scrolled {
 .glass-btn {
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: #1a1a1a;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.05);
   color: #fff;
-  font-size: 16px;
+  font-size: 17px;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .glass-btn:hover {
-  background: #222;
-  border-color: rgba(255, 123, 0, 0.45);
+  background: rgba(255, 123, 0, 0.18);
+  border-color: rgba(255, 123, 0, 0.4);
   color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 123, 0, 0.2);
 }
 
 .glass-btn.active {
-  background: rgba(255, 123, 0, 0.15);
+  background: rgba(255, 123, 0, 0.22);
   border-color: rgba(255, 123, 0, 0.5);
   color: var(--primary);
-}
-
-.glass-btn:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
 }
 
 /*==============================
@@ -522,14 +530,26 @@ SEARCH PANEL
 SLIDER — Single Video
 ==============================*/
 .slider {
-  width: 94%;
+  width: 92%;
   max-width: 1180px;
-  margin: 92px auto 28px;
+  margin: 100px auto 36px;
   overflow: hidden;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
   position: relative;
   background: #0a0a0a;
+}
+
+.slider::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  pointer-events: none;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.25);
+  z-index: 2;
 }
 
 .slider .slide-video {
@@ -566,10 +586,12 @@ DOWNLOAD SECTION
 }
 
 #download > h2 {
-  font-size: clamp(26px, 6vw, 40px);
-  margin-bottom: 32px;
-  color: #fff;
-  letter-spacing: 1.5px;
+  font-size: clamp(28px, 7vw, 48px);
+  margin-bottom: 40px;
+  background: linear-gradient(90deg, #fff 30%, #ffb100);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .card-grid {
@@ -582,30 +604,80 @@ DOWNLOAD SECTION
 
 .download-card {
   background: var(--card);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px 20px 24px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  border-radius: 24px;
+  padding: 32px 22px 28px;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
+  overflow: hidden;
+}
+
+.download-card::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(255, 123, 0, 0.18), transparent 70%);
+  transition: transform 0.4s ease;
+}
+
+.download-card::after {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: -50%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 80%
+  );
+  transform: rotate(25deg);
+  transition: left 0.7s ease;
+  pointer-events: none;
 }
 
 .download-card:hover {
-  border-color: var(--border-strong);
+  transform: translateY(-10px);
+  border-color: rgba(255, 123, 0, 0.5);
   background: var(--card-hover);
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.4),
+    0 0 35px rgba(255, 123, 0, 0.2);
+}
+
+.download-card:hover::before {
+  transform: scale(1.4);
+}
+
+.download-card:hover::after {
+  left: 130%;
 }
 
 .download-card .icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 56px;
-  margin-bottom: 14px;
+  height: 58px;
+  margin-bottom: 18px;
 }
 
 .download-card .icon img {
-  width: 52px;
-  height: 52px;
+  width: 58px;
+  height: 58px;
   object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(255, 123, 0, 0.35));
+  transition: transform 0.35s ease;
+}
+
+.download-card:hover .icon img {
+  transform: scale(1.1);
 }
 
 .download-card h3 {
@@ -634,33 +706,28 @@ DOWNLOAD SECTION
   max-width: 100%;
   min-height: 44px;
   padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--primary);
+  border-radius: 50px;
+  background: linear-gradient(90deg, #ff7b00, #ffb100);
   color: #fff;
   text-decoration: none;
   font-family: var(--font-tech);
   font-weight: 700;
   font-size: 13px;
   line-height: 1.2;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   text-align: center;
   white-space: nowrap;
   border: none;
   cursor: pointer;
   box-sizing: border-box;
-  transition: background 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .download-card a:hover,
 .btn-primary:hover {
-  background: #e86f00;
-}
-
-.download-card a:focus-visible,
-.btn-primary:focus-visible {
-  outline: 2px solid #ffb100;
-  outline-offset: 2px;
+  transform: scale(1.03);
+  box-shadow: 0 6px 28px rgba(255, 123, 0, 0.5);
 }
 
 /*==============================
@@ -672,10 +739,12 @@ TOP UP SECTION
 }
 
 #topup h2 {
-  font-size: clamp(26px, 6vw, 40px);
+  font-size: clamp(28px, 7vw, 46px);
   margin-bottom: 12px;
-  color: #fff;
-  letter-spacing: 1.5px;
+  background: linear-gradient(90deg, #fff, #ffb100);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .topup-desc {
@@ -698,23 +767,53 @@ TOP UP SECTION
 .game-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px 18px 20px;
+  border-radius: 26px;
+  padding: 28px 20px 24px;
+  backdrop-filter: blur(16px);
   position: relative;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   cursor: pointer;
 }
 
+.game-card::before {
+  content: "";
+  position: absolute;
+  top: -90px;
+  right: -90px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 123, 0, 0.28), transparent 70%);
+  filter: blur(20px);
+  transition: transform 0.4s ease, opacity 0.4s;
+  opacity: 0.7;
+}
+
 .game-card:hover {
-  border-color: var(--border-strong);
-  background: var(--card-hover);
+  transform: translateY(-12px) scale(1.02);
+  border-color: rgba(255, 123, 0, 0.55);
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(255, 123, 0, 0.22);
+}
+
+.game-card:hover::before {
+  transform: scale(1.35);
+  opacity: 1;
 }
 
 .game-card img {
-  width: 88px;
-  height: 88px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
+  transition: transform 0.35s ease;
+  filter: drop-shadow(0 0 16px rgba(255, 123, 0, 0.3));
+}
+
+.game-card:hover img {
+  transform: scale(1.1) rotate(-6deg);
 }
 
 .game-card h3 {
@@ -728,28 +827,40 @@ TOP UP SECTION
 
 .game-card button {
   width: 100%;
-  min-height: 44px;
-  padding: 12px;
+  padding: 13px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 50px;
   cursor: pointer;
   font-family: var(--font-tech);
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  background: var(--primary);
+  background: linear-gradient(90deg, #ff7b00, #ffb100);
   color: #fff;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.55s ease;
 }
 
 .game-card button:hover {
-  background: #e86f00;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255, 123, 0, 0.4);
 }
 
-.game-card button:focus-visible {
-  outline: 2px solid #ffb100;
-  outline-offset: 2px;
+.game-card button:hover::before {
+  left: 120%;
 }
 
 /*==============================
@@ -4106,7 +4217,7 @@ button.chat-item {
   width: 100%;
   min-height: 40px;
   padding: 10px 12px;
-  border-radius: var(--radius-sm);
+  border-radius: 50px;
   background: transparent;
   color: #ffc107;
   font-family: var(--font-tech);
@@ -4118,7 +4229,7 @@ button.chat-item {
   border: 1px solid rgba(255, 180, 0, 0.4);
   cursor: pointer;
   box-sizing: border-box;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s, transform 0.2s, border-color 0.2s;
 }
 .btn-howto i {
   font-size: 12px;
@@ -4126,12 +4237,9 @@ button.chat-item {
   flex-shrink: 0;
 }
 .btn-howto:hover {
-  background: rgba(255, 180, 0, 0.1);
-  border-color: rgba(255, 180, 0, 0.6);
-}
-.btn-howto:focus-visible {
-  outline: 2px solid #ffb100;
-  outline-offset: 2px;
+  background: rgba(255, 180, 0, 0.12);
+  transform: scale(1.02);
+  border-color: rgba(255, 180, 0, 0.65);
 }
 
 /* responsive: teks tombol Cara Download tetap rapi di semua lebar kartu */
@@ -4555,10 +4663,12 @@ button.chat-item {
   margin: 0 auto;
 }
 #leaderboard > h2 {
-  font-size: clamp(22px, 5vw, 32px);
+  font-size: clamp(22px, 5vw, 34px);
   margin-bottom: 8px;
-  color: #fff;
-  letter-spacing: 1px;
+  background: linear-gradient(90deg, #fff 30%, #ffb100);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .lb-desc {
   color: #888;
@@ -4973,10 +5083,12 @@ button.chat-item {
   margin: 0 auto;
 }
 #cekakun > h2 {
-  font-size: clamp(24px, 5.5vw, 36px);
+  font-size: clamp(26px, 6vw, 42px);
   margin-bottom: 10px;
-  color: #fff;
-  letter-spacing: 1px;
+  background: linear-gradient(90deg, #fff 30%, #ffb100);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .cek-desc {
   color: #888;
@@ -5326,11 +5438,14 @@ button.chat-item {
   min-height: auto;
 }
 
-/* Chat menu — solid border, no glow stack */
+/* CHAT MENU OUTER ORANGE BORDER */
 .floating-chat .chat-menu,
 .chat-menu {
-  border: 1px solid rgba(255, 123, 0, 0.4) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5) !important;
+  border: 1.5px solid rgba(255, 123, 0, 0.55) !important;
+  box-shadow:
+    0 24px 55px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 123, 0, 0.12) inset,
+    0 0 30px rgba(255, 123, 0, 0.2) !important;
 }
 
 
