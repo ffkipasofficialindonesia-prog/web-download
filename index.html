@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Oxanium:wght@500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link href="style.css?v=20260920pop" rel="stylesheet"/>
+<link href="style.css?v=20260926stream" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
@@ -572,19 +572,16 @@
 
         <div class="tutorial-video-wrap">
             <p class="tutorial-video-label">Video Tutorial</p>
-            <!-- Ganti file di assets/tutorial-download.mp4 ATAU isi data-youtube di bawah -->
-            <div class="tutorial-video-box" id="tutorialVideoBox"
-                 data-youtube="">
-                <video id="tutorialVideo"
-                    class="tutorial-video"
-                    controls
-                    playsinline
-                    preload="metadata"
-                    poster="assets/slider/download.png">
-                    <source src="assets/tutorial-download.mp4" type="video/mp4" />
-                    Browser kamu tidak mendukung video.
-                </video>
-                <!-- Kalau pakai YouTube: isi data-youtube="VIDEO_ID" di tutorialVideoBox, video di atas diganti iframe oleh script -->
+            <div class="tutorial-video-box" id="tutorialVideoBox">
+                <iframe
+                    class="tutorial-streamable"
+                    src="https://streamable.com/e/pwbmpn"
+                    title="Tutorial Download FFKIPAS"
+                    frameborder="0"
+                    allowfullscreen
+                    allow="autoplay; fullscreen; encrypted-media"
+                    loading="lazy">
+                </iframe>
             </div>
             <p class="tutorial-video-hint">Tonton dulu biar gak salah pasang</p>
         </div>
@@ -879,6 +876,6 @@
 
 <!-- Social Bar extra -->
 <script src="https://pl29896662.effectivecpmnetwork.com/20/06/c7/2006c7c18b1bd25a644a2f8799d58457.js"></script>
-<script src="script.js?v=20260920pop"></script>
+<script src="script.js?v=20260926stream"></script>
 </body>
 </html>
