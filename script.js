@@ -150,6 +150,7 @@ const SECTION_PATHS = {
     download: "/download",
     topup: "/topup",
     cekakun: "/cekakun",
+    spin: "/spin",
     history: "/history",
     faq: "/faq"
 };
@@ -161,6 +162,8 @@ const PATH_TO_SECTION = {
     "/topup": "topup",
     "/cekakun": "cekakun",
     "/cek": "cekakun",
+    "/spin": "spin",
+    "/event": "spin",
     "/history": "history",
     "/riwayat": "history",
     "/faq": "faq"
@@ -5840,7 +5843,7 @@ SPA PAGE SWITCH (home kartu → topup/cekakun)
 function setSpaPage(sectionId) {
   const page = sectionId || "home";
   const body = document.body;
-  ["spa-home","spa-download","spa-topup","spa-cekakun","spa-history","spa-faq"].forEach(c => body.classList.remove(c));
+  ["spa-home","spa-download","spa-topup","spa-cekakun","spa-spin","spa-history","spa-faq"].forEach(c => body.classList.remove(c));
   if (page === "home" || page === "leaderboard") {
     body.classList.add("spa-home");
   } else {
@@ -5894,7 +5897,7 @@ document.addEventListener("click", (e) => {
     } catch (e) {}
     if (sid === "home") {
       const p = (location.pathname || "/").replace(/\/index\.html$/i, "") || "/";
-      const map = { "/download": "download", "/topup": "topup", "/cekakun": "cekakun", "/cek": "cekakun", "/history": "history", "/riwayat": "history", "/faq": "faq" };
+      const map = { "/download": "download", "/topup": "topup", "/spin": "spin", "/event": "spin", "/cekakun": "cekakun", "/cek": "cekakun", "/spin": "spin", "/event": "spin", "/history": "history", "/riwayat": "history", "/faq": "faq" };
       const key = p.replace(/\/+$/, "") || "/";
       if (map[key]) sid = map[key];
       else if (location.hash && location.hash.length > 1) {
@@ -5907,5 +5910,473 @@ document.addEventListener("click", (e) => {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply);
   else apply();
   window.addEventListener("popstate", () => setTimeout(apply, 10));
+})();
+
+
+/* ===========================
+EVENT SPIN — VIP langka + saldo + refill 3 link
+=========================== */
+(function initEventSpin() {
+  const WA_CLAIM = "https://wa.me/6283138876438?text=" + encodeURIComponent(
+    "Halo admin, saya menang SPIN FFKIPAS VIP. Mohon proses hadiahnya."
+  );
+  // Link yang harus dilalui 3x untuk +1 spin (bisa diganti)
+  // weight tinggi = lebih sering. VIP sangat kecil.
+  const PRIZES = [
+    { id: "vip", label: "FFKIPAS VIP", color: "#ff7b00", weight: 1, icon: "👑", amount: 0 },
+    { id: "saldo2k", label: "Saldo Rp2.000", color: "#ffb100", weight: 1, icon: "💰", amount: 2000 },
+    { id: "saldo1k", label: "Saldo Rp1.000", color: "#e6a800", weight: 1, icon: "💰", amount: 1000 },
+    { id: "saldo500", label: "Saldo Rp500", color: "#d4a017", weight: 2, icon: "🪙", amount: 500 },
+    { id: "saldo400", label: "Saldo Rp400", color: "#c9a227", weight: 2, icon: "🪙", amount: 400 },
+    { id: "saldo300", label: "Saldo Rp300", color: "#b8860b", weight: 2, icon: "🪙", amount: 300 },
+    { id: "saldo200", label: "Saldo Rp200", color: "#9a7b0a", weight: 3, icon: "🪙", amount: 200 },
+    { id: "saldo100", label: "Saldo Rp100", color: "#8a7010", weight: 4, icon: "🪙", amount: 100 },
+    { id: "saldo2", label: "Saldo Rp2", color: "#7a6518", weight: 12, icon: "🪙", amount: 2 },
+    { id: "saldo1", label: "Saldo Rp1", color: "#6a5510", weight: 55, icon: "🪙", amount: 1 },
+    { id: "miss", label: "Belum beruntung", color: "#3a3a3a", weight: 35, icon: "😅", amount: 0 }
+  ];
+  const SALDO_CLAIM_MIN = 10000;
+  const SALDO_KEY = "ffkipas_spin_saldo";
+  const MAX_DAY = 3;
+  const STORAGE_KEY = "ffkipas_spin_day";
+  const REFILL_KEY = "ffkipas_spin_refill";
+
+  function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+
+  function getSpinState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const o = raw ? JSON.parse(raw) : null;
+      if (!o || o.day !== todayKey()) return { day: todayKey(), used: 0, bonus: 0 };
+      return {
+        day: o.day,
+        used: Math.max(0, Number(o.used) || 0),
+        bonus: Math.max(0, Number(o.bonus) || 0)
+      };
+    } catch (e) {
+      return { day: todayKey(), used: 0, bonus: 0 };
+    }
+  }
+
+  function setSpinState(st) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
+    } catch (e) {}
+  }
+
+  function getSaldoTotal() {
+    try {
+      return Math.max(0, Number(localStorage.getItem(SALDO_KEY)) || 0);
+    } catch (e) { return 0; }
+  }
+  function addSaldo(amount) {
+    const a = Math.max(0, Math.floor(Number(amount) || 0));
+    if (!a) return getSaldoTotal();
+    const next = getSaldoTotal() + a;
+    try { localStorage.setItem(SALDO_KEY, String(next)); } catch (e) {}
+    return next;
+  }
+  function resetSaldoAfterClaim() {
+    try { localStorage.setItem(SALDO_KEY, "0"); } catch (e) {}
+  }
+  function updateSaldoUI() {
+    const el = document.getElementById("spinSaldoTotal");
+    if (!el) return;
+    const t = getSaldoTotal();
+    el.innerHTML = "Saldo terkumpul: <strong>Rp" + t.toLocaleString("id-ID") + "</strong> / Rp" + SALDO_CLAIM_MIN.toLocaleString("id-ID");
+    const claimSaldo = document.getElementById("spinClaimSaldoBtn");
+    if (claimSaldo) {
+      claimSaldo.hidden = t < SALDO_CLAIM_MIN;
+      claimSaldo.disabled = t < SALDO_CLAIM_MIN;
+    }
+  }
+
+
+  function maxSpins() {
+    const st = getSpinState();
+    return MAX_DAY + (st.bonus || 0);
+  }
+
+  function remaining() {
+    const st = getSpinState();
+    return Math.max(0, maxSpins() - (st.used || 0));
+  }
+
+  function getRefillProgress() {
+    try {
+      const raw = localStorage.getItem(REFILL_KEY);
+      const o = raw ? JSON.parse(raw) : null;
+      if (!o || o.day !== todayKey()) return { day: todayKey(), step: 0 };
+      return { day: o.day, step: Math.min(3, Number(o.step) || 0) };
+    } catch (e) {
+      return { day: todayKey(), step: 0 };
+    }
+  }
+
+  function setRefillProgress(p) {
+    try {
+      localStorage.setItem(REFILL_KEY, JSON.stringify(p));
+    } catch (e) {}
+  }
+
+  function updateChanceUI() {
+    try { updateSaldoUI(); } catch (e) {}
+
+    const el = document.getElementById("spinChance");
+    const btn = document.getElementById("spinBtn");
+    const refillWrap = document.getElementById("spinRefillWrap");
+    const left = remaining();
+    const st = getSpinState();
+    if (el) {
+      el.innerHTML =
+        "Sisa putaran: <strong>" +
+        left +
+        "</strong>" +
+        (st.bonus ? " <small>(+" + st.bonus + " bonus)</small>" : "");
+    }
+    if (btn) {
+      btn.disabled = left <= 0;
+      btn.textContent = left <= 0 ? "HABIS — ISI ULANG" : "PUTAR SEKARANG";
+    }
+    if (refillWrap) {
+      refillWrap.hidden = left > 0;
+    }
+}
+
+  function pickPrize() {
+    const total = PRIZES.reduce((s, p) => s + p.weight, 0);
+    let r = Math.random() * total;
+    for (const p of PRIZES) {
+      r -= p.weight;
+      if (r <= 0) return p;
+    }
+    return PRIZES[PRIZES.length - 1];
+  }
+
+  function drawWheel(rotDeg) {
+    const canvas = document.getElementById("spinCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const size = canvas.width;
+    const cx = size / 2;
+    const cy = size / 2;
+    const r = size / 2 - 4;
+    const n = PRIZES.length;
+    const arc = (Math.PI * 2) / n;
+    ctx.clearRect(0, 0, size, size);
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate((rotDeg * Math.PI) / 180);
+    for (let i = 0; i < n; i++) {
+      const start = i * arc - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, r, start, start + arc);
+      ctx.closePath();
+      ctx.fillStyle = PRIZES[i].color;
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.35)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.save();
+      ctx.rotate(start + arc / 2);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 10px sans-serif";
+      let text = PRIZES[i].label;
+      if (text.length > 12) text = text.slice(0, 11) + "…";
+      ctx.fillText(text, r * 0.62, 3);
+      ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(0, 0, 26, 0, Math.PI * 2);
+    ctx.fillStyle = "#1a1a1a";
+    ctx.fill();
+    ctx.strokeStyle = "#ffb100";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.fillStyle = "#ffc107";
+    ctx.font = "bold 10px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("SPIN", 0, 4);
+    ctx.restore();
+  }
+
+  let spinning = false;
+  let currentRot = 0;
+
+  function spin() {
+    if (spinning) return;
+    if (remaining() <= 0) {
+      if (typeof showToast === "function") {
+        showToast("Habis", "Putaran habis. Isi ulang lewat 3 link di bawah.", "warning");
+      }
+      updateChanceUI();
+      return;
+    }
+    spinning = true;
+    const btn = document.getElementById("spinBtn");
+    if (btn) btn.disabled = true;
+
+    const prize = pickPrize();
+    const idx = PRIZES.findIndex((p) => p.id === prize.id);
+    const n = PRIZES.length;
+    const arcDeg = 360 / n;
+    const targetCenter = idx * arcDeg + arcDeg / 2;
+    const extra = 6 * 360 + (360 - targetCenter);
+    const finalRot = currentRot + extra;
+    const start = currentRot;
+    const dur = 4500;
+    const t0 = performance.now();
+
+    function frame(now) {
+      const t = Math.min(1, (now - t0) / dur);
+      const eased = 1 - Math.pow(1 - t, 3);
+      currentRot = start + (finalRot - start) * eased;
+      drawWheel(currentRot);
+      if (t < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        currentRot = finalRot % 360;
+        drawWheel(currentRot);
+        spinning = false;
+        const st = getSpinState();
+        st.used = (st.used || 0) + 1;
+        st.day = todayKey();
+        setSpinState(st);
+        updateChanceUI();
+        showResult(prize);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function showResult(prize) {
+    const box = document.getElementById("spinResult");
+    const title = document.getElementById("spinResultTitle");
+    const msg = document.getElementById("spinResultMsg");
+    const icon = document.getElementById("spinResultIcon");
+    const claim = document.getElementById("spinClaimBtn");
+    if (!box) return;
+    if (icon) icon.textContent = prize.icon || "🎉";
+
+    const amt = Number(prize.amount) || 0;
+    let total = getSaldoTotal();
+
+    if (prize.id === "vip") {
+      if (title) title.textContent = "Kamu dapat: FFKIPAS VIP";
+      if (msg) msg.textContent = "Langka! Klaim langsung via WhatsApp admin (kirim screenshot).";
+      if (claim) {
+        claim.hidden = false;
+        claim.classList.remove("is-hidden");
+        claim.style.display = "inline-flex";
+        claim.textContent = "Klaim VIP via WhatsApp";
+        claim.dataset.mode = "wa";
+      }
+    } else if (prize.id === "miss" || amt <= 0) {
+      if (title) title.textContent = "Belum beruntung";
+      if (msg) msg.textContent = "Coba putar lagi. Saldo terkumpul: Rp" + total.toLocaleString("id-ID") + " (klaim min Rp10.000).";
+      if (claim) {
+        claim.hidden = true;
+        claim.classList.add("is-hidden");
+        claim.style.display = "none";
+        claim.dataset.mode = "";
+      }
+    } else {
+      // saldo — kumpulkan, jangan klaim per-menang
+      total = addSaldo(amt);
+      updateSaldoUI();
+      if (title) title.textContent = "Kamu dapat: " + prize.label;
+      if (total >= SALDO_CLAIM_MIN) {
+        if (msg) msg.textContent = "Saldo terkumpul Rp" + total.toLocaleString("id-ID") + "! Sudah bisa klaim ke admin.";
+        if (claim) {
+          claim.hidden = false;
+          claim.classList.remove("is-hidden");
+          claim.style.display = "inline-flex";
+          claim.textContent = "Klaim Saldo via Chat Admin";
+          claim.dataset.mode = "saldo";
+        }
+      } else {
+        if (msg) msg.textContent = "Masuk ke saldo. Total: Rp" + total.toLocaleString("id-ID") + " / Rp10.000. Belum bisa klaim.";
+        if (claim) {
+          claim.hidden = true;
+          claim.classList.add("is-hidden");
+          claim.style.display = "none";
+          claim.dataset.mode = "";
+        }
+      }
+    }
+    box.hidden = false;
+  }
+
+  function closeResult() {
+    const box = document.getElementById("spinResult");
+    if (box) box.hidden = true;
+  }
+
+  const SMARTLINK_REFILL = "https://predestineheadypleasure.com/b8r0ht674?key=7390f2d0c006f1597d4c085f2dcf948f";
+
+  function openSmartlinkOnce() {
+    try {
+      if (typeof window.__ffSmart === "function") {
+        window.__ffSmart(true);
+        return;
+      }
+    } catch (e) {}
+    try {
+      const w = window.open(SMARTLINK_REFILL, "_blank", "noopener,noreferrer");
+      if (!w) {
+        const a = document.createElement("a");
+        a.href = SMARTLINK_REFILL;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+    } catch (e) {}
+  }
+
+  function renderStepButtons() {
+    const prog = getRefillProgress();
+    const step = Math.min(3, prog.step || 0);
+    for (let i = 1; i <= 3; i++) {
+      const btn = document.getElementById("spinStep" + i);
+      if (!btn) continue;
+      btn.classList.remove("active", "done", "locked");
+      btn.disabled = false;
+      const status = btn.querySelector(".spin-step-status");
+      const small = btn.querySelector(".spin-step-text small");
+      if (i <= step) {
+        btn.classList.add("done");
+        btn.disabled = true;
+        if (status) status.innerHTML = '<i class="fa-solid fa-check"></i>';
+        if (small) small.textContent = "Selesai";
+      } else if (i === step + 1) {
+        btn.classList.add("active");
+        btn.disabled = false;
+        if (status) status.textContent = "Buka";
+        if (small) small.textContent = "Klik untuk lanjut";
+      } else {
+        btn.classList.add("locked");
+        btn.disabled = true;
+        if (status) status.innerHTML = '<i class="fa-solid fa-lock"></i>';
+        if (small) small.textContent = "Selesaikan langkah " + (i - 1) + " dulu";
+      }
+    }
+    const foot = document.getElementById("spinRefillFoot");
+    if (foot) foot.textContent = "Progress: " + step + "/3";
+  }
+
+  function openRefillModal() {
+    const modal = document.getElementById("spinRefillModal");
+    if (!modal) return;
+    // jangan reset progress kalau sedang jalan
+    renderStepButtons();
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeRefillModal() {
+    const modal = document.getElementById("spinRefillModal");
+    if (modal) modal.hidden = true;
+    if (!document.getElementById("sideMenu")?.classList.contains("open")) {
+      document.body.style.overflow = "";
+    }
+  }
+
+  function onStepClick(stepNum) {
+    const prog = getRefillProgress();
+    const current = prog.step || 0;
+    // hanya langkah berikutnya yang boleh
+    if (stepNum !== current + 1) return;
+    if (stepNum < 1 || stepNum > 3) return;
+
+    openSmartlinkOnce();
+
+    prog.step = stepNum;
+    prog.day = todayKey();
+    setRefillProgress(prog);
+    renderStepButtons();
+
+    if (stepNum >= 3) {
+      // complete → +1 otomatis
+      const st = getSpinState();
+      st.bonus = (st.bonus || 0) + 1;
+      st.day = todayKey();
+      setSpinState(st);
+      setRefillProgress({ day: todayKey(), step: 0 });
+      if (typeof showToast === "function") {
+        showToast("Complete!", "+1 putaran ditambahkan. Silakan putar!");
+      }
+      setTimeout(() => {
+        closeRefillModal();
+        updateChanceUI();
+      }, 600);
+    } else if (typeof showToast === "function") {
+      showToast("Unlock " + stepNum + "/3", "Lanjut ke langkah berikutnya.");
+    }
+  }
+
+  function boot() {
+    const canvas = document.getElementById("spinCanvas");
+    if (!canvas) return;
+    drawWheel(0);
+    updateChanceUI();
+    const btn = document.getElementById("spinBtn");
+    if (btn) btn.addEventListener("click", spin);
+    const closeBtn = document.getElementById("spinResultClose");
+    if (closeBtn) closeBtn.addEventListener("click", closeResult);
+    const claim = document.getElementById("spinClaimBtn");
+    if (claim) {
+      claim.addEventListener("click", () => {
+        const mode = claim.dataset.mode || "";
+        closeResult();
+        if (mode === "wa") {
+          window.open(WA_CLAIM, "_blank", "noopener,noreferrer");
+          return;
+        }
+        if (mode === "saldo") {
+          if (getSaldoTotal() < SALDO_CLAIM_MIN) {
+            if (typeof showToast === "function") showToast("Belum cukup", "Kumpulkan minimal Rp10.000 dulu", "warning");
+            return;
+          }
+          const nominal = getSaldoTotal();
+          resetSaldoAfterClaim();
+          updateSaldoUI();
+          const text = encodeURIComponent("Halo admin, saya klaim saldo spin Rp" + nominal.toLocaleString("id-ID") + ". Mohon diproses.");
+          window.open("https://wa.me/6283138876438?text=" + text, "_blank", "noopener,noreferrer");
+          return;
+        }
+        // jangan buka chat untuk zonk / tanpa mode
+      });
+    }
+    const openBtn = document.getElementById("spinRefillOpenBtn");
+    if (openBtn) openBtn.addEventListener("click", openRefillModal);
+    const closeM = document.getElementById("spinRefillClose");
+    if (closeM) closeM.addEventListener("click", closeRefillModal);
+    const modal = document.getElementById("spinRefillModal");
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeRefillModal();
+      });
+    }
+    for (let i = 1; i <= 3; i++) {
+      const sb = document.getElementById("spinStep" + i);
+      if (sb) {
+        sb.addEventListener("click", () => onStepClick(i));
+      }
+    }
+    window.addEventListener("resize", () => drawWheel(currentRot));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
 })();
 

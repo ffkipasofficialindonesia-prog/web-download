@@ -5723,3 +5723,377 @@ body.spa-download #download {
   margin-top: 8px;
   text-align: center;
 }
+
+
+/* ===== Event Spin ===== */
+#spin {
+  padding: 50px 6% 90px;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+#spin > h2 {
+  font-size: clamp(28px, 7vw, 44px);
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #fff 30%, #ffb100);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.spin-desc {
+  color: #999;
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+.spin-desc strong { color: #ffc107; }
+.spin-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  text-align: left;
+}
+.spin-wheel-box {
+  position: relative;
+  width: min(320px, 88vw);
+  height: min(320px, 88vw);
+  flex-shrink: 0;
+}
+#spinCanvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 6px rgba(255, 123, 0, 0.35),
+    0 0 0 12px rgba(0, 0, 0, 0.4),
+    0 20px 50px rgba(0, 0, 0, 0.5);
+}
+.spin-pointer {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 28px solid #ffb100;
+  z-index: 3;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+.spin-side {
+  flex: 1;
+  min-width: 240px;
+  max-width: 340px;
+}
+.spin-prizes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.spin-prize {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 160, 0, 0.15);
+  font-size: 13px;
+  font-weight: 600;
+  color: #eee;
+}
+.spin-prize i { color: #ffb100; width: 18px; text-align: center; }
+.spin-prize.main {
+  background: rgba(255, 123, 0, 0.12);
+  border-color: rgba(255, 180, 0, 0.4);
+  color: #ffd54f;
+}
+.spin-prize.main small {
+  margin-left: auto;
+  font-size: 10px;
+  color: #ffb100;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.spin-prize.miss { opacity: 0.7; }
+.spin-chance {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+.spin-chance strong { color: #ffc107; }
+#spinBtn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.spin-note {
+  font-size: 11.5px;
+  color: #777;
+  line-height: 1.4;
+}
+.spin-result {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  padding: 20px;
+}
+.spin-result[hidden] { display: none !important; }
+.spin-result-box {
+  background: linear-gradient(180deg, #1a1a1a, #111);
+  border: 1px solid rgba(255, 160, 0, 0.35);
+  border-radius: 20px;
+  padding: 28px 22px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+}
+.spin-result-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.spin-result-box strong {
+  display: block;
+  font-size: 20px;
+  color: #ffc107;
+  margin-bottom: 8px;
+}
+.spin-result-box p {
+  font-size: 13.5px;
+  color: #bbb;
+  margin-bottom: 18px;
+  line-height: 1.45;
+}
+.spin-result-box .buy-btn,
+.spin-result-box .btn-howto,
+#spinClaimBtn {
+  width: 100%;
+  max-width: 280px;
+  margin: 8px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body.spa-spin #spin { display: block; padding-top: 100px; }
+body.spa-spin #home { display: none; }
+
+@media (max-width: 640px) {
+  .spin-wrap { flex-direction: column; }
+  .spin-side { max-width: 100%; }
+}
+
+.spin-refill {
+  margin: 12px 0 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 123, 0, 0.08);
+  border: 1px dashed rgba(255, 160, 0, 0.35);
+  text-align: center;
+}
+.spin-refill-hint {
+  font-size: 12px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+#spinRefillBtn {
+  width: 100%;
+}
+.spin-prizes .spin-prize small {
+  margin-left: auto;
+  font-size: 10px;
+  color: #ff9800;
+  text-transform: uppercase;
+}
+
+/* Spin refill modal — langkah berurutan */
+.spin-refill-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+}
+.spin-refill-modal[hidden] { display: none !important; }
+.spin-refill-panel {
+  position: relative;
+  width: min(400px, 100%);
+  background: linear-gradient(180deg, #1c1a16, #12100e);
+  border: 1px solid rgba(255, 160, 0, 0.35);
+  border-radius: 20px;
+  padding: 24px 18px 20px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+}
+.spin-refill-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.spin-refill-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.spin-refill-head i {
+  font-size: 28px;
+  color: #ffb100;
+  margin-bottom: 8px;
+}
+.spin-refill-head h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffc107;
+  margin-bottom: 6px;
+}
+.spin-refill-head p {
+  font-size: 12.5px;
+  color: #999;
+  line-height: 1.4;
+}
+.spin-refill-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.spin-step-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 160, 0, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+  color: #eee;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.spin-step-btn .spin-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  background: rgba(255, 123, 0, 0.2);
+  color: #ffb100;
+  flex-shrink: 0;
+}
+.spin-step-btn .spin-step-text {
+  flex: 1;
+  min-width: 0;
+}
+.spin-step-btn .spin-step-text strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.spin-step-btn .spin-step-text small {
+  font-size: 11px;
+  color: #888;
+}
+.spin-step-btn .spin-step-status {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffb100;
+  flex-shrink: 0;
+}
+.spin-step-btn.active {
+  border-color: rgba(255, 180, 0, 0.55);
+  background: rgba(255, 123, 0, 0.14);
+  box-shadow: 0 0 0 1px rgba(255, 160, 0, 0.15);
+}
+.spin-step-btn.active:hover {
+  transform: translateY(-1px);
+  border-color: #ffb100;
+}
+.spin-step-btn.done {
+  border-color: rgba(80, 200, 120, 0.4);
+  background: rgba(40, 120, 70, 0.15);
+  opacity: 0.9;
+  cursor: default;
+}
+.spin-step-btn.done .spin-step-num {
+  background: rgba(80, 200, 120, 0.35);
+  color: #7dffa0;
+}
+.spin-step-btn.done .spin-step-status { color: #7dffa0; }
+.spin-step-btn.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.spin-step-btn.locked .spin-step-status { color: #666; }
+.spin-refill-foot {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 12px;
+  color: #aaa;
+  font-weight: 600;
+}
+#spinRefillOpenBtn {
+  width: 100%;
+}
+
+.spin-result-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.spin-result-box .buy-btn,
+.spin-result-box .btn-howto {
+  width: 100%;
+  max-width: 280px;
+  margin: 8px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+#spinClaimBtn {
+  width: 100%;
+  max-width: 280px;
+  margin: 8px auto 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+#spinClaimBtn[hidden],
+#spinClaimBtn.is-hidden {
+  display: none !important;
+}
+.spin-result-box p {
+  text-align: center;
+}
+
+.spin-saldo-total {
+  font-size: 13px;
+  color: #ccc;
+  margin: 0 0 12px;
+  text-align: center;
+}
+.spin-saldo-total strong {
+  color: #ffc107;
+}
