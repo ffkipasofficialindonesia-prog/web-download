@@ -5926,14 +5926,14 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     { id: "vip", label: "FFKIPAS VIP", color: "#ff7b00", weight: 1, icon: "👑", amount: 0 },
     { id: "saldo2k", label: "Saldo Rp2.000", color: "#ffb100", weight: 1, icon: "💰", amount: 2000 },
     { id: "saldo1k", label: "Saldo Rp1.000", color: "#e6a800", weight: 1, icon: "💰", amount: 1000 },
-    { id: "saldo500", label: "Saldo Rp500", color: "#d4a017", weight: 2, icon: "🪙", amount: 500 },
-    { id: "saldo400", label: "Saldo Rp400", color: "#c9a227", weight: 2, icon: "🪙", amount: 400 },
+    { id: "saldo500", label: "Saldo Rp500", color: "#d4a017", weight: 1, icon: "🪙", amount: 500 },
+    { id: "saldo400", label: "Saldo Rp400", color: "#c9a227", weight: 1, icon: "🪙", amount: 400 },
     { id: "saldo300", label: "Saldo Rp300", color: "#b8860b", weight: 2, icon: "🪙", amount: 300 },
-    { id: "saldo200", label: "Saldo Rp200", color: "#9a7b0a", weight: 3, icon: "🪙", amount: 200 },
-    { id: "saldo100", label: "Saldo Rp100", color: "#8a7010", weight: 4, icon: "🪙", amount: 100 },
-    { id: "saldo2", label: "Saldo Rp2", color: "#7a6518", weight: 12, icon: "🪙", amount: 2 },
+    { id: "saldo200", label: "Saldo Rp200", color: "#9a7b0a", weight: 2, icon: "🪙", amount: 200 },
+    { id: "saldo100", label: "Saldo Rp100", color: "#8a7010", weight: 3, icon: "🪙", amount: 100 },
+    { id: "saldo2", label: "Saldo Rp2", color: "#7a6518", weight: 18, icon: "🪙", amount: 2 },
     { id: "saldo1", label: "Saldo Rp1", color: "#6a5510", weight: 55, icon: "🪙", amount: 1 },
-    { id: "miss", label: "Belum beruntung", color: "#3a3a3a", weight: 35, icon: "😅", amount: 0 }
+    { id: "miss", label: "Belum beruntung", color: "#3a3a3a", weight: 50, icon: "😅", amount: 0 }
   ];
   const SALDO_CLAIM_MIN = 10000;
   const SALDO_KEY = "ffkipas_spin_saldo";
@@ -6010,7 +6010,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       const raw = localStorage.getItem(REFILL_KEY);
       const o = raw ? JSON.parse(raw) : null;
       if (!o || o.day !== todayKey()) return { day: todayKey(), step: 0 };
-      return { day: o.day, step: Math.min(3, Number(o.step) || 0) };
+      return { day: o.day, step: Math.min(5, Number(o.step) || 0) };
     } catch (e) {
       return { day: todayKey(), step: 0 };
     }
@@ -6059,49 +6059,71 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
   function drawWheel(rotDeg) {
     const canvas = document.getElementById("spinCanvas");
     if (!canvas) return;
+    const cssSize = 320;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    const need = Math.round(cssSize * dpr);
+    if (canvas.width !== need || canvas.height !== need) {
+      canvas.width = need;
+      canvas.height = need;
+      canvas.style.width = cssSize + "px";
+      canvas.style.height = cssSize + "px";
+    }
     const ctx = canvas.getContext("2d");
-    const size = canvas.width;
-    const cx = size / 2;
-    const cy = size / 2;
-    const r = size / 2 - 4;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssSize, cssSize);
+    ctx.imageSmoothingEnabled = true;
+
+    const cx = cssSize / 2;
+    const cy = cssSize / 2;
+    const r = cssSize / 2 - 6;
     const n = PRIZES.length;
     const arc = (Math.PI * 2) / n;
-    ctx.clearRect(0, 0, size, size);
+
     ctx.save();
     ctx.translate(cx, cy);
+    // rotDeg: derajat, putar searah jarum jam
     ctx.rotate((rotDeg * Math.PI) / 180);
+
     for (let i = 0; i < n; i++) {
-      const start = i * arc - Math.PI / 2;
+      // Segmen i mulai dari atas (-90°) lalu searah jarum jam
+      const start = -Math.PI / 2 + i * arc;
+      const end = start + arc;
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.arc(0, 0, r, start, start + arc);
+      ctx.arc(0, 0, r, start, end);
       ctx.closePath();
       ctx.fillStyle = PRIZES[i].color;
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.35)";
+      ctx.strokeStyle = "rgba(0,0,0,0.45)";
       ctx.lineWidth = 2;
       ctx.stroke();
+
+      // Label di tengah segmen
       ctx.save();
       ctx.rotate(start + arc / 2);
       ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       ctx.fillStyle = "#fff";
-      ctx.font = "bold 10px sans-serif";
+      ctx.font = "bold 11px sans-serif";
       let text = PRIZES[i].label;
-      if (text.length > 12) text = text.slice(0, 11) + "…";
-      ctx.fillText(text, r * 0.62, 3);
+      if (text.length > 11) text = text.slice(0, 10) + "…";
+      ctx.fillText(text, r * 0.62, 0);
       ctx.restore();
     }
+
+    // pusat
     ctx.beginPath();
-    ctx.arc(0, 0, 26, 0, Math.PI * 2);
-    ctx.fillStyle = "#1a1a1a";
+    ctx.arc(0, 0, 28, 0, Math.PI * 2);
+    ctx.fillStyle = "#141414";
     ctx.fill();
     ctx.strokeStyle = "#ffb100";
     ctx.lineWidth = 3;
     ctx.stroke();
     ctx.fillStyle = "#ffc107";
-    ctx.font = "bold 10px sans-serif";
+    ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("SPIN", 0, 4);
+    ctx.textBaseline = "middle";
+    ctx.fillText("SPIN", 0, 0);
     ctx.restore();
   }
 
@@ -6124,12 +6146,19 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     const prize = pickPrize();
     const idx = PRIZES.findIndex((p) => p.id === prize.id);
     const n = PRIZES.length;
-    const arcDeg = 360 / n;
-    const targetCenter = idx * arcDeg + arcDeg / 2;
-    const extra = 6 * 360 + (360 - targetCenter);
-    const finalRot = currentRot + extra;
+    const seg = 360 / n;
+    // pusat segmen idx dari atas, searah jarum jam
+    const centerDeg = idx * seg + seg / 2;
+    // putar roda searah jarum jam supaya pusat segmen ke pointer (atas)
+    const land = (360 - centerDeg) % 360;
+    // selalu putar ke depan (minimal 5 putaran penuh)
+    const base = currentRot % 360;
+    let delta = land - base;
+    if (delta <= 0) delta += 360;
+    delta += 5 * 360;
+    const finalRot = currentRot + delta;
     const start = currentRot;
-    const dur = 4500;
+    const dur = 4800;
     const t0 = performance.now();
 
     function frame(now) {
@@ -6140,7 +6169,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       if (t < 1) {
         requestAnimationFrame(frame);
       } else {
-        currentRot = finalRot % 360;
+        currentRot = finalRot;
         drawWheel(currentRot);
         spinning = false;
         const st = getSpinState();
@@ -6148,6 +6177,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         st.day = todayKey();
         setSpinState(st);
         updateChanceUI();
+        try { if (typeof publishSpinWin === "function") publishSpinWin(prize); } catch (e) {}
         showResult(prize);
       }
     }
@@ -6242,21 +6272,23 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
 
   function renderStepButtons() {
     const prog = getRefillProgress();
-    const step = Math.min(3, prog.step || 0);
-    for (let i = 1; i <= 3; i++) {
+    const step = Math.min(5, prog.step || 0);
+    for (let i = 1; i <= 5; i++) {
       const btn = document.getElementById("spinStep" + i);
       if (!btn) continue;
-      btn.classList.remove("active", "done", "locked");
+      const wasDone = btn.classList.contains("done");
+      btn.classList.remove("active", "done", "locked", "just-done", "unlock-pop");
       btn.disabled = false;
       const status = btn.querySelector(".spin-step-status");
       const small = btn.querySelector(".spin-step-text small");
       if (i <= step) {
         btn.classList.add("done");
+        if (!wasDone) btn.classList.add("just-done");
         btn.disabled = true;
         if (status) status.innerHTML = '<i class="fa-solid fa-check"></i>';
         if (small) small.textContent = "Selesai";
       } else if (i === step + 1) {
-        btn.classList.add("active");
+        btn.classList.add("active", "unlock-pop");
         btn.disabled = false;
         if (status) status.textContent = "Buka";
         if (small) small.textContent = "Klik untuk lanjut";
@@ -6268,7 +6300,15 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       }
     }
     const foot = document.getElementById("spinRefillFoot");
-    if (foot) foot.textContent = "Progress: " + step + "/3";
+    if (foot) {
+      foot.textContent = "Progress: " + step + "/5";
+      foot.classList.remove("foot-pulse");
+      void foot.offsetWidth;
+      foot.classList.add("foot-pulse");
+    }
+    // progress bar if ada
+    const bar = document.getElementById("spinRefillBarFill");
+    if (bar) bar.style.width = (step / 5 * 100) + "%";
   }
 
   function openRefillModal() {
@@ -6293,7 +6333,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     const current = prog.step || 0;
     // hanya langkah berikutnya yang boleh
     if (stepNum !== current + 1) return;
-    if (stepNum < 1 || stepNum > 3) return;
+    if (stepNum < 1 || stepNum > 5) return;
 
     openSmartlinkOnce();
 
@@ -6302,7 +6342,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     setRefillProgress(prog);
     renderStepButtons();
 
-    if (stepNum >= 3) {
+    if (stepNum >= 5) {
       // complete → +1 otomatis
       const st = getSpinState();
       st.bonus = (st.bonus || 0) + 1;
@@ -6364,7 +6404,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         if (e.target === modal) closeRefillModal();
       });
     }
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 5; i++) {
       const sb = document.getElementById("spinStep" + i);
       if (sb) {
         sb.addEventListener("click", () => onStepClick(i));
