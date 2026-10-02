@@ -5923,17 +5923,20 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
   // Link yang harus dilalui 3x untuk +1 spin (bisa diganti)
   // weight tinggi = lebih sering. VIP sangat kecil.
   const PRIZES = [
-    { id: "vip", label: "FFKIPAS VIP", color: "#ff7b00", weight: 1, icon: "👑", amount: 0 },
-    { id: "saldo2k", label: "Saldo Rp2.000", color: "#ffb100", weight: 1, icon: "💰", amount: 2000 },
-    { id: "saldo1k", label: "Saldo Rp1.000", color: "#e6a800", weight: 1, icon: "💰", amount: 1000 },
-    { id: "saldo500", label: "Saldo Rp500", color: "#d4a017", weight: 1, icon: "🪙", amount: 500 },
-    { id: "saldo400", label: "Saldo Rp400", color: "#c9a227", weight: 1, icon: "🪙", amount: 400 },
-    { id: "saldo300", label: "Saldo Rp300", color: "#b8860b", weight: 2, icon: "🪙", amount: 300 },
-    { id: "saldo200", label: "Saldo Rp200", color: "#9a7b0a", weight: 2, icon: "🪙", amount: 200 },
-    { id: "saldo100", label: "Saldo Rp100", color: "#8a7010", weight: 3, icon: "🪙", amount: 100 },
-    { id: "saldo2", label: "Saldo Rp2", color: "#7a6518", weight: 18, icon: "🪙", amount: 2 },
-    { id: "saldo1", label: "Saldo Rp1", color: "#6a5510", weight: 55, icon: "🪙", amount: 1 },
-    { id: "miss", label: "Belum beruntung", color: "#3a3a3a", weight: 50, icon: "😅", amount: 0 }
+    { id: "vip", label: "FFKIPAS VIP", color: "#ff7b00", weight: 10, icon: "👑", amount: 0 },
+    { id: "saldo2k", label: "Saldo Rp2.000", color: "#ffb100", weight: 8, icon: "💰", amount: 2000 },
+    { id: "saldo1k", label: "Saldo Rp1.000", color: "#e6a800", weight: 12, icon: "💰", amount: 1000 },
+    { id: "saldo500", label: "Saldo Rp500", color: "#d4a017", weight: 15, icon: "🪙", amount: 500 },
+    { id: "saldo400", label: "Saldo Rp400", color: "#c9a227", weight: 15, icon: "🪙", amount: 400 },
+    { id: "saldo300", label: "Saldo Rp300", color: "#b8860b", weight: 15, icon: "🪙", amount: 300 },
+    { id: "saldo200", label: "Saldo Rp200", color: "#9a7b0a", weight: 15, icon: "🪙", amount: 200 },
+    { id: "saldo100", label: "Saldo Rp100", color: "#8a7010", weight: 20, icon: "🪙", amount: 100 },
+    { id: "saldo50", label: "Saldo Rp50", color: "#8a7520", weight: 80, icon: "🪙", amount: 50 },
+    { id: "saldo20", label: "Saldo Rp20", color: "#7a6a18", weight: 100, icon: "🪙", amount: 20 },
+    { id: "saldo10", label: "Saldo Rp10", color: "#6a5a12", weight: 120, icon: "🪙", amount: 10 },
+    { id: "saldo2", label: "Saldo Rp2", color: "#7a6518", weight: 2000, icon: "🪙", amount: 2 },
+    { id: "saldo1", label: "Saldo Rp1", color: "#6a5510", weight: 3000, icon: "🪙", amount: 1 },
+    { id: "miss", label: "Belum beruntung", color: "#3a3a3a", weight: 4590, icon: "😅", amount: 0 }
   ];
   const SALDO_CLAIM_MIN = 10000;
   const SALDO_KEY = "ffkipas_spin_saldo";
@@ -6184,6 +6187,82 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     requestAnimationFrame(frame);
   }
 
+  
+  const SPIN_FEED_PATH = "ffkipas_spin_feed";
+  const SPIN_FEED_MAX = 25;
+
+  function spinGuestName() {
+    try {
+      const n = localStorage.getItem("gc_name") || localStorage.getItem("ffkipas_gc_name");
+      if (n && String(n).trim().length >= 2) return String(n).trim().slice(0, 16);
+    } catch (e) {}
+    return "Player" + Math.floor(1000 + Math.random() * 9000);
+  }
+
+  function publishSpinWin(prize) {
+    if (!prize || prize.id === "miss") return;
+    const payload = {
+      name: spinGuestName(),
+      prize: prize.label || "Hadiah",
+      id: prize.id || "",
+      amount: Number(prize.amount) || 0,
+      ts: Date.now()
+    };
+    try {
+      const db = (typeof gcDb !== "undefined" && gcDb) ? gcDb
+        : (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length
+          ? firebase.database() : null);
+      if (!db) return;
+      const ref = db.ref(SPIN_FEED_PATH);
+      ref.push(payload).then(() => {
+        ref.orderByChild("ts").once("value").then((snap) => {
+          const rows = [];
+          snap.forEach((c) => rows.push({ key: c.key, ts: (c.val() || {}).ts || 0 }));
+          if (rows.length > SPIN_FEED_MAX) {
+            rows.sort((a, b) => a.ts - b.ts);
+            rows.slice(0, rows.length - SPIN_FEED_MAX).forEach((r) => {
+              ref.child(r.key).remove().catch(() => {});
+            });
+          }
+        }).catch(() => {});
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
+  function renderSpinFeed(list) {
+    const track = document.getElementById("spinTickerTrack");
+    if (!track) return;
+    if (!list || !list.length) {
+      track.innerHTML = '<span class="spin-ticker-placeholder">Live hadiah gacha akan muncul di sini…</span>';
+      return;
+    }
+    const parts = list.map((x) => {
+      const vip = x.id === "vip" ? " vip" : "";
+      const name = String(x.name || "Player").slice(0, 16).replace(/</g, "&lt;");
+      const prize = String(x.prize || "Hadiah").slice(0, 28).replace(/</g, "&lt;");
+      return '<span class="spin-ticker-item' + vip + '"><span class="st-name">' + name +
+        '</span> dapat <span class="st-prize">' + prize + '</span></span>';
+    });
+    const joined = parts.join('<span class="st-sep">•</span>');
+    track.innerHTML = joined + '<span class="st-sep">•</span>' + joined;
+  }
+
+  function initSpinFeedRealtime() {
+    try {
+      const db = (typeof gcDb !== "undefined" && gcDb) ? gcDb
+        : (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length
+          ? firebase.database() : null);
+      if (!db) return;
+      db.ref(SPIN_FEED_PATH).orderByChild("ts").limitToLast(SPIN_FEED_MAX).on("value", (snap) => {
+        const rows = [];
+        snap.forEach((c) => rows.push(c.val() || {}));
+        rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+        renderSpinFeed(rows);
+      });
+    } catch (e) {}
+  }
+
+
   function showResult(prize) {
     const box = document.getElementById("spinResult");
     const title = document.getElementById("spinResultTitle");
@@ -6357,11 +6436,12 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         updateChanceUI();
       }, 600);
     } else if (typeof showToast === "function") {
-      showToast("Unlock " + stepNum + "/3", "Lanjut ke langkah berikutnya.");
+      showToast("Unlock " + stepNum + "/5", "Lanjut ke langkah berikutnya.");
     }
   }
 
   function boot() {
+    try { initSpinFeedRealtime(); } catch (e) {}
     const canvas = document.getElementById("spinCanvas");
     if (!canvas) return;
     drawWheel(0);

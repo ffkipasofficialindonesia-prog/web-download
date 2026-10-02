@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Oxanium:wght@500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link href="style.css?v=20261003spin14" rel="stylesheet"/>
+<link href="style.css?v=20261003spin17" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
@@ -47,6 +47,16 @@
         </button>
     </div>
 </header>
+
+<!-- Live hadiah gacha — kotak terpisah -->
+<div class="spin-ticker-wrap" id="spinTickerWrap">
+  <div class="spin-ticker" id="spinTicker" aria-live="polite">
+    <div class="spin-ticker-track" id="spinTickerTrack">
+      <span class="spin-ticker-placeholder">daftar player hoki</span>
+    </div>
+  </div>
+</div>
+
 
 <!-- SIDE MENU -->
 <div class="menu-overlay" id="menuOverlay"></div>
@@ -242,8 +252,9 @@
     <div class="spin-side">
       <div class="spin-prizes">
         <div class="spin-prize main"><i class="fa-solid fa-crown"></i> <span>FFKIPAS VIP</span> <small>Hadiah Utama</small></div>
-        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp2.000 · 1.000 · 500 · 400</span></div>
-        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp300 · 200 · 100 · 2 · 1</span></div>
+        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp2.000 · 1.000 · 500 · 400 · 300</span></div>
+        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp200 · 100 · 50 · 20 · 10</span></div>
+        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp2 · Rp1</span></div>
         <div class="spin-prize miss"><i class="fa-solid fa-xmark"></i> <span>Belum beruntung</span></div>
       </div>
       <p class="spin-chance" id="spinChance">Sisa putaran: <strong>3</strong></p>
@@ -933,7 +944,7 @@
 
 <!-- Social Bar extra -->
 <script src="https://pl29896662.effectivecpmnetwork.com/20/06/c7/2006c7c18b1bd25a644a2f8799d58457.js"></script>
-<script src="script.js?v=20261003spin14"></script>
+<script src="script.js?v=20261003spin17"></script>
 
 <!-- SPIN REFILL STEPS (seperti verifyuid / unlock berurutan) -->
 <div class="spin-refill-modal" id="spinRefillModal" hidden>
