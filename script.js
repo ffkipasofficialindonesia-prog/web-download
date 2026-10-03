@@ -6223,6 +6223,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
 
   // Notif pemain lain: kunci hadiah sendiri (tidak di-toast), yang sudah terlihat, dan item "baru"
   const spinOwnKeys = new Set();
+  const spinSendState = {}; // key -> "sending" | "ok" | "fail"
   const spinSeenKeys = new Set();
   let spinFeedPrimed = false;
   let spinFreshKey = "";
@@ -6286,12 +6287,16 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     return ref.child(item.key).set(item.payload).then(() => {
       removeFromSpinOutbox(item.key);
       trimSpinFeed(ref);
+      spinSendState[item.key] = "ok";
+      try { renderSpinFeed(spinLastRows); } catch (e) {}
       return true;
     }).catch((err) => {
       console.warn("Hadiah gacha gagal dikirim ke feed:", err && err.message ? err.message : err);
       const code = (err && (err.code || err.message)) || "unknown";
       spinFeedStatus("Kirim gagal: " + code);
       spinFeedWarn(code);
+      spinSendState[item.key] = "fail";
+      try { renderSpinFeed(spinLastRows); } catch (e) {}
       return false;
     });
   }
@@ -6326,6 +6331,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         : "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
       const item = { key: key, payload: payload };
       spinOwnKeys.add(key);
+      spinSendState[key] = "sending";
       setSpinOutbox(getSpinOutbox().concat([item]));
       try { renderSpinFeed(spinLastRows); } catch (e) {}
       if (!db) {
@@ -6365,7 +6371,9 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       const vip = (x.id === "vip" ? " vip" : "") + (x.__key && x.__key === spinFreshKey ? " fresh" : "");
       const name = String(x.name || "Player").slice(0, 16).replace(/</g, "&lt;");
       return '<span class="spin-ticker-item' + vip + '"><span class="st-name">' + name + '</span>' +
-        (mine ? '<span class="st-me">(kamu)</span>' : '') +
+        (mine ? (spinSendState[x.__key] === "ok" ? '<span class="st-me">(kamu)</span>'
+          : spinSendState[x.__key] === "fail" ? '<span class="st-me bad">(gagal kirim)</span>'
+          : '<span class="st-me wait">(mengirim…)</span>') : '') +
         ' dapat <span class="st-prize">' + pz.label + '</span></span>';
     });
     const joined = parts.join('<span class="st-sep">•</span>');
