@@ -6194,7 +6194,7 @@ body.spa-spin #home { display: none; }
   align-items: center;
   width: max-content;
   padding-left: 16px;
-  animation: spinTickerMove 30s linear infinite;
+  animation: spinTickerMove 7s linear infinite;
 }
 .spin-ticker-track:hover { animation-play-state: paused; }
 .spin-ticker-item {
