@@ -6193,7 +6193,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
 
   function spinGuestName() {
     try {
-      const n = localStorage.getItem("gc_name") || localStorage.getItem("ffkipas_gc_name");
+      const n = localStorage.getItem("ff_chat_name") || localStorage.getItem("gc_name") || localStorage.getItem("ffkipas_gc_name");
       if (n && String(n).trim().length >= 2) return String(n).trim().slice(0, 16);
     } catch (e) {}
     return "Player" + Math.floor(1000 + Math.random() * 9000);
@@ -6225,7 +6225,9 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
             });
           }
         }).catch(() => {});
-      }).catch(() => {});
+      }).catch((err) => {
+        console.warn("Hadiah gacha gagal dikirim ke feed:", err && err.message ? err.message : err);
+      });
     } catch (e) {}
   }
 
@@ -6247,19 +6249,34 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     track.innerHTML = joined + '<span class="st-sep">•</span>' + joined;
   }
 
+  let spinFeedStarted = false;
+  let spinFeedTries = 0;
+
   function initSpinFeedRealtime() {
+    if (spinFeedStarted) return;
     try {
       const db = (typeof gcDb !== "undefined" && gcDb) ? gcDb
         : (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length
           ? firebase.database() : null);
-      if (!db) return;
+      if (!db) {
+        // Firebase belum siap — coba lagi sebentar
+        if (spinFeedTries++ < 20) setTimeout(initSpinFeedRealtime, 500);
+        return;
+      }
+      spinFeedStarted = true;
       db.ref(SPIN_FEED_PATH).orderByChild("ts").limitToLast(SPIN_FEED_MAX).on("value", (snap) => {
         const rows = [];
         snap.forEach((c) => rows.push(c.val() || {}));
         rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
         renderSpinFeed(rows);
+      }, (err) => {
+        // biasanya karena Rules Firebase belum mengizinkan path ffkipas_spin_feed
+        console.warn("Feed gacha gagal dibaca:", err && err.message ? err.message : err);
+        spinFeedStarted = false;
       });
-    } catch (e) {}
+    } catch (e) {
+      console.warn("Feed gacha error:", e);
+    }
   }
 
 
