@@ -6199,6 +6199,17 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     return "Player" + Math.floor(1000 + Math.random() * 9000);
   }
 
+  // Diagnosa: tampilkan penyebab error langsung di kotak notif (biar kelihatan di HP).
+  // Kalau notif sudah normal, ubah jadi false.
+  const SPIN_FEED_DEBUG = true;
+  function spinFeedStatus(msg) {
+    if (!SPIN_FEED_DEBUG) return;
+    const track = document.getElementById("spinTickerTrack");
+    if (!track || track.querySelector(".spin-ticker-item")) return;
+    track.style.animation = "none";
+    track.innerHTML = '<span class="spin-ticker-placeholder">' + String(msg).replace(/</g, "&lt;") + '</span>';
+  }
+
   function publishSpinWin(prize) {
     if (!prize || prize.id === "miss") return;
     const payload = {
@@ -6212,7 +6223,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       const db = (typeof gcDb !== "undefined" && gcDb) ? gcDb
         : (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length
           ? firebase.database() : null);
-      if (!db) return;
+      if (!db) { spinFeedStatus("Firebase belum siap, hadiah tidak terkirim"); return; }
       const ref = db.ref(SPIN_FEED_PATH);
       ref.push(payload).then(() => {
         ref.orderByChild("ts").once("value").then((snap) => {
@@ -6227,6 +6238,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         }).catch(() => {});
       }).catch((err) => {
         console.warn("Hadiah gacha gagal dikirim ke feed:", err && err.message ? err.message : err);
+        spinFeedStatus("Kirim gagal: " + ((err && (err.code || err.message)) || "unknown"));
       });
     } catch (e) {}
   }
@@ -6234,6 +6246,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
   function renderSpinFeed(list) {
     const track = document.getElementById("spinTickerTrack");
     if (!track) return;
+    track.style.animation = "";
     if (!list || !list.length) {
       track.innerHTML = '<span class="spin-ticker-placeholder">Live hadiah gacha akan muncul di sini…</span>';
       return;
@@ -6261,6 +6274,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       if (!db) {
         // Firebase belum siap — coba lagi sebentar
         if (spinFeedTries++ < 20) setTimeout(initSpinFeedRealtime, 500);
+        else spinFeedStatus("Firebase tidak terhubung");
         return;
       }
       spinFeedStarted = true;
@@ -6272,6 +6286,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       }, (err) => {
         // biasanya karena Rules Firebase belum mengizinkan path ffkipas_spin_feed
         console.warn("Feed gacha gagal dibaca:", err && err.message ? err.message : err);
+        spinFeedStatus("Baca feed gagal: " + ((err && (err.code || err.message)) || "unknown"));
         spinFeedStarted = false;
       });
     } catch (e) {
