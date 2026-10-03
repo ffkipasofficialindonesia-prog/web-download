@@ -6210,6 +6210,80 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     track.innerHTML = '<span class="spin-ticker-placeholder">' + String(msg).replace(/</g, "&lt;") + '</span>';
   }
 
+  // Hadiah disimpan dulu di HP (outbox), baru dikirim. Kalau sinyal putus / halaman
+  // ditutup sebelum terkirim, akan dikirim ulang otomatis saat online lagi.
+  const SPIN_OUTBOX_KEY = "ffkipas_spin_outbox";
+
+  // Notif pemain lain: kunci hadiah sendiri (tidak di-toast), yang sudah terlihat, dan item "baru"
+  const spinOwnKeys = new Set();
+  const spinSeenKeys = new Set();
+  let spinFeedPrimed = false;
+  let spinFreshKey = "";
+  let spinLastToast = 0;
+
+  function getSpinOutbox() {
+    try {
+      const a = JSON.parse(localStorage.getItem(SPIN_OUTBOX_KEY) || "[]");
+      return Array.isArray(a) ? a : [];
+    } catch (e) { return []; }
+  }
+  function setSpinOutbox(list) {
+    try { localStorage.setItem(SPIN_OUTBOX_KEY, JSON.stringify(list.slice(-20))); } catch (e) {}
+  }
+  function removeFromSpinOutbox(key) {
+    setSpinOutbox(getSpinOutbox().filter((x) => x && x.key !== key));
+  }
+
+  function getSpinDb() {
+    try {
+      return (typeof gcDb !== "undefined" && gcDb) ? gcDb
+        : (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length
+          ? firebase.database() : null);
+    } catch (e) { return null; }
+  }
+
+  function trimSpinFeed(ref) {
+    ref.orderByChild("ts").once("value").then((snap) => {
+      const rows = [];
+      snap.forEach((c) => rows.push({ key: c.key, ts: (c.val() || {}).ts || 0 }));
+      if (rows.length > SPIN_FEED_MAX) {
+        rows.sort((a, b) => a.ts - b.ts);
+        rows.slice(0, rows.length - SPIN_FEED_MAX).forEach((r) => {
+          ref.child(r.key).remove().catch(() => {});
+        });
+      }
+    }).catch(() => {});
+  }
+
+  function sendSpinItem(item) {
+    const db = getSpinDb();
+    if (!db || !item || !item.key || !item.payload) return Promise.resolve(false);
+    const ref = db.ref(SPIN_FEED_PATH);
+    return ref.child(item.key).set(item.payload).then(() => {
+      removeFromSpinOutbox(item.key);
+      trimSpinFeed(ref);
+      return true;
+    }).catch((err) => {
+      console.warn("Hadiah gacha gagal dikirim ke feed:", err && err.message ? err.message : err);
+      spinFeedStatus("Kirim gagal: " + ((err && (err.code || err.message)) || "unknown"));
+      return false;
+    });
+  }
+
+  let spinOutboxBusy = false;
+  function flushSpinOutbox() {
+    if (spinOutboxBusy) return;
+    const list = getSpinOutbox();
+    if (!list.length || !getSpinDb()) return;
+    spinOutboxBusy = true;
+    const now = Date.now();
+    Promise.all(list.map((it) => {
+      // kirim ulang: kalau sudah lama, pakai waktu sekarang supaya masuk daftar "live"
+      if (it && it.payload && now - (it.payload.ts || 0) > 10 * 60 * 1000) it.payload.ts = now;
+      return sendSpinItem(it);
+    })).then(() => { spinOutboxBusy = false; }, () => { spinOutboxBusy = false; });
+  }
+
   function publishSpinWin(prize) {
     if (!prize || prize.id === "miss") return;
     const payload = {
@@ -6220,26 +6294,18 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       ts: Date.now()
     };
     try {
-      const db = (typeof gcDb !== "undefined" && gcDb) ? gcDb
-        : (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length
-          ? firebase.database() : null);
-      if (!db) { spinFeedStatus("Firebase belum siap, hadiah tidak terkirim"); return; }
-      const ref = db.ref(SPIN_FEED_PATH);
-      ref.push(payload).then(() => {
-        ref.orderByChild("ts").once("value").then((snap) => {
-          const rows = [];
-          snap.forEach((c) => rows.push({ key: c.key, ts: (c.val() || {}).ts || 0 }));
-          if (rows.length > SPIN_FEED_MAX) {
-            rows.sort((a, b) => a.ts - b.ts);
-            rows.slice(0, rows.length - SPIN_FEED_MAX).forEach((r) => {
-              ref.child(r.key).remove().catch(() => {});
-            });
-          }
-        }).catch(() => {});
-      }).catch((err) => {
-        console.warn("Hadiah gacha gagal dikirim ke feed:", err && err.message ? err.message : err);
-        spinFeedStatus("Kirim gagal: " + ((err && (err.code || err.message)) || "unknown"));
-      });
+      const db = getSpinDb();
+      const key = db
+        ? db.ref(SPIN_FEED_PATH).push().key
+        : "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      const item = { key: key, payload: payload };
+      spinOwnKeys.add(key);
+      setSpinOutbox(getSpinOutbox().concat([item]));
+      if (!db) {
+        spinFeedStatus("Firebase belum siap, hadiah disimpan & dikirim ulang");
+        return;
+      }
+      sendSpinItem(item);
     } catch (e) {}
   }
 
@@ -6252,7 +6318,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       return;
     }
     const parts = list.map((x) => {
-      const vip = x.id === "vip" ? " vip" : "";
+      const vip = (x.id === "vip" ? " vip" : "") + (x.__key && x.__key === spinFreshKey ? " fresh" : "");
       const name = String(x.name || "Player").slice(0, 16).replace(/</g, "&lt;");
       const prize = String(x.prize || "Hadiah").slice(0, 28).replace(/</g, "&lt;");
       return '<span class="spin-ticker-item' + vip + '"><span class="st-name">' + name +
@@ -6278,10 +6344,35 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         return;
       }
       spinFeedStarted = true;
+      flushSpinOutbox();
       db.ref(SPIN_FEED_PATH).orderByChild("ts").limitToLast(SPIN_FEED_MAX).on("value", (snap) => {
         const rows = [];
-        snap.forEach((c) => rows.push(c.val() || {}));
+        snap.forEach((c) => rows.push(Object.assign({}, c.val() || {}, { __key: c.key })));
         rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+
+        // cari hadiah baru dari pemain lain (bukan snapshot pertama, bukan punya sendiri)
+        const now = Date.now();
+        const fresh = [];
+        rows.forEach((r) => {
+          if (spinSeenKeys.has(r.__key)) return;
+          spinSeenKeys.add(r.__key);
+          if (!spinFeedPrimed) return;
+          if (spinOwnKeys.has(r.__key)) return;
+          if (now - (r.ts || 0) > 90 * 1000) return;
+          fresh.push(r);
+        });
+        spinFeedPrimed = true;
+        if (fresh.length) {
+          const latest = fresh[0];
+          spinFreshKey = latest.__key;
+          const resultOpen = (document.getElementById("spinResult") || {}).hidden === false;
+          const refillOpen = (document.getElementById("spinRefillModal") || {}).hidden === false;
+          if (!resultOpen && !refillOpen && now - spinLastToast > 2000 && typeof showToast === "function") {
+            spinLastToast = now;
+            const who = String(latest.name || "Player").slice(0, 16);
+            showToast("🎁 " + who + " menang gacha!", "Dapat " + String(latest.prize || "hadiah").slice(0, 28));
+          }
+        }
         renderSpinFeed(rows);
       }, (err) => {
         // biasanya karena Rules Firebase belum mengizinkan path ffkipas_spin_feed
@@ -6474,6 +6565,10 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
 
   function boot() {
     try { initSpinFeedRealtime(); } catch (e) {}
+    try {
+      window.addEventListener("online", flushSpinOutbox);
+      setInterval(flushSpinOutbox, 15000);
+    } catch (e) {}
     const canvas = document.getElementById("spinCanvas");
     if (!canvas) return;
     drawWheel(0);
