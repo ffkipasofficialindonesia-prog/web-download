@@ -6241,6 +6241,23 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     setSpinOutbox(getSpinOutbox().filter((x) => x && x.key !== key));
   }
 
+  // Waktu server: urutan notif memakai jam server, bukan jam HP (jam HP salah bisa bikin hadiah "hilang")
+  let spinTimeOffset = 0;
+  function spinNow() { return Date.now() + spinTimeOffset; }
+
+  // Peringatan kirim gagal: tampil di popup hasil + toast, walau kotak notif sudah berisi data lama
+  let spinWarnAt = 0;
+  function spinFeedWarn(code) {
+    const msg = document.getElementById("spinResultMsg");
+    if (msg && msg.textContent.indexOf("Notif gagal") === -1) {
+      msg.textContent += " ⚠ Notif gagal terkirim (" + code + ").";
+    }
+    const t = Date.now();
+    if (t - spinWarnAt < 4000) return;
+    spinWarnAt = t;
+    if (typeof showToast === "function") showToast("Notif gagal terkirim", String(code), "warning");
+  }
+
   function getSpinDb() {
     try {
       return (typeof gcDb !== "undefined" && gcDb) ? gcDb
@@ -6272,7 +6289,9 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       return true;
     }).catch((err) => {
       console.warn("Hadiah gacha gagal dikirim ke feed:", err && err.message ? err.message : err);
-      spinFeedStatus("Kirim gagal: " + ((err && (err.code || err.message)) || "unknown"));
+      const code = (err && (err.code || err.message)) || "unknown";
+      spinFeedStatus("Kirim gagal: " + code);
+      spinFeedWarn(code);
       return false;
     });
   }
@@ -6283,7 +6302,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     const list = getSpinOutbox();
     if (!list.length || !getSpinDb()) return;
     spinOutboxBusy = true;
-    const now = Date.now();
+    const now = spinNow();
     Promise.all(list.map((it) => {
       // kirim ulang: kalau sudah lama, pakai waktu sekarang supaya masuk daftar "live"
       if (it && it.payload && now - (it.payload.ts || 0) > 10 * 60 * 1000) it.payload.ts = now;
@@ -6298,7 +6317,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       prize: prize.label || "Hadiah",
       id: prize.id || "",
       amount: Number(prize.amount) || 0,
-      ts: Date.now()
+      ts: spinNow()
     };
     try {
       const db = getSpinDb();
@@ -6351,6 +6370,9 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         return;
       }
       spinFeedStarted = true;
+      try {
+        db.ref(".info/serverTimeOffset").on("value", (s) => { spinTimeOffset = Number(s.val()) || 0; });
+      } catch (e) {}
       flushSpinOutbox();
       // Kalau 8 detik tidak ada balasan sama sekali dari Firebase (jaringan / DB tidak terjangkau)
       let spinFeedGotFirst = false;
@@ -6364,7 +6386,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
 
         // cari hadiah baru dari pemain lain (bukan snapshot pertama, bukan punya sendiri)
-        const now = Date.now();
+        const now = spinNow();
         const fresh = [];
         rows.forEach((r) => {
           if (spinSeenKeys.has(r.__key)) return;
