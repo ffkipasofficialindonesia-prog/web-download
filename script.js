@@ -5920,23 +5920,25 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
   const WA_CLAIM = "https://wa.me/6283138876438?text=" + encodeURIComponent(
     "Halo admin, saya menang SPIN FFKIPAS VIP. Mohon proses hadiahnya."
   );
-  // Tabel hadiah. weight = peluang relatif (total 10000, jadi 100 = 1%).
-  // Makin besar nominal, makin kecil weight-nya. Mau ubah peluang? Cukup ubah angka weight di sini.
-  // Urutan di roda sengaja diselang-seling; urutan tidak memengaruhi peluang.
+  // Link yang harus dilalui 3x untuk +1 spin (bisa diganti)
+  // weight tinggi = lebih sering. VIP sangat kecil.
   const PRIZES = [
-    { id: "vip",      label: "FFKIPAS VIP",     short: "VIP",      color: "#ff7b00", weight: 100,  icon: "👑", amount: 0 },
-    { id: "saldo1k",  label: "Saldo Rp1.000",   short: "Rp1.000",  color: "#6b5416", weight: 2800, icon: "💰", amount: 1000 },
-    { id: "saldo10k", label: "Saldo Rp10.000",  short: "Rp10.000", color: "#f0a800", weight: 300,  icon: "💰", amount: 10000 },
-    { id: "saldo2k",  label: "Saldo Rp2.000",   short: "Rp2.000",  color: "#7d6218", weight: 2000, icon: "💰", amount: 2000 },
-    { id: "saldo20k", label: "Saldo Rp20.000",  short: "Rp20.000", color: "#ffb100", weight: 150,  icon: "💰", amount: 20000 },
-    { id: "saldo3k",  label: "Saldo Rp3.000",   short: "Rp3.000",  color: "#8f7019", weight: 1500, icon: "💰", amount: 3000 },
-    { id: "miss",     label: "Belum beruntung", short: "Zonk",     color: "#3a3a3a", weight: 1000, icon: "😅", amount: 0 },
-    { id: "saldo4k",  label: "Saldo Rp4.000",   short: "Rp4.000",  color: "#a07f1c", weight: 1000, icon: "💰", amount: 4000 },
-    { id: "saldo8k",  label: "Saldo Rp8.000",   short: "Rp8.000",  color: "#e09800", weight: 450,  icon: "💰", amount: 8000 },
-    { id: "saldo5k",  label: "Saldo Rp5.000",   short: "Rp5.000",  color: "#b58d1f", weight: 700,  icon: "💰", amount: 5000 }
+    { id: "vip", label: "FFKIPAS VIP", color: "#ff7b00", weight: 10, icon: "👑", amount: 0 },
+    { id: "saldo2k", label: "Saldo Rp2.000", color: "#ffb100", weight: 8, icon: "💰", amount: 2000 },
+    { id: "saldo1k", label: "Saldo Rp1.000", color: "#e6a800", weight: 12, icon: "💰", amount: 1000 },
+    { id: "saldo500", label: "Saldo Rp500", color: "#d4a017", weight: 15, icon: "🪙", amount: 500 },
+    { id: "saldo400", label: "Saldo Rp400", color: "#c9a227", weight: 15, icon: "🪙", amount: 400 },
+    { id: "saldo300", label: "Saldo Rp300", color: "#b8860b", weight: 15, icon: "🪙", amount: 300 },
+    { id: "saldo200", label: "Saldo Rp200", color: "#9a7b0a", weight: 15, icon: "🪙", amount: 200 },
+    { id: "saldo100", label: "Saldo Rp100", color: "#8a7010", weight: 20, icon: "🪙", amount: 100 },
+    { id: "saldo50", label: "Saldo Rp50", color: "#8a7520", weight: 80, icon: "🪙", amount: 50 },
+    { id: "saldo20", label: "Saldo Rp20", color: "#7a6a18", weight: 100, icon: "🪙", amount: 20 },
+    { id: "saldo10", label: "Saldo Rp10", color: "#6a5a12", weight: 120, icon: "🪙", amount: 10 },
+    { id: "saldo2", label: "Saldo Rp2", color: "#7a6518", weight: 2000, icon: "🪙", amount: 2 },
+    { id: "saldo1", label: "Saldo Rp1", color: "#6a5510", weight: 3000, icon: "🪙", amount: 1 },
+    { id: "miss", label: "Belum beruntung", color: "#3a3a3a", weight: 4590, icon: "😅", amount: 0 }
   ];
-  const SALDO_CLAIM_MIN = 500000;
-  const fmtRp = (n) => "Rp" + Number(n).toLocaleString("id-ID");
+  const SALDO_CLAIM_MIN = 10000;
   const SALDO_KEY = "ffkipas_spin_saldo";
   const MAX_DAY = 3;
   const STORAGE_KEY = "ffkipas_spin_day";
@@ -6006,23 +6008,14 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     return Math.max(0, maxSpins() - (st.used || 0));
   }
 
-// Paket tambah putaran: buka N link -> dapat sekian putaran (6 link per putaran)
-  const PACKS = [
-    { links: 6,  spins: 1 },
-    { links: 12, spins: 2 },
-    { links: 18, spins: 3 }
-  ];
-
   function getRefillProgress() {
-    const fresh = { day: todayKey(), pack: 0, step: 0 };
     try {
-      const o = JSON.parse(localStorage.getItem(REFILL_KEY) || "null");
-      if (!o || o.day !== todayKey()) return fresh;
-      const pack = Math.min(PACKS.length - 1, Math.max(0, Number(o.pack) || 0));
-      const step = Math.min(PACKS[pack].links - 1, Math.max(0, Number(o.step) || 0));
-      return { day: o.day, pack: pack, step: step };
+      const raw = localStorage.getItem(REFILL_KEY);
+      const o = raw ? JSON.parse(raw) : null;
+      if (!o || o.day !== todayKey()) return { day: todayKey(), step: 0 };
+      return { day: o.day, step: Math.min(5, Number(o.step) || 0) };
     } catch (e) {
-      return fresh;
+      return { day: todayKey(), step: 0 };
     }
   }
 
@@ -6114,8 +6107,8 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#fff";
-      ctx.font = "bold 13px sans-serif";
-      let text = PRIZES[i].short || PRIZES[i].label;
+      ctx.font = "bold 11px sans-serif";
+      let text = PRIZES[i].label;
       if (text.length > 11) text = text.slice(0, 10) + "…";
       ctx.fillText(text, r * 0.62, 0);
       ctx.restore();
@@ -6144,7 +6137,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     if (spinning) return;
     if (remaining() <= 0) {
       if (typeof showToast === "function") {
-        showToast("Habis", "Putaran habis. Tambah putaran lewat tombol di bawah.", "warning");
+        showToast("Habis", "Putaran habis. Isi ulang lewat 3 link di bawah.", "warning");
       }
       updateChanceUI();
       return;
@@ -6223,7 +6216,6 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
 
   // Notif pemain lain: kunci hadiah sendiri (tidak di-toast), yang sudah terlihat, dan item "baru"
   const spinOwnKeys = new Set();
-  const spinSendState = {}; // key -> "sending" | "ok" | "fail"
   const spinSeenKeys = new Set();
   let spinFeedPrimed = false;
   let spinFreshKey = "";
@@ -6240,23 +6232,6 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
   }
   function removeFromSpinOutbox(key) {
     setSpinOutbox(getSpinOutbox().filter((x) => x && x.key !== key));
-  }
-
-  // Waktu server: urutan notif memakai jam server, bukan jam HP (jam HP salah bisa bikin hadiah "hilang")
-  let spinTimeOffset = 0;
-  function spinNow() { return Date.now() + spinTimeOffset; }
-
-  // Peringatan kirim gagal: tampil di popup hasil + toast, walau kotak notif sudah berisi data lama
-  let spinWarnAt = 0;
-  function spinFeedWarn(code) {
-    const msg = document.getElementById("spinResultMsg");
-    if (msg && msg.textContent.indexOf("Notif gagal") === -1) {
-      msg.textContent += " ⚠ Notif gagal terkirim (" + code + ").";
-    }
-    const t = Date.now();
-    if (t - spinWarnAt < 4000) return;
-    spinWarnAt = t;
-    if (typeof showToast === "function") showToast("Notif gagal terkirim", String(code), "warning");
   }
 
   function getSpinDb() {
@@ -6287,16 +6262,10 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     return ref.child(item.key).set(item.payload).then(() => {
       removeFromSpinOutbox(item.key);
       trimSpinFeed(ref);
-      spinSendState[item.key] = "ok";
-      try { renderSpinFeed(spinLastRows); } catch (e) {}
       return true;
     }).catch((err) => {
       console.warn("Hadiah gacha gagal dikirim ke feed:", err && err.message ? err.message : err);
-      const code = (err && (err.code || err.message)) || "unknown";
-      spinFeedStatus("Kirim gagal: " + code);
-      spinFeedWarn(code);
-      spinSendState[item.key] = "fail";
-      try { renderSpinFeed(spinLastRows); } catch (e) {}
+      spinFeedStatus("Kirim gagal: " + ((err && (err.code || err.message)) || "unknown"));
       return false;
     });
   }
@@ -6307,7 +6276,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     const list = getSpinOutbox();
     if (!list.length || !getSpinDb()) return;
     spinOutboxBusy = true;
-    const now = spinNow();
+    const now = Date.now();
     Promise.all(list.map((it) => {
       // kirim ulang: kalau sudah lama, pakai waktu sekarang supaya masuk daftar "live"
       if (it && it.payload && now - (it.payload.ts || 0) > 10 * 60 * 1000) it.payload.ts = now;
@@ -6322,7 +6291,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       prize: prize.label || "Hadiah",
       id: prize.id || "",
       amount: Number(prize.amount) || 0,
-      ts: spinNow()
+      ts: Date.now()
     };
     try {
       const db = getSpinDb();
@@ -6331,9 +6300,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         : "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
       const item = { key: key, payload: payload };
       spinOwnKeys.add(key);
-      spinSendState[key] = "sending";
       setSpinOutbox(getSpinOutbox().concat([item]));
-      try { renderSpinFeed(spinLastRows); } catch (e) {}
       if (!db) {
         spinFeedStatus("Firebase belum siap, hadiah disimpan & dikirim ulang");
         return;
@@ -6342,39 +6309,20 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     } catch (e) {}
   }
 
-  // Hanya hadiah yang masih ada di roda sekarang yang boleh tampil (entri lama / dari versi lama dibuang)
-  function spinPrizeById(id) {
-    return PRIZES.find((p) => p.id === id && p.id !== "miss") || null;
-  }
-
-  let spinLastRows = [];
   function renderSpinFeed(list) {
     const track = document.getElementById("spinTickerTrack");
     if (!track) return;
     track.style.animation = "";
-    spinLastRows = list || [];
-    // hadiah milik sendiri (sesi ini) yang belum terkonfirmasi server tetap ditampilkan
-    const have = new Set(spinLastRows.map((r) => r.__key));
-    const pending = getSpinOutbox()
-      .filter((it) => it && it.key && it.payload && spinOwnKeys.has(it.key) && !have.has(it.key))
-      .map((it) => Object.assign({}, it.payload, { __key: it.key }));
-    const rows = spinLastRows.concat(pending)
-      .filter((x) => spinPrizeById(x.id))
-      .sort((a, b) => (b.ts || 0) - (a.ts || 0));
-    if (!rows.length) {
+    if (!list || !list.length) {
       track.innerHTML = '<span class="spin-ticker-placeholder">Live hadiah gacha akan muncul di sini…</span>';
       return;
     }
-    const parts = rows.map((x) => {
-      const pz = spinPrizeById(x.id);
-      const mine = spinOwnKeys.has(x.__key);
+    const parts = list.map((x) => {
       const vip = (x.id === "vip" ? " vip" : "") + (x.__key && x.__key === spinFreshKey ? " fresh" : "");
       const name = String(x.name || "Player").slice(0, 16).replace(/</g, "&lt;");
-      return '<span class="spin-ticker-item' + vip + '"><span class="st-name">' + name + '</span>' +
-        (mine ? (spinSendState[x.__key] === "ok" ? '<span class="st-me">(kamu)</span>'
-          : spinSendState[x.__key] === "fail" ? '<span class="st-me bad">(gagal kirim)</span>'
-          : '<span class="st-me wait">(mengirim…)</span>') : '') +
-        ' dapat <span class="st-prize">' + pz.label + '</span></span>';
+      const prize = String(x.prize || "Hadiah").slice(0, 28).replace(/</g, "&lt;");
+      return '<span class="spin-ticker-item' + vip + '"><span class="st-name">' + name +
+        '</span> dapat <span class="st-prize">' + prize + '</span></span>';
     });
     const joined = parts.join('<span class="st-sep">•</span>');
     track.innerHTML = joined + '<span class="st-sep">•</span>' + joined;
@@ -6396,23 +6344,14 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         return;
       }
       spinFeedStarted = true;
-      try {
-        db.ref(".info/serverTimeOffset").on("value", (s) => { spinTimeOffset = Number(s.val()) || 0; });
-      } catch (e) {}
       flushSpinOutbox();
-      // Kalau 8 detik tidak ada balasan sama sekali dari Firebase (jaringan / DB tidak terjangkau)
-      let spinFeedGotFirst = false;
-      setTimeout(() => {
-        if (!spinFeedGotFirst) spinFeedStatus("Server notif tidak merespon (cek koneksi / Rules Firebase)");
-      }, 8000);
       db.ref(SPIN_FEED_PATH).orderByChild("ts").limitToLast(SPIN_FEED_MAX).on("value", (snap) => {
-        spinFeedGotFirst = true;
         const rows = [];
         snap.forEach((c) => rows.push(Object.assign({}, c.val() || {}, { __key: c.key })));
         rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
 
         // cari hadiah baru dari pemain lain (bukan snapshot pertama, bukan punya sendiri)
-        const now = spinNow();
+        const now = Date.now();
         const fresh = [];
         rows.forEach((r) => {
           if (spinSeenKeys.has(r.__key)) return;
@@ -6420,7 +6359,6 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
           if (!spinFeedPrimed) return;
           if (spinOwnKeys.has(r.__key)) return;
           if (now - (r.ts || 0) > 90 * 1000) return;
-          if (!spinPrizeById(r.id)) return;
           fresh.push(r);
         });
         spinFeedPrimed = true;
@@ -6432,12 +6370,11 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
           if (!resultOpen && !refillOpen && now - spinLastToast > 2000 && typeof showToast === "function") {
             spinLastToast = now;
             const who = String(latest.name || "Player").slice(0, 16);
-            showToast("🎁 " + who + " menang gacha!", "Dapat " + spinPrizeById(latest.id).label);
+            showToast("🎁 " + who + " menang gacha!", "Dapat " + String(latest.prize || "hadiah").slice(0, 28));
           }
         }
         renderSpinFeed(rows);
       }, (err) => {
-        spinFeedGotFirst = true; // sudah ada balasan (error), jangan ditimpa pesan "tidak merespon"
         // biasanya karena Rules Firebase belum mengizinkan path ffkipas_spin_feed
         console.warn("Feed gacha gagal dibaca:", err && err.message ? err.message : err);
         spinFeedStatus("Baca feed gagal: " + ((err && (err.code || err.message)) || "unknown"));
@@ -6473,7 +6410,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       }
     } else if (prize.id === "miss" || amt <= 0) {
       if (title) title.textContent = "Belum beruntung";
-      if (msg) msg.textContent = "Coba putar lagi. Saldo terkumpul: Rp" + total.toLocaleString("id-ID") + " (klaim min " + fmtRp(SALDO_CLAIM_MIN) + ").";
+      if (msg) msg.textContent = "Coba putar lagi. Saldo terkumpul: Rp" + total.toLocaleString("id-ID") + " (klaim min Rp10.000).";
       if (claim) {
         claim.hidden = true;
         claim.classList.add("is-hidden");
@@ -6495,7 +6432,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
           claim.dataset.mode = "saldo";
         }
       } else {
-        if (msg) msg.textContent = "Masuk ke saldo. Total: Rp" + total.toLocaleString("id-ID") + " / " + fmtRp(SALDO_CLAIM_MIN) + ". Belum bisa klaim.";
+        if (msg) msg.textContent = "Masuk ke saldo. Total: Rp" + total.toLocaleString("id-ID") + " / Rp10.000. Belum bisa klaim.";
         if (claim) {
           claim.hidden = true;
           claim.classList.add("is-hidden");
@@ -6535,52 +6472,52 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     } catch (e) {}
   }
 
-  function renderRefill() {
+  function renderStepButtons() {
     const prog = getRefillProgress();
-    const pack = PACKS[prog.pack];
-    const started = prog.step > 0;
-
-    document.querySelectorAll("#spinPacks .spin-pack").forEach((b) => {
-      const i = Number(b.dataset.pack);
-      b.classList.toggle("active", i === prog.pack);
-      b.disabled = started && i !== prog.pack;
-    });
-
-    const linkBtn = document.getElementById("spinLinkBtn");
-    if (linkBtn) linkBtn.textContent = "BUKA LINK " + (prog.step + 1) + "/" + pack.links;
-
-    const dots = document.getElementById("spinDots");
-    if (dots) {
-      let html = "";
-      for (let i = 0; i < pack.links; i++) {
-        const cls = i < prog.step ? " done" : i === prog.step ? " now" : "";
-        html += '<span class="spin-dot' + cls + '">' + (i < prog.step ? "✓" : i + 1) + "</span>";
+    const step = Math.min(5, prog.step || 0);
+    for (let i = 1; i <= 5; i++) {
+      const btn = document.getElementById("spinStep" + i);
+      if (!btn) continue;
+      const wasDone = btn.classList.contains("done");
+      btn.classList.remove("active", "done", "locked", "just-done", "unlock-pop");
+      btn.disabled = false;
+      const status = btn.querySelector(".spin-step-status");
+      const small = btn.querySelector(".spin-step-text small");
+      if (i <= step) {
+        btn.classList.add("done");
+        if (!wasDone) btn.classList.add("just-done");
+        btn.disabled = true;
+        if (status) status.innerHTML = '<i class="fa-solid fa-check"></i>';
+        if (small) small.textContent = "Selesai";
+      } else if (i === step + 1) {
+        btn.classList.add("active", "unlock-pop");
+        btn.disabled = false;
+        if (status) status.textContent = "Buka";
+        if (small) small.textContent = "Klik untuk lanjut";
+      } else {
+        btn.classList.add("locked");
+        btn.disabled = true;
+        if (status) status.innerHTML = '<i class="fa-solid fa-lock"></i>';
+        if (small) small.textContent = "Selesaikan langkah " + (i - 1) + " dulu";
       }
-      dots.innerHTML = html;
     }
-
-    const note = document.getElementById("spinPackNote");
-    if (note) {
-      note.textContent = started
-        ? "Selesaikan paket ini dulu sebelum ganti paket."
-        : "Pilih paket, lalu buka link satu per satu.";
-    }
-
     const foot = document.getElementById("spinRefillFoot");
     if (foot) {
-      foot.textContent = "Progress: " + prog.step + "/" + pack.links + " link · hadiah +" + pack.spins + " putaran";
+      foot.textContent = "Progress: " + step + "/5";
       foot.classList.remove("foot-pulse");
       void foot.offsetWidth;
       foot.classList.add("foot-pulse");
     }
+    // progress bar if ada
     const bar = document.getElementById("spinRefillBarFill");
-    if (bar) bar.style.width = (prog.step / pack.links * 100) + "%";
+    if (bar) bar.style.width = (step / 5 * 100) + "%";
   }
 
   function openRefillModal() {
     const modal = document.getElementById("spinRefillModal");
     if (!modal) return;
-    renderRefill();
+    // jangan reset progress kalau sedang jalan
+    renderStepButtons();
     modal.hidden = false;
     document.body.style.overflow = "hidden";
   }
@@ -6593,45 +6530,36 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     }
   }
 
-  function onPackClick(i) {
+  function onStepClick(stepNum) {
     const prog = getRefillProgress();
-    if (prog.step > 0) return; // paket yang sedang jalan harus selesai dulu
-    if (i < 0 || i >= PACKS.length) return;
-    setRefillProgress({ day: todayKey(), pack: i, step: 0 });
-    renderRefill();
-  }
+    const current = prog.step || 0;
+    // hanya langkah berikutnya yang boleh
+    if (stepNum !== current + 1) return;
+    if (stepNum < 1 || stepNum > 5) return;
 
-  let linkBusy = false;
-  function onLinkClick() {
-    if (linkBusy) return;
-    linkBusy = true;
-    setTimeout(() => { linkBusy = false; }, 800); // cegah dobel tap = 2 link
-
-    const prog = getRefillProgress();
-    const pack = PACKS[prog.pack];
     openSmartlinkOnce();
 
-    const step = prog.step + 1;
-    if (step >= pack.links) {
+    prog.step = stepNum;
+    prog.day = todayKey();
+    setRefillProgress(prog);
+    renderStepButtons();
+
+    if (stepNum >= 5) {
+      // complete → +1 otomatis
       const st = getSpinState();
-      st.bonus = (st.bonus || 0) + pack.spins;
+      st.bonus = (st.bonus || 0) + 1;
       st.day = todayKey();
       setSpinState(st);
-      setRefillProgress({ day: todayKey(), pack: prog.pack, step: 0 });
-      renderRefill();
+      setRefillProgress({ day: todayKey(), step: 0 });
       if (typeof showToast === "function") {
-        showToast("Complete!", "+" + pack.spins + " putaran ditambahkan. Silakan putar!");
+        showToast("Complete!", "+1 putaran ditambahkan. Silakan putar!");
       }
       setTimeout(() => {
         closeRefillModal();
         updateChanceUI();
       }, 600);
-    } else {
-      setRefillProgress({ day: todayKey(), pack: prog.pack, step: step });
-      renderRefill();
-      if (typeof showToast === "function") {
-        showToast("Link " + step + "/" + pack.links, "Lanjut buka link berikutnya.");
-      }
+    } else if (typeof showToast === "function") {
+      showToast("Unlock " + stepNum + "/5", "Lanjut ke langkah berikutnya.");
     }
   }
 
@@ -6660,7 +6588,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         }
         if (mode === "saldo") {
           if (getSaldoTotal() < SALDO_CLAIM_MIN) {
-            if (typeof showToast === "function") showToast("Belum cukup", "Kumpulkan minimal " + fmtRp(SALDO_CLAIM_MIN) + " dulu", "warning");
+            if (typeof showToast === "function") showToast("Belum cukup", "Kumpulkan minimal Rp10.000 dulu", "warning");
             return;
           }
           const nominal = getSaldoTotal();
@@ -6683,11 +6611,12 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         if (e.target === modal) closeRefillModal();
       });
     }
-    document.querySelectorAll("#spinPacks .spin-pack").forEach((b) => {
-      b.addEventListener("click", () => onPackClick(Number(b.dataset.pack)));
-    });
-    const linkBtn = document.getElementById("spinLinkBtn");
-    if (linkBtn) linkBtn.addEventListener("click", onLinkClick);
+    for (let i = 1; i <= 5; i++) {
+      const sb = document.getElementById("spinStep" + i);
+      if (sb) {
+        sb.addEventListener("click", () => onStepClick(i));
+      }
+    }
     window.addEventListener("resize", () => drawWheel(currentRot));
   }
 

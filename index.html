@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Oxanium:wght@500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link href="style.css?v=20261004spin29" rel="stylesheet"/>
+<link href="style.css?v=20261003spin23" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
@@ -52,7 +52,7 @@
 <div class="spin-ticker-wrap" id="spinTickerWrap">
   <div class="spin-ticker" id="spinTicker" aria-live="polite">
     <div class="spin-ticker-track" id="spinTickerTrack">
-      <span class="spin-ticker-placeholder">Menyambung ke server notif…</span>
+      <span class="spin-ticker-placeholder">daftar player hoki</span>
     </div>
   </div>
 </div>
@@ -252,18 +252,19 @@
     <div class="spin-side">
       <div class="spin-prizes">
         <div class="spin-prize main"><i class="fa-solid fa-crown"></i> <span>FFKIPAS VIP</span> <small>Hadiah Utama</small></div>
-        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp20k · 10k · 8k · 5k</span></div>
-        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp4k · 3k · 2k · 1k</span></div>
+        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp2.000 · 1.000 · 500 · 400 · 300</span></div>
+        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp200 · 100 · 50 · 20 · 10</span></div>
+        <div class="spin-prize"><i class="fa-solid fa-coins"></i> <span>Rp2 · Rp1</span></div>
         <div class="spin-prize miss"><i class="fa-solid fa-xmark"></i> <span>Belum beruntung</span></div>
       </div>
       <p class="spin-chance" id="spinChance">Sisa putaran: <strong>3</strong></p>
-      <p class="spin-saldo-total" id="spinSaldoTotal">Saldo terkumpul: <strong>Rp0</strong> / Rp500.000</p>
+      <p class="spin-saldo-total" id="spinSaldoTotal">Saldo terkumpul: <strong>Rp0</strong> / Rp10.000</p>
       <button type="button" class="buy-btn" id="spinBtn">PUTAR SEKARANG</button>
             <div class="spin-refill" id="spinRefillWrap" hidden>
         <p class="spin-refill-hint">Yuk tambah putaran dibawah ini!</p>
-        <button type="button" class="buy-btn" id="spinRefillOpenBtn">TAMBAH PUTARAN</button>
+        <button type="button" class="buy-btn" id="spinRefillOpenBtn">TAMBAH 1 PUTARAN</button>
       </div>
-<p class="spin-note">Saldo dikumpulkan dulu (min Rp500.000 baru bisa klaim/WD). VIP klaim langsung ke admin.</p>
+<p class="spin-note">Saldo dikumpulkan dulu (min Rp10.000 baru bisa klaim). VIP klaim langsung ke admin.</p>
     </div>
   </div>
   <div class="spin-result" id="spinResult" hidden>
@@ -943,27 +944,61 @@
 
 <!-- Social Bar extra -->
 <script src="https://pl29896662.effectivecpmnetwork.com/20/06/c7/2006c7c18b1bd25a644a2f8799d58457.js"></script>
-<script src="script.js?v=20261004spin29"></script>
+<script src="script.js?v=20261003spin23"></script>
 
-<!-- SPIN: PAKET TAMBAH PUTARAN -->
+<!-- SPIN REFILL STEPS (seperti verifyuid / unlock berurutan) -->
 <div class="spin-refill-modal" id="spinRefillModal" hidden>
   <div class="spin-refill-panel">
     <button type="button" class="spin-refill-x" id="spinRefillClose" aria-label="Tutup">×</button>
     <div class="spin-refill-head">
       <i class="fa-solid fa-unlock-keyhole"></i>
-      <h3>Tambah Putaran</h3>
-      <p>Buka link sesuai paket. Tiap klik membuka satu smartlink.</p>
+      <h3>Tambah 1 Putaran</h3>
+      <p>Selesaikan 5 langkah berurutan. Tiap langkah membuka smartlink.</p>
     </div>
-    <div class="spin-packs" id="spinPacks">
-      <button type="button" class="spin-pack active" data-pack="0"><strong>1 putaran</strong><small>6 link</small></button>
-      <button type="button" class="spin-pack" data-pack="1"><strong>2 putaran</strong><small>12 link</small></button>
-      <button type="button" class="spin-pack" data-pack="2"><strong>3 putaran</strong><small>18 link</small></button>
+    <div class="spin-refill-steps" id="spinRefillSteps">
+      <button type="button" class="spin-step-btn active" data-step="1" id="spinStep1">
+        <span class="spin-step-num">1</span>
+        <span class="spin-step-text">
+          <strong>Unlock 1</strong>
+          <small>Klik untuk lanjut</small>
+        </span>
+        <span class="spin-step-status">Buka</span>
+      </button>
+      <button type="button" class="spin-step-btn locked" data-step="2" id="spinStep2" disabled>
+        <span class="spin-step-num">2</span>
+        <span class="spin-step-text">
+          <strong>Unlock 2</strong>
+          <small>Selesaikan langkah 1 dulu</small>
+        </span>
+        <span class="spin-step-status"><i class="fa-solid fa-lock"></i></span>
+      </button>
+      <button type="button" class="spin-step-btn locked" data-step="3" id="spinStep3" disabled>
+        <span class="spin-step-num">3</span>
+        <span class="spin-step-text">
+          <strong>Unlock 3</strong>
+          <small>Selesaikan langkah 2 dulu</small>
+        </span>
+        <span class="spin-step-status"><i class="fa-solid fa-lock"></i></span>
+      </button>
+      <button type="button" class="spin-step-btn locked" data-step="4" id="spinStep4" disabled>
+        <span class="spin-step-num">4</span>
+        <span class="spin-step-text">
+          <strong>Unlock 4</strong>
+          <small>Selesaikan langkah 3 dulu</small>
+        </span>
+        <span class="spin-step-status"><i class="fa-solid fa-lock"></i></span>
+      </button>
+      <button type="button" class="spin-step-btn locked" data-step="5" id="spinStep5" disabled>
+        <span class="spin-step-num">5</span>
+        <span class="spin-step-text">
+          <strong>Unlock 5</strong>
+          <small>Selesaikan langkah 4 dulu</small>
+        </span>
+        <span class="spin-step-status"><i class="fa-solid fa-lock"></i></span>
+      </button>
     </div>
-    <button type="button" class="buy-btn" id="spinLinkBtn">BUKA LINK 1/6</button>
-    <div class="spin-dots" id="spinDots"></div>
     <div class="spin-refill-bar"><div class="spin-refill-bar-fill" id="spinRefillBarFill"></div></div>
-    <p class="spin-refill-foot" id="spinRefillFoot">Progress: 0/6 link</p>
-    <p class="spin-pack-note" id="spinPackNote"></p>
+    <p class="spin-refill-foot" id="spinRefillFoot">Progress: 0/5</p>
   </div>
 </div>
 
