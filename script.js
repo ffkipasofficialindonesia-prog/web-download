@@ -6352,7 +6352,13 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       }
       spinFeedStarted = true;
       flushSpinOutbox();
+      // Kalau 8 detik tidak ada balasan sama sekali dari Firebase (jaringan / DB tidak terjangkau)
+      let spinFeedGotFirst = false;
+      setTimeout(() => {
+        if (!spinFeedGotFirst) spinFeedStatus("Server notif tidak merespon (cek koneksi / Rules Firebase)");
+      }, 8000);
       db.ref(SPIN_FEED_PATH).orderByChild("ts").limitToLast(SPIN_FEED_MAX).on("value", (snap) => {
+        spinFeedGotFirst = true;
         const rows = [];
         snap.forEach((c) => rows.push(Object.assign({}, c.val() || {}, { __key: c.key })));
         rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
@@ -6382,6 +6388,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
         }
         renderSpinFeed(rows);
       }, (err) => {
+        spinFeedGotFirst = true; // sudah ada balasan (error), jangan ditimpa pesan "tidak merespon"
         // biasanya karena Rules Firebase belum mengizinkan path ffkipas_spin_feed
         console.warn("Feed gacha gagal dibaca:", err && err.message ? err.message : err);
         spinFeedStatus("Baca feed gagal: " + ((err && (err.code || err.message)) || "unknown"));
