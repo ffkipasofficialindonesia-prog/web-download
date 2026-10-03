@@ -6327,6 +6327,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
       const item = { key: key, payload: payload };
       spinOwnKeys.add(key);
       setSpinOutbox(getSpinOutbox().concat([item]));
+      try { renderSpinFeed(spinLastRows); } catch (e) {}
       if (!db) {
         spinFeedStatus("Firebase belum siap, hadiah disimpan & dikirim ulang");
         return;
@@ -6335,20 +6336,37 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     } catch (e) {}
   }
 
+  // Hanya hadiah yang masih ada di roda sekarang yang boleh tampil (entri lama / dari versi lama dibuang)
+  function spinPrizeById(id) {
+    return PRIZES.find((p) => p.id === id && p.id !== "miss") || null;
+  }
+
+  let spinLastRows = [];
   function renderSpinFeed(list) {
     const track = document.getElementById("spinTickerTrack");
     if (!track) return;
     track.style.animation = "";
-    if (!list || !list.length) {
+    spinLastRows = list || [];
+    // hadiah milik sendiri (sesi ini) yang belum terkonfirmasi server tetap ditampilkan
+    const have = new Set(spinLastRows.map((r) => r.__key));
+    const pending = getSpinOutbox()
+      .filter((it) => it && it.key && it.payload && spinOwnKeys.has(it.key) && !have.has(it.key))
+      .map((it) => Object.assign({}, it.payload, { __key: it.key }));
+    const rows = spinLastRows.concat(pending)
+      .filter((x) => spinPrizeById(x.id))
+      .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    if (!rows.length) {
       track.innerHTML = '<span class="spin-ticker-placeholder">Live hadiah gacha akan muncul di sini…</span>';
       return;
     }
-    const parts = list.map((x) => {
+    const parts = rows.map((x) => {
+      const pz = spinPrizeById(x.id);
+      const mine = spinOwnKeys.has(x.__key);
       const vip = (x.id === "vip" ? " vip" : "") + (x.__key && x.__key === spinFreshKey ? " fresh" : "");
       const name = String(x.name || "Player").slice(0, 16).replace(/</g, "&lt;");
-      const prize = String(x.prize || "Hadiah").slice(0, 28).replace(/</g, "&lt;");
-      return '<span class="spin-ticker-item' + vip + '"><span class="st-name">' + name +
-        '</span> dapat <span class="st-prize">' + prize + '</span></span>';
+      return '<span class="spin-ticker-item' + vip + '"><span class="st-name">' + name + '</span>' +
+        (mine ? '<span class="st-me">(kamu)</span>' : '') +
+        ' dapat <span class="st-prize">' + pz.label + '</span></span>';
     });
     const joined = parts.join('<span class="st-sep">•</span>');
     track.innerHTML = joined + '<span class="st-sep">•</span>' + joined;
@@ -6394,6 +6412,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
           if (!spinFeedPrimed) return;
           if (spinOwnKeys.has(r.__key)) return;
           if (now - (r.ts || 0) > 90 * 1000) return;
+          if (!spinPrizeById(r.id)) return;
           fresh.push(r);
         });
         spinFeedPrimed = true;
@@ -6405,7 +6424,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
           if (!resultOpen && !refillOpen && now - spinLastToast > 2000 && typeof showToast === "function") {
             spinLastToast = now;
             const who = String(latest.name || "Player").slice(0, 16);
-            showToast("🎁 " + who + " menang gacha!", "Dapat " + String(latest.prize || "hadiah").slice(0, 28));
+            showToast("🎁 " + who + " menang gacha!", "Dapat " + spinPrizeById(latest.id).label);
           }
         }
         renderSpinFeed(rows);

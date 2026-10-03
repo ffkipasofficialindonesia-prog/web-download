@@ -6307,3 +6307,5 @@ body.spa-spin #home { display: none; }
   color: #888;
   text-align: center;
 }
+
+.spin-ticker-item .st-me { color: #7dffa0; font-size: 10.5px; font-weight: 700; }
