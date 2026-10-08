@@ -5116,6 +5116,23 @@ function skinPlaceholder(name) {
   return "data:image/svg+xml," + encodeURIComponent(svg);
 }
 
+/** Nama outfit/weapon dari FFxAPI (string, bukan ID numerik). */
+function collectNamedGear(data) {
+  const profile = (data && data.ProfileInfo) || {};
+  const out = [];
+  const pushNames = (arr, label) => {
+    if (!Array.isArray(arr)) return;
+    arr.forEach((n) => {
+      const s = String(n || "").trim();
+      if (!s || /^default$/i.test(s)) return;
+      out.push({ id: s, name: s, label: label, urls: [skinPlaceholder(s)] });
+    });
+  };
+  pushNames(profile.OutfitNames, "Outfit");
+  pushNames(profile.WeaponNames, "Weapon");
+  return out;
+}
+
 function renderEquippedSkinsFast(data) {
   const box = document.getElementById("cekSkinsBox");
   const grid = document.getElementById("cekSkinsGrid");
@@ -5123,28 +5140,64 @@ function renderEquippedSkinsFast(data) {
   if (!box || !grid) return;
 
   const ids = collectEquippedIds(data);
-  if (!ids.length) {
+  const skills = collectEquippedSkills(data).map(resolveFfSkill).filter(Boolean);
+  const named = collectNamedGear(data);
+
+  // Skill dulu (ada icon), lalu item ID, lalu nama outfit/weapon dari FFxAPI
+  let html = "";
+  let total = 0;
+
+  skills.forEach((it) => {
+    total++;
+    const name = String(it.name).slice(0, 32);
+    const safe = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const first = (it.urls && it.urls[0]) || skinPlaceholder(name);
+    const ph = skinPlaceholder("?").replace(/'/g, "\\'");
+    html += `<div class="cek-skin-item" title="${safe}">
+      <img src="${first}" alt="${safe}" loading="eager" decoding="async"
+        onerror="this.onerror=null;this.src='${ph}'" />
+      <span>${safe}</span>
+      <small>Skill</small>
+    </div>`;
+  });
+
+  const seen = new Set();
+  ids.forEach((id) => {
+    if (seen.has(id)) return;
+    seen.add(id);
+    total++;
+    const safeId = String(id).replace(/[^0-9]/g, "");
+    const url = FF_SKIN_IMG + encodeURIComponent(safeId);
+    const ph = skinPlaceholder("?").replace(/'/g, "\\'");
+    html += `<div class="cek-skin-item" title="Item ${safeId}">
+      <img src="${url}" alt="Item ${safeId}" loading="eager" decoding="async" fetchpriority="high"
+        referrerpolicy="no-referrer"
+        onerror="this.onerror=null;this.src='${ph}'" />
+      <span>Item ${safeId}</span>
+      <small>Skin</small>
+    </div>`;
+  });
+
+  named.forEach((it) => {
+    total++;
+    const name = String(it.name).slice(0, 36);
+    const safe = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const ph = skinPlaceholder(name).replace(/'/g, "\\'");
+    html += `<div class="cek-skin-item" title="${safe}">
+      <img src="${ph}" alt="${safe}" loading="lazy" />
+      <span>${safe}</span>
+      <small>${it.label}</small>
+    </div>`;
+  });
+
+  if (!total) {
     box.hidden = true;
     grid.innerHTML = "";
     if (countEl) countEl.textContent = "";
     return;
   }
-
-  if (countEl) countEl.textContent = ids.length + " item";
-  const seen = new Set();
-  grid.innerHTML = ids.map((id) => {
-    if (seen.has(id)) return "";
-    seen.add(id);
-    const safeId = String(id).replace(/[^0-9]/g, "");
-    const url = FF_SKIN_IMG + encodeURIComponent(safeId);
-    return `<div class="cek-skin-item" title="Item ${safeId}">
-      <img src="${url}" alt="Item ${safeId}" loading="eager" decoding="async" fetchpriority="high"
-        referrerpolicy="no-referrer"
-        onerror="this.onerror=null;this.src='${skinPlaceholder("?").replace(/'/g, "\\'")}'" />
-      <span>Item ${safeId}</span>
-      <small>Skin</small>
-    </div>`;
-  }).join("");
+  if (countEl) countEl.textContent = total + " item";
+  grid.innerHTML = html;
   box.hidden = false;
 }
 
@@ -5156,7 +5209,8 @@ function renderEquippedSkins(data) {
 
   const items = collectEquippedIds(data).map(resolveFfItem).filter(Boolean);
   const skills = collectEquippedSkills(data).map(resolveFfSkill).filter(Boolean);
-  const all = items.concat(skills);
+  const named = collectNamedGear(data);
+  const all = skills.concat(items).concat(named);
   if (!all.length) {
     box.hidden = true;
     grid.innerHTML = "";
@@ -5166,13 +5220,13 @@ function renderEquippedSkins(data) {
   if (countEl) countEl.textContent = all.length + " item";
   grid.innerHTML = all
     .map((it) => {
-      const name = String(it.name).slice(0, 32);
+      const name = String(it.name).slice(0, 36);
       const safe = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
       const urls = (it.urls || []).slice();
       const first = urls.shift() || skinPlaceholder(name);
       const dataUrls = urls.join("|").replace(/"/g, "");
       const ph = skinPlaceholder("?").replace(/'/g, "\\'");
-      return `<div class="cek-skin-item" title="${safe} (${it.id})">
+      return `<div class="cek-skin-item" title="${safe}${it.id ? " (" + it.id + ")" : ""}">
       <img src="${first}" alt="${safe}" loading="lazy" data-fallbacks="${dataUrls}" data-ph="1"
         onerror="(function(img){var list=(img.getAttribute('data-fallbacks')||'').split('|').filter(Boolean);if(list.length){img.setAttribute('data-fallbacks',list.slice(1).join('|'));img.src=list[0];}else if(img.dataset.ph==='1'){img.dataset.ph='0';img.src='${ph}';}})(this)" />
       <span>${safe}</span>
@@ -5330,10 +5384,23 @@ function formatValue(value) {
   return stripEnumPrefix(value) || String(value);
 }
 
+/** Terima unix detik ATAU ISO string (FFxAPI pakai ISO). */
+function ffParseDate(ts) {
+  if (ts == null || ts === "") return null;
+  if (typeof ts === "string" && /[T\-]/.test(ts) && !/^\d+$/.test(ts)) {
+    const d = new Date(ts);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const n = Number(ts);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  const d = new Date(n < 1e12 ? n * 1000 : n);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 function ffTsToDate(ts) {
   try {
-    const d = new Date(Number(ts) * 1000);
-    if (isNaN(d.getTime())) return "Tidak diketahui";
+    const d = ffParseDate(ts);
+    if (!d) return "Tidak diketahui";
     return d.toLocaleString("id-ID", {
       day: "2-digit", month: "long", year: "numeric",
       hour: "2-digit", minute: "2-digit"
@@ -5345,9 +5412,9 @@ function ffTsToDate(ts) {
 
 function ffAccountAge(ts) {
   try {
-    const created = new Date(Number(ts) * 1000);
+    const created = ffParseDate(ts);
     const now = new Date();
-    if (isNaN(created.getTime())) return "Tidak diketahui";
+    if (!created) return "Tidak diketahui";
     let y = now.getFullYear() - created.getFullYear();
     let m = now.getMonth() - created.getMonth();
     let d = now.getDate() - created.getDate();
@@ -5382,13 +5449,119 @@ async function cekFfBan(uid) {
   }
 }
 
+/**
+ * FFxAPI (gratis, tanpa key) — pengganti Danger yang sudah mati.
+ * Response dinormalisasi ke bentuk mirip Danger biar UI lama tetap jalan.
+ */
 async function cekFfFullInfo(uid) {
-  const url = "https://danger-player-info.vercel.app/accinfo?uid=" + encodeURIComponent(uid) + "&key=DANGERxINFO";
-  const r = await fetch(url);
+  const url = "https://ffxinfo-ffx.ffxapis.workers.dev/ffinfo?uid=" + encodeURIComponent(uid);
+  const r = await fetch(url, {
+    method: "GET",
+    headers: { Accept: "application/json" }
+  });
   if (!r.ok) throw new Error("HTTP " + r.status);
-  const data = await r.json();
-  if (!data || !data.BasicInfo) throw new Error("ID tidak ditemukan");
-  return data;
+  const raw = await r.json();
+  if (!raw || raw.error || raw.msg === "id_not_found" || !raw.data) {
+    throw new Error("ID tidak ditemukan");
+  }
+  return normalizeFfxApi(raw.data, uid);
+}
+
+/** Ubah payload FFxAPI → struktur BasicInfo / SocialInfo / dll. */
+function normalizeFfxApi(d, fallbackUid) {
+  const idn = d.identity || {};
+  const prof = d.profile || {};
+  const acc = d.account_info || {};
+  const rank = d.rank_info || {};
+  const eq = d.equipped_items || {};
+  const pet = d.pet_details || {};
+  const guild = d.guild_info || {};
+  const leader = guild.leader || {};
+
+  const isoToUnix = (iso) => {
+    const dt = ffParseDate(iso);
+    return dt ? Math.floor(dt.getTime() / 1000) : null;
+  };
+
+  const skills = Array.isArray(eq.skills) ? eq.skills : [];
+
+  return {
+    BasicInfo: {
+      AccountId: String(idn.uid || fallbackUid || ""),
+      Nickname: idn.username || "—",
+      Region: idn.region || "—",
+      Level: prof.level != null ? Number(prof.level) : null,
+      Likes: prof.likes != null ? Number(prof.likes) : null,
+      Rank: rank.br_rank != null ? Number(rank.br_rank) : (rank.br_max_rank != null ? Number(rank.br_max_rank) : null),
+      MaxRank: rank.br_max_rank != null ? Number(rank.br_max_rank) : null,
+      RankingPoints: rank.br_rank_points != null ? Number(rank.br_rank_points) : null,
+      CsRank: rank.cs_rank != null ? Number(rank.cs_rank) : (rank.cs_max_rank != null ? Number(rank.cs_max_rank) : null),
+      CsMaxRank: rank.cs_max_rank != null ? Number(rank.cs_max_rank) : null,
+      CsRankingPoints: rank.cs_rank_points != null ? Number(rank.cs_rank_points) : null,
+      CreateAt: isoToUnix(prof.created_at),
+      LastLoginAt: isoToUnix(prof.last_login),
+      ReleaseVersion: acc.release_version || null,
+      SeasonId: acc.season_id != null ? Number(acc.season_id) : null,
+      AccountType: acc.account_type != null ? Number(acc.account_type) : null,
+      Exp: acc.exp != null ? Number(acc.exp) : null,
+      BadgeCnt: eq.bp_badges != null ? Number(eq.bp_badges) : null,
+      BadgeId: eq.bp_id != null ? Number(eq.bp_id) : null,
+      PrimeInfo: {
+        PrimeLevel: prof.prime_level != null ? Number(prof.prime_level) : 0
+      },
+      HasElitePass: !!leader.has_elite_pass
+    },
+    SocialInfo: {
+      Signature: (prof.bio || "").trim(),
+      Gender: acc.gender || "",
+      Language: acc.language || "",
+      ModePrefer: acc.mode_prefer || "",
+      RankShow: acc.rank_show || "",
+      TimeActive: acc.time_active || "",
+      TimeOnline: acc.time_online || ""
+    },
+    CreditScoreInfo: {
+      CreditScore: acc.credit_score != null ? Number(acc.credit_score) : null
+    },
+    ProfileInfo: {
+      EquippedSkills: skills,
+      equipedSkills: skills,
+      Clothes: [],
+      OutfitNames: Array.isArray(eq.outfit) ? eq.outfit : [],
+      WeaponNames: Array.isArray(eq.weapon) ? eq.weapon : []
+    },
+    PetInfo: {
+      Name: pet.name || pet.id || null,
+      Level: pet.level != null ? Number(pet.level) : null,
+      Exp: pet.exp != null ? Number(pet.exp) : null,
+      SkinId: null,
+      SelectedSkillId: pet.skill_id || null
+    },
+    ClanBasicInfo: guild.name
+      ? {
+          ClanName: guild.name,
+          ClanId: guild.id || null,
+          ClanLevel: guild.level != null ? Number(guild.level) : null,
+          MemberNum: guild.members && guild.members.current != null ? Number(guild.members.current) : null,
+          Capacity: guild.members && guild.members.capacity != null ? Number(guild.members.capacity) : null
+        }
+      : {},
+    CaptainBasicInfo: leader.uid
+      ? {
+          AccountId: String(leader.uid),
+          Nickname: leader.name || "—",
+          Level: leader.level != null ? Number(leader.level) : null,
+          Region: leader.region || null,
+          Likes: leader.likes != null ? Number(leader.likes) : null
+        }
+      : {},
+    _ffx: {
+      title: acc.title || null,
+      booyah_pass: acc.booyah_pass,
+      banner_image: prof.banner_image || null,
+      account_age_label: prof.account_age && prof.account_age.label ? prof.account_age.label : null
+    }
+  };
 }
 
 function setCekImg(el, file) {
