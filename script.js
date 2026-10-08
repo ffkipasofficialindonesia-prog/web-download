@@ -6113,7 +6113,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     { id: "miss", label: "Belum beruntung", color: "#3a3a3a", weight: 3550, icon: "😅", amount: 0 }
   ];
   // Poin: makin besar makin susah (weight kecil). Total weight = 10.000.
-  const POIN_CLAIM_MIN = 5000; // minimal poin untuk tukar ke FFKIPAS VIP
+  const POIN_CLAIM_MIN = 6000; // minimal poin untuk tukar ke FFKIPAS VIP
   const SALDO_KEY = "ffkipas_spin_poin"; // key baru, saldo rupiah lama tidak ikut terhitung
   const MAX_DAY = 3;
   const STORAGE_KEY = "ffkipas_spin_day";
@@ -6381,6 +6381,7 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
   
   const SPIN_FEED_PATH = "ffkipas_spin_feed";
   const SPIN_FEED_MAX = 25;
+  const TICKER_PX_PER_SEC = 75; // kecepatan geser notif (piksel per detik)
 
   function spinGuestName() {
     try {
@@ -6517,6 +6518,14 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     });
     const joined = parts.join('<span class="st-sep">•</span>');
     track.innerHTML = joined + '<span class="st-sep">•</span>' + joined;
+    // Durasi dihitung dari panjang daftar supaya kecepatan geser selalu sama
+    // walau pemenangnya makin banyak. Mau lebih cepat/lambat: ubah TICKER_PX_PER_SEC.
+    try {
+      const half = track.scrollWidth / 2;
+      if (half > 0) {
+        track.style.animationDuration = Math.max(6, half / TICKER_PX_PER_SEC).toFixed(2) + "s";
+      }
+    } catch (e) {}
   }
 
   let spinFeedStarted = false;
