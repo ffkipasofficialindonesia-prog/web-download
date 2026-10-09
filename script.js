@@ -5450,21 +5450,147 @@ async function cekFfBan(uid) {
 }
 
 /**
- * FFxAPI (gratis, tanpa key) — pengganti Danger yang sudah mati.
- * Response dinormalisasi ke bentuk mirip Danger biar UI lama tetap jalan.
+ * Self-host Railway API — clothes/skill ID lengkap.
+ * Fallback FFxAPI kalau Railway gagal.
  */
+const CEK_API_PRIMARY = "https://cekinfo-ff-production.up.railway.app/get_player_personal_show?server=BD&uid=";
+const CEK_API_FALLBACK = "https://ffxinfo-ffx.ffxapis.workers.dev/ffinfo?uid=";
+
 async function cekFfFullInfo(uid) {
-  const url = "https://ffxinfo-ffx.ffxapis.workers.dev/ffinfo?uid=" + encodeURIComponent(uid);
-  const r = await fetch(url, {
-    method: "GET",
-    headers: { Accept: "application/json" }
-  });
-  if (!r.ok) throw new Error("HTTP " + r.status);
-  const raw = await r.json();
-  if (!raw || raw.error || raw.msg === "id_not_found" || !raw.data) {
+  // 1) Railway self-host (skin ID lengkap)
+  try {
+    const url = CEK_API_PRIMARY + encodeURIComponent(uid);
+    const r = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+    if (r.ok) {
+      const raw = await r.json();
+      if (raw && !raw.error && !raw.code && (raw.basicinfo || raw.BasicInfo || raw.profileinfo || raw.ProfileInfo)) {
+        return normalizeRailwayApi(raw, uid);
+      }
+      if (raw && (raw.error || raw.code) && String(raw.code).indexOf("NOT_FOUND") >= 0) {
+        throw new Error("ID tidak ditemukan");
+      }
+    }
+  } catch (e) {
+    if (e && e.message === "ID tidak ditemukan") throw e;
+    console.warn("Railway API gagal, coba fallback FFxAPI:", e && e.message ? e.message : e);
+  }
+
+  // 2) Fallback FFxAPI (tanpa clothes ID)
+  const url2 = CEK_API_FALLBACK + encodeURIComponent(uid);
+  const r2 = await fetch(url2, { method: "GET", headers: { Accept: "application/json" } });
+  if (!r2.ok) throw new Error("HTTP " + r2.status);
+  const raw2 = await r2.json();
+  if (!raw2 || raw2.error || raw2.msg === "id_not_found" || !raw2.data) {
     throw new Error("ID tidak ditemukan");
   }
-  return normalizeFfxApi(raw.data, uid);
+  return normalizeFfxApi(raw2.data, uid);
+}
+
+/** Response Railway / GetPlayerPersonalShow → struktur UI (PascalCase). */
+function normalizeRailwayApi(d, fallbackUid) {
+  const bi = d.basicinfo || d.BasicInfo || {};
+  const pi = d.profileinfo || d.ProfileInfo || {};
+  const si = d.socialinfo || d.SocialInfo || {};
+  const pet = d.petinfo || d.PetInfo || {};
+  const clan = d.clanbasicinfo || d.ClanBasicInfo || {};
+  const cap = d.captainbasicinfo || d.CaptainBasicInfo || {};
+  const credit = d.creditscoreinfo || d.CreditScoreInfo || {};
+  const diamond = d.diamondcostres || d.DiamondCostRes || {};
+
+  const pick = (obj, ...keys) => {
+    for (const k of keys) {
+      if (obj[k] != null && obj[k] !== "") return obj[k];
+    }
+    return null;
+  };
+
+  const toNum = (v) => {
+    if (v == null || v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const clothes = pi.clothes || pi.Clothes || [];
+  const skills = pi.equipedskills || pi.EquipedSkills || pi.equippedskills || [];
+  const weapons = bi.weaponskinshows || bi.WeaponSkinShows || [];
+
+  return {
+    BasicInfo: {
+      AccountId: String(pick(bi, "accountid", "AccountId") || fallbackUid || ""),
+      Nickname: pick(bi, "nickname", "Nickname") || "—",
+      Region: pick(bi, "region", "Region") || "—",
+      Level: toNum(pick(bi, "level", "Level")),
+      Likes: toNum(pick(bi, "liked", "Liked", "likes", "Likes")),
+      Rank: toNum(pick(bi, "rank", "Rank")),
+      MaxRank: toNum(pick(bi, "maxrank", "MaxRank")),
+      RankingPoints: toNum(pick(bi, "rankingpoints", "RankingPoints")),
+      CsRank: toNum(pick(bi, "csrank", "CsRank")),
+      CsMaxRank: toNum(pick(bi, "csmaxrank", "CsMaxRank")),
+      CsRankingPoints: toNum(pick(bi, "csrankingpoints", "CsRankingPoints")),
+      CreateAt: toNum(pick(bi, "createat", "CreateAt")),
+      LastLoginAt: toNum(pick(bi, "lastloginat", "LastLoginAt")),
+      ReleaseVersion: pick(bi, "releaseversion", "ReleaseVersion"),
+      SeasonId: toNum(pick(bi, "seasonid", "SeasonId")),
+      AccountType: toNum(pick(bi, "accounttype", "AccountType")),
+      Exp: toNum(pick(bi, "exp", "Exp")),
+      BadgeCnt: toNum(pick(bi, "badgecnt", "BadgeCnt")),
+      BadgeId: toNum(pick(bi, "badgeid", "BadgeId")),
+      BannerId: toNum(pick(bi, "bannerid", "BannerId")),
+      HeadPic: toNum(pick(bi, "headpic", "HeadPic")),
+      PinId: toNum(pick(bi, "pinid", "PinId")),
+      Title: toNum(pick(bi, "title", "Title")),
+      WeaponSkinShows: Array.isArray(weapons) ? weapons : []
+    },
+    SocialInfo: {
+      Signature: pick(si, "signature", "Signature") || "",
+      Gender: pick(si, "gender", "Gender"),
+      Language: pick(si, "language", "Language"),
+      ModePrefer: pick(si, "modeprefer", "ModePrefer"),
+      RankShow: pick(si, "rankshow", "RankShow"),
+      TimeActive: pick(si, "timeactive", "TimeActive"),
+      TimeOnline: pick(si, "timeonline", "TimeOnline")
+    },
+    CreditScoreInfo: {
+      CreditScore: toNum(pick(credit, "creditscore", "CreditScore"))
+    },
+    ProfileInfo: {
+      EquippedSkills: Array.isArray(skills) ? skills : [],
+      equipedSkills: Array.isArray(skills) ? skills : [],
+      Clothes: Array.isArray(clothes) ? clothes : [],
+      AvatarId: toNum(pick(pi, "avatarid", "AvatarId")),
+      OutfitNames: [],
+      WeaponNames: []
+    },
+    PetInfo: {
+      Name: pick(pet, "id", "Id", "name", "Name"),
+      Level: toNum(pick(pet, "level", "Level")),
+      Exp: toNum(pick(pet, "exp", "Exp")),
+      SkinId: toNum(pick(pet, "skinid", "SkinId")),
+      SelectedSkillId: pick(pet, "selectedskillid", "SelectedSkillId")
+    },
+    ClanBasicInfo: pick(clan, "clanname", "ClanName")
+      ? {
+          ClanName: pick(clan, "clanname", "ClanName"),
+          ClanId: pick(clan, "clanid", "ClanId"),
+          ClanLevel: toNum(pick(clan, "clanlevel", "ClanLevel")),
+          MemberNum: toNum(pick(clan, "membernum", "MemberNum")),
+          Capacity: toNum(pick(clan, "capacity", "Capacity"))
+        }
+      : {},
+    CaptainBasicInfo: pick(cap, "accountid", "AccountId")
+      ? {
+          AccountId: String(pick(cap, "accountid", "AccountId")),
+          Nickname: pick(cap, "nickname", "Nickname") || "—",
+          Level: toNum(pick(cap, "level", "Level")),
+          Region: pick(cap, "region", "Region"),
+          Likes: toNum(pick(cap, "liked", "Liked", "likes"))
+        }
+      : {},
+    DiamondCostRes: {
+      DiamondCost: toNum(pick(diamond, "diamondcost", "DiamondCost"))
+    },
+    _source: "railway"
+  };
 }
 
 /** Ubah payload FFxAPI → struktur BasicInfo / SocialInfo / dll. */
@@ -5506,19 +5632,16 @@ function normalizeFfxApi(d, fallbackUid) {
       Exp: acc.exp != null ? Number(acc.exp) : null,
       BadgeCnt: eq.bp_badges != null ? Number(eq.bp_badges) : null,
       BadgeId: eq.bp_id != null ? Number(eq.bp_id) : null,
-      PrimeInfo: {
-        PrimeLevel: prof.prime_level != null ? Number(prof.prime_level) : 0
-      },
-      HasElitePass: !!leader.has_elite_pass
+      WeaponSkinShows: []
     },
     SocialInfo: {
-      Signature: (prof.bio || "").trim(),
-      Gender: acc.gender || "",
-      Language: acc.language || "",
-      ModePrefer: acc.mode_prefer || "",
-      RankShow: acc.rank_show || "",
-      TimeActive: acc.time_active || "",
-      TimeOnline: acc.time_online || ""
+      Signature: (prof.bio || prof.signature || "") + "",
+      Gender: acc.gender || null,
+      Language: acc.language || null,
+      ModePrefer: acc.mode_prefer || null,
+      RankShow: acc.rank_show || null,
+      TimeActive: acc.time_active || null,
+      TimeOnline: acc.time_online || null
     },
     CreditScoreInfo: {
       CreditScore: acc.credit_score != null ? Number(acc.credit_score) : null
@@ -5560,7 +5683,8 @@ function normalizeFfxApi(d, fallbackUid) {
       booyah_pass: acc.booyah_pass,
       banner_image: prof.banner_image || null,
       account_age_label: prof.account_age && prof.account_age.label ? prof.account_age.label : null
-    }
+    },
+    _source: "ffx"
   };
 }
 
