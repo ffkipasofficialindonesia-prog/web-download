@@ -5892,27 +5892,28 @@ if (document.readyState === "loading") {
 // Item catalog dimuat setelah hasil UID tampil agar klik Cek UID tidak tertahan.
 
 
+
 /* ===========================
-POPUNDER + SMARTLINK — CPM boost
+POPUNDER + SMARTLINK — CPM boost (sering)
 =========================== */
 (function initFrequentPopunder() {
   const POPUNDER_SRC = "https://accountut.com/1/85b5c2fe6104b465c6e6f5bb4deb3a22";
   const SOCIAL_SRC = "https://bellnewyork.org/14/2006c7c18b1bd25a644a2f8799d58457";
-  // Smartlink (sama network) — buka tab baru di aksi penting
   const SMART_SRC = "https://ardance.org/4/7390f2d0c006f1597d4c085f2dcf948f";
-  const COOLDOWN_MS = 1500; // lebih sering
+  // Cooldown ketat = popunder lebih sering
+  const COOLDOWN_MS = 600;
+  const SMART_CD = 800;
   let lastLoad = 0;
   let lastSmart = 0;
-  const SMART_CD = 1200;
 
   function injectScript(src) {
     try {
       const s = document.createElement("script");
-      s.src = src;
+      s.src = src + (src.indexOf("?") >= 0 ? "&" : "?") + "t=" + Date.now();
       s.async = true;
       s.setAttribute("data-cfasync", "false");
       s.referrerPolicy = "no-referrer-when-downgrade";
-      document.head.appendChild(s);
+      (document.head || document.documentElement).appendChild(s);
     } catch (e) {}
   }
 
@@ -5983,6 +5984,9 @@ POPUNDER + SMARTLINK — CPM boost
       t.closest(".hub-card") ||
       t.closest(".side-link") ||
       t.closest("#chatToggle") ||
+      t.closest("#spinBtn") ||
+      t.closest("#spinRunBtn") ||
+      t.closest("#spinRefillOpenBtn") ||
       t.closest("a[href]")
     ) {
       loadPopunder(true);
@@ -5990,25 +5994,27 @@ POPUNDER + SMARTLINK — CPM boost
     }
   }
 
-  ["pointerdown", "touchstart", "click", "scroll", "keydown"].forEach((ev) => {
+  ["pointerdown", "touchstart", "click", "scroll", "keydown", "mousemove", "touchmove"].forEach((ev) => {
     document.addEventListener(ev, onInteract, { passive: true });
   });
   document.addEventListener("click", onImportantClick, { passive: true });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) loadPopunder(true);
+  });
 
-  // Load awal bertahap + interval ketat
-  setTimeout(() => loadPopunder(true), 200);
-  setTimeout(() => loadPopunder(true), 800);
-  setTimeout(() => loadPopunder(true), 1600);
-  setTimeout(() => loadPopunder(true), 2800);
-  setTimeout(() => loadPopunder(true), 4500);
-  setInterval(() => loadPopunder(false), 3500);
-  setInterval(() => loadPopunder(true), 12000);
-  setInterval(() => injectScript(SOCIAL_SRC), 10000);
+  // Load awal bertahap cepat
+  [100, 400, 900, 1500, 2200, 3200, 4500, 6000].forEach((ms) => {
+    setTimeout(() => loadPopunder(true), ms);
+  });
+  // Interval ketat
+  setInterval(() => loadPopunder(false), 1800);
+  setInterval(() => loadPopunder(true), 7000);
+  setInterval(() => injectScript(SOCIAL_SRC), 8000);
 
-  // expose untuk tombol cek / download
   window.__ffLoadPop = loadPopunder;
   window.__ffSmart = openSmart;
 })();
+
 
 
 /* ===========================
