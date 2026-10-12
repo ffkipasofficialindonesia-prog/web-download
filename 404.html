@@ -5,20 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FFKIPAS</title>
 <script>
-  // Simpan path asli (misal "/cekakun") sebelum redirect ke root.
-  // index.html (lewat script.js -> applyRouteFromLocation) baca ini
-  // lagi dan nampilin section yang benar tanpa harus ada file/route
-  // sungguhan di server untuk path tersebut.
+(function () {
+  var path = location.pathname || "/";
+  var search = location.search || "";
+  var hash = location.hash || "";
   try {
-    sessionStorage.setItem(
-      "spa_redirect",
-      location.pathname + location.search + location.hash
-    );
+    sessionStorage.setItem("spa_redirect", path + search + hash);
   } catch (e) {}
-  location.replace("/");
+  // Ambil segmen pertama: /spin/xxx -> spin
+  var seg = path.replace(/^\/+|\/+$/g, "").split("/")[0].toLowerCase();
+  var map = {
+    spin: "spin", event: "spin",
+    topup: "topup",
+    cekakun: "cekakun", cek: "cekakun",
+    download: "download",
+    history: "history", riwayat: "history",
+    faq: "faq", home: "home"
+  };
+  var go = map[seg] || "";
+  if (go) {
+    location.replace("/?go=" + encodeURIComponent(go));
+  } else {
+    location.replace("/");
+  }
+})();
 </script>
 </head>
-<body>
+<body style="background:#0b0b0f;color:#ffc107;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0">
   Mengalihkan...
 </body>
 </html>

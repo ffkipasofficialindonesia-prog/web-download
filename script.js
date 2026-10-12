@@ -261,10 +261,18 @@ function applyRouteFromLocation() {
         sectionId = sectionFromPath(location.pathname);
     }
 
-    if (sectionId && sectionId !== "home") {
-        navigateToSection(sectionId, { push: false, smooth: false });
+    if (sectionId) {
+        try {
+            if (typeof setSpaPage === "function") setSpaPage(sectionId === "leaderboard" ? "home" : sectionId);
+        } catch (e) {}
+        if (sectionId !== "home") {
+            navigateToSection(sectionId, { push: false, smooth: false });
+        }
         return sectionId;
     }
+    try {
+        if (typeof setSpaPage === "function") setSpaPage("home");
+    } catch (e) {}
     return null;
 }
 
@@ -6071,13 +6079,31 @@ document.addEventListener("click", (e) => {
 (function bootSpa() {
   function apply() {
     let sid = "home";
+    // 1) ?go=
     try {
       const params = new URLSearchParams(location.search || "");
-      if (params.get("go") && document.getElementById(params.get("go"))) sid = params.get("go");
+      const go = params.get("go");
+      if (go && document.getElementById(go)) sid = go;
     } catch (e) {}
+    // 2) sessionStorage dari 404 / folder stub
+    if (sid === "home") {
+      try {
+        const saved = sessionStorage.getItem("spa_redirect");
+        if (saved) {
+          const pathOnly = String(saved).split("?")[0].split("#")[0];
+          const seg = pathOnly.replace(/^\/+|\/+$/g, "").split("/")[0].toLowerCase();
+          const mapSeg = { spin: "spin", event: "spin", topup: "topup", cekakun: "cekakun", cek: "cekakun", download: "download", history: "history", riwayat: "history", faq: "faq" };
+          if (mapSeg[seg]) {
+            sid = mapSeg[seg];
+            try { sessionStorage.removeItem("spa_redirect"); } catch (e) {}
+          }
+        }
+      } catch (e) {}
+    }
+    // 3) pathname
     if (sid === "home") {
       const p = (location.pathname || "/").replace(/\/index\.html$/i, "") || "/";
-      const map = { "/download": "download", "/topup": "topup", "/spin": "spin", "/event": "spin", "/cekakun": "cekakun", "/cek": "cekakun", "/spin": "spin", "/event": "spin", "/history": "history", "/riwayat": "history", "/faq": "faq" };
+      const map = { "/download": "download", "/topup": "topup", "/spin": "spin", "/event": "spin", "/cekakun": "cekakun", "/cek": "cekakun", "/history": "history", "/riwayat": "history", "/faq": "faq" };
       const key = p.replace(/\/+$/, "") || "/";
       if (map[key]) sid = map[key];
       else if (location.hash && location.hash.length > 1) {
@@ -6086,6 +6112,15 @@ document.addEventListener("click", (e) => {
       }
     }
     setSpaPage(sid === "leaderboard" ? "home" : sid);
+    // bersihkan URL ?go= jadi path bersih
+    if (sid && sid !== "home") {
+      try {
+        const path = (typeof SECTION_PATHS !== "undefined" && SECTION_PATHS[sid]) ? SECTION_PATHS[sid] : ("/" + sid);
+        if (location.search && location.search.indexOf("go=") >= 0) {
+          history.replaceState({ section: sid }, "", path);
+        }
+      } catch (e) {}
+    }
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply);
   else apply();

@@ -5583,7 +5583,8 @@ body.spa-topup #topup,
 body.spa-cekakun #cekakun,
 body.spa-history #history,
 body.spa-faq #faq,
-body.spa-download #download {
+body.spa-download #download,
+body.spa-spin #spin {
   padding-top: 100px;
 }
 
