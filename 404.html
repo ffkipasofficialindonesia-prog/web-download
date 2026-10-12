@@ -7,27 +7,11 @@
 <script>
 (function () {
   var path = location.pathname || "/";
-  var search = location.search || "";
-  var hash = location.hash || "";
-  try {
-    sessionStorage.setItem("spa_redirect", path + search + hash);
-  } catch (e) {}
-  // Ambil segmen pertama: /spin/xxx -> spin
+  try { sessionStorage.setItem("spa_redirect", path + (location.search||"") + (location.hash||"")); } catch (e) {}
   var seg = path.replace(/^\/+|\/+$/g, "").split("/")[0].toLowerCase();
-  var map = {
-    spin: "spin", event: "spin",
-    topup: "topup",
-    cekakun: "cekakun", cek: "cekakun",
-    download: "download",
-    history: "history", riwayat: "history",
-    faq: "faq", home: "home"
-  };
+  var map = { spin: "spin", topup: "topup", cekakun: "cekakun", download: "download" };
   var go = map[seg] || "";
-  if (go) {
-    location.replace("/?go=" + encodeURIComponent(go));
-  } else {
-    location.replace("/");
-  }
+  location.replace(go ? ("/?go=" + encodeURIComponent(go)) : "/");
 })();
 </script>
 </head>

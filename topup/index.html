@@ -7,9 +7,7 @@
 <meta http-equiv="refresh" content="0;url=/?go=topup">
 <script>
 (function () {
-  try {
-    sessionStorage.setItem("spa_redirect", "/topup");
-  } catch (e) {}
+  try { sessionStorage.setItem("spa_redirect", "/topup"); } catch (e) {}
   location.replace("/?go=topup");
 })();
 </script>

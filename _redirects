@@ -1,18 +1,10 @@
-# Cloudflare Pages SPA — rewrite (200) biar URL tetap /spin dll
+# Cloudflare Pages SPA
 /spin          /index.html   200
-/event         /index.html   200
 /topup         /index.html   200
 /cekakun       /index.html   200
-/cek           /index.html   200
 /download      /index.html   200
-/history       /index.html   200
-/riwayat       /index.html   200
-/faq           /index.html   200
-/home          /index.html   200
 /spin/         /index.html   200
 /topup/        /index.html   200
 /cekakun/      /index.html   200
 /download/     /index.html   200
-/history/      /index.html   200
-/faq/          /index.html   200
 /*             /index.html   200
