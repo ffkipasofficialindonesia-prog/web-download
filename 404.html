@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FFKIPAS</title>
+<script>
+  // Simpan path asli (misal "/cekakun") sebelum redirect ke root.
+  // index.html (lewat script.js -> applyRouteFromLocation) baca ini
+  // lagi dan nampilin section yang benar tanpa harus ada file/route
+  // sungguhan di server untuk path tersebut.
+  try {
+    sessionStorage.setItem(
+      "spa_redirect",
+      location.pathname + location.search + location.hash
+    );
+  } catch (e) {}
+  location.replace("/");
+</script>
+</head>
+<body>
+  Mengalihkan...
+</body>
+</html>
