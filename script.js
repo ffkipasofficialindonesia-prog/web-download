@@ -6881,7 +6881,7 @@ FF OLD — kunci download (6 klik, jeda 4 detik) + langkah Chrono
 - Daftar / Verifikasi Chrono: klik 1 = smartlink, klik 2 = halaman tujuan
 =========================== */
 (function initFfOld() {
-  const APK_URL = "https://www.mediafire.com/file/uwhdzz7xj1dvebi/CHRONO+PROJECT_1.56.1.apk/file";
+  const APK_URL = "https://move2link.co/3cd7cdc";
   const REGISTER_URL = "https://core.chronoprojects.com/chrono/register";
   const VERIFY_URL = "https://chronoprojects.com/verify";
   const SMARTLINK = "https://ardance.org/4/7390f2d0c006f1597d4c085f2dcf948f";
