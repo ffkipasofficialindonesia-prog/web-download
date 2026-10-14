@@ -525,6 +525,7 @@ SEARCH PANEL
   font-size: 14px;
 }
 
+
 /*==============================
 SLIDER — Single Video
 ==============================*/
@@ -869,6 +870,80 @@ ACCOUNT CHECK
   padding: 70px 20px 80px;
 }
 
+.account-search {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 36px 32px;
+  background: linear-gradient(155deg, #1a1a1a, #0e0e0e);
+  border: 1px solid rgba(255, 123, 0, 0.28);
+  border-radius: 28px;
+  box-shadow:
+    0 0 50px rgba(255, 123, 0, 0.12),
+    0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.search-title {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.search-title i {
+  font-size: 48px;
+  color: #ff9800;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 0 12px rgba(255, 152, 0, 0.4));
+}
+
+.search-title h2 {
+  font-size: clamp(22px, 5vw, 30px);
+  font-family: var(--font-display);
+  margin-bottom: 8px;
+}
+
+.search-title p {
+  color: #888;
+  font-size: 14px;
+}
+
+.search-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background: #1c1c1c;
+  border-radius: 16px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.input-group:focus-within {
+  border-color: #ff9800;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.15);
+}
+
+.input-group i {
+  color: #ff9800;
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  height: 54px;
+  background: none;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+}
+
 #cekAccountBtn {
   grid-column: 1 / -1;
   width: 100%;
@@ -895,6 +970,126 @@ ACCOUNT CHECK
   box-shadow: 0 10px 32px rgba(255, 123, 0, 0.45);
 }
 
+/* Profile result */
+.ff-profile {
+  margin-top: 28px;
+  background: #0f0f0f;
+  border: 1px solid rgba(255, 123, 0, 0.3);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(255, 123, 0, 0.12);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 26px;
+  background: linear-gradient(180deg, #222, #161616);
+  border-bottom: 1px solid rgba(255, 140, 0, 0.2);
+}
+
+.avatar-box {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff7b00, #ffb300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 24px rgba(255, 123, 0, 0.4);
+}
+
+.player-info h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #fff;
+}
+
+.player-info p {
+  margin: 4px 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.level-badge {
+  display: inline-block;
+  margin-top: 8px;
+  background: linear-gradient(90deg, #ff7b00, #ff9d00);
+  padding: 5px 14px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 18px;
+}
+
+.stat-box {
+  background: #181818;
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-box h3 {
+  margin: 6px 0;
+  color: #ffb100;
+  font-size: 20px;
+  font-family: var(--font-display);
+}
+
+.stat-box span {
+  color: #777;
+  font-size: 12px;
+}
+
+.info-card {
+  padding: 8px 20px 20px;
+}
+
+.info-card p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 14px;
+  color: #ccc;
+}
+
+.info-card span {
+  color: #ffb100;
+  font-weight: 700;
+}
+
+.bio-box {
+  margin: 0 18px 20px;
+  padding: 18px;
+  border-radius: 16px;
+  background: #181818;
+}
+
+.bio-box h4 {
+  margin-bottom: 10px;
+  color: #ffb100;
+  font-size: 14px;
+}
+
+.bio-box p {
+  color: #bbb;
+  line-height: 1.65;
+  font-size: 13.5px;
+}
+
 /*==============================
 PRICE CALCULATOR
 ==============================*/
@@ -908,6 +1103,18 @@ STATS
   gap: 22px;
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.online-stat h1 {
+  color: #00e676 !important;
+  text-shadow: 0 0 24px rgba(0, 230, 118, 0.35);
+}
+
+.online-stat p {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .online-live-dot {
@@ -1163,10 +1370,12 @@ HISTORY — Premium cards
   background: rgba(255, 123, 0, 0.2);
   transform: translateY(-1px);
 }
+
 @media (max-width: 480px) {
   .hc-grid { grid-template-columns: 1fr; }
   .hc-price { font-size: 16px; }
-  .hc-icon { width: 38px; height: 38px; font-size: 14px; }}
+  .hc-icon { width: 38px; height: 38px; font-size: 14px; }
+}
 
 /*==============================
 FAQ
@@ -1309,6 +1518,15 @@ POPUP TOPUP
 
 .close:hover {
   color: #ff7b00;
+}
+
+.popup-banner {
+  display: none !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
 }
 
 .popup-box h2 {
@@ -1478,6 +1696,7 @@ POPUP TOPUP
 .diamond-card.dm-best {
   border-color: rgba(255, 180, 0, 0.4);
 }
+
 @media (max-width: 420px) {
   .diamond-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1488,7 +1707,8 @@ POPUP TOPUP
     padding: 12px 8px 10px;
   }
   .diamond-card b { font-size: 14px; }
-  .diamond-card .diamond-icon { width: 26px; height: 26px; }}
+  .diamond-card .diamond-icon { width: 26px; height: 26px; }
+}
 
 .custom-topup {
   margin-top: 8px;
@@ -1745,6 +1965,17 @@ PROCESSING & INVOICE
 @keyframes procCorePulse {
   0%, 100% { transform: scale(1); box-shadow: 0 0 16px rgba(255, 123, 0, 0.3); }
   50% { transform: scale(1.08); box-shadow: 0 0 28px rgba(255, 177, 0, 0.5); }
+}
+
+/* legacy loader fallback */
+.loader-circle {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #ff7b00;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
 }
 
 .processing-box h2 {
@@ -2296,6 +2527,7 @@ TOAST — simple & clean
 .toast.warning .toast-body strong {
   color: #ffb300;
 }
+
 @media (max-width: 480px) {
   .toast {
     top: 78px;
@@ -2311,7 +2543,8 @@ TOAST — simple & clean
     border-radius: 9px;
   }
   .toast-body strong { font-size: 10.5px; }
-  .toast-body span { font-size: 12.5px; }}
+  .toast-body span { font-size: 12.5px; }
+}
 
 /*==============================
 FLOATING CHAT — Premium
@@ -2671,6 +2904,7 @@ FLOATING CHAT — Premium
   font-size: 12px;
 }
 
+
 /*==============================
 ANIMATIONS
 ==============================*/
@@ -2720,12 +2954,14 @@ RESPONSIVE
   #stats {
     grid-template-columns: repeat(3, 1fr);
     gap: 14px;
-  }}
+  }
+}
 
 @media (max-width: 640px) {
   #stats {
     grid-template-columns: 1fr;
-  }}
+  }
+}
 
 @media (max-width: 768px) {
   .header {
@@ -2812,6 +3048,22 @@ RESPONSIVE
     font-size: 13px;
   }
 
+  .search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .account-search {
+    padding: 24px 18px;
+  }
+
+  .search-title h2 {
+    font-size: 22px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
   #stats {
     grid-template-columns: 1fr;
     gap: 14px;
@@ -2852,7 +3104,8 @@ RESPONSIVE
 
   .chat-menu {
     width: min(270px, calc(100vw - 28px));
-  }}
+  }
+}
 
 @media (max-width: 420px) {
   .card-grid {
@@ -2861,7 +3114,8 @@ RESPONSIVE
 
   .download-card h3 {
     font-size: 13px;
-  }}
+  }
+}
 
 /* Print invoice */
 @media print {
@@ -2878,7 +3132,9 @@ RESPONSIVE
     top: 0;
     width: 100%;
     background: white;
-  }}
+  }
+}
+
 
 /*==============================
 OVERLAY SAFETY — never block clicks when hidden
@@ -2895,6 +3151,7 @@ OVERLAY SAFETY — never block clicks when hidden
   pointer-events: none !important;
 }
 
+
 /*==============================
 RIGHT SIDE CLICK FIX
 ==============================*/
@@ -2910,6 +3167,7 @@ RIGHT SIDE CLICK FIX
 .floating-chat .chat-menu.show {
   pointer-events: auto;
 }
+
 
 /*==============================
 GROUP CHAT ROOM
@@ -3419,6 +3677,7 @@ GROUP CHAT ROOM
 #gcSend:hover {
   filter: brightness(1.08);
 }
+
 @media (max-width: 480px) {
   .group-chat-panel {
     right: 12px;
@@ -3426,7 +3685,9 @@ GROUP CHAT ROOM
     width: auto;
     bottom: 88px;
     height: min(480px, calc(100vh - 110px));
-  }}
+  }
+}
+
 
 /* Label di samping tombol chat */
 .chat-fab-label {
@@ -3472,7 +3733,8 @@ GROUP CHAT ROOM
     font-size: 10px;
     padding: 7px 10px;
     right: 68px;
-  }}
+  }
+}
 
 /*==============================
 FFKIPAS VIP ORDER + PRIVATE CHAT
@@ -3788,17 +4050,19 @@ FFKIPAS VIP ORDER + PRIVATE CHAT
   font-size: 12px;
   line-height: 1.4;
 }
+
 @media (max-width: 1024px) {
   .card-grid {
     grid-template-columns: repeat(2, 1fr);
-  }}
-
+  }
+}
 @media (max-width: 480px) {
   .vip-chat-panel {
     right: 12px;
     left: 12px;
     width: auto;
-  }}
+  }
+}
 
 .vip-join-by-id {
   display: flex;
@@ -3835,11 +4099,13 @@ FFKIPAS VIP ORDER + PRIVATE CHAT
   flex-shrink: 0;
 }
 
+
 button.chat-item {
   width: 100%;
   text-align: left;
   font-family: inherit;
 }
+
 
 .vip-order-item .voi-meta {
   display: block;
@@ -3865,10 +4131,21 @@ button.chat-item {
   background: rgba(0, 200, 83, 0.15);
   color: #00c853;
 }
+.vip-admin-hint {
+  font-size: 12px;
+  color: #ffc107;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 180, 0, 0.08);
+  border: 1px solid rgba(255, 180, 0, 0.2);
+  text-align: left;
+}
 #vipMenuSub.has-new {
   color: #ffc107 !important;
   font-weight: 700;
 }
+
 
 .vip-admin-actions {
   display: flex;
@@ -3923,6 +4200,8 @@ button.chat-item {
   color: #00c853;
 }
 
+
+
 /* Cara order + status track + notif UI */
 .vip-card .card-btns {
   display: flex;
@@ -3971,15 +4250,15 @@ button.chat-item {
     min-height: 38px;
     letter-spacing: 0.2px;
   }
-  .btn-howto i { font-size: 11px; }}
-
+  .btn-howto i { font-size: 11px; }
+}
 @media (max-width: 720px) {
   .btn-howto {
     font-size: 11px;
     padding: 10px 12px;
     min-height: 40px;
-  }}
-
+  }
+}
 @media (max-width: 400px) {
   .btn-howto {
     font-size: 10.5px;
@@ -3987,8 +4266,8 @@ button.chat-item {
     padding: 9px 8px;
     min-height: 38px;
   }
-  .btn-howto i { font-size: 10.5px; }}
-
+  .btn-howto i { font-size: 10.5px; }
+}
 .vip-howto-box {
   max-width: 420px;
   text-align: left;
@@ -4127,6 +4406,14 @@ button.chat-item {
   width: 10px;
   height: 1px;
   background: rgba(255, 255, 255, 0.15);
+}
+
+/* Cara Download button di section header */
+.section-howto {
+  display: inline-flex;
+  width: auto;
+  margin: 0 auto 28px;
+  padding: 10px 18px;
 }
 #download {
   text-align: center;
@@ -4275,6 +4562,39 @@ button.chat-item {
 .vip-coupon-msg.ok { color: #00c853; }
 .vip-coupon-msg.err { color: #ff6b6b; }
 
+
+.testi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.testi-card {
+  text-align: left;
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.testi-stars {
+  color: #ffc107;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.testi-card p {
+  color: #ddd;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.testi-card span {
+  color: #888;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
 .vip-order-item.is-archived {
   opacity: 0.72;
 }
@@ -4290,6 +4610,7 @@ button.chat-item {
   border-color: rgba(255, 80, 80, 0.45) !important;
   color: #ff6b6b !important;
 }
+
 
 /* ========== Video Tutorial (Cara Download) ========== */
 .tutorial-video-wrap {
@@ -4332,6 +4653,7 @@ button.chat-item {
 .vip-howto-box {
   max-width: min(520px, 94vw) !important;
 }
+
 
 /* ========== Leaderboard ========== */
 #leaderboard {
@@ -4438,9 +4760,16 @@ button.chat-item {
   padding: 20px;
   font-size: 13px;
 }
+
+/* Bot message in group chat */
+.gc-msg-row.is-bot .gc-msg-bubble {
+  border-color: rgba(255, 180, 0, 0.35) !important;
+  background: rgba(255, 152, 0, 0.12) !important;
+}
 .gc-msg-row.is-bot .gc-msg-name {
   color: #ffc107 !important;
 }
+
 
 /* Notif Saluran WA — bar bawah, simpel */
 .wa-bar {
@@ -4500,6 +4829,7 @@ button.chat-item {
   .wa-bar { bottom: 78px; } /* di atas FAB chat */
 }
 
+
 /* Invoice cooler entrance */
 .invoice.active .invoice-box {
   animation: invReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -4552,6 +4882,7 @@ button.chat-item {
   from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: none; }
 }
+
 
 /* Header mini stats — tengah, dekat search */
 .header {
@@ -4628,6 +4959,7 @@ button.chat-item {
 .header-actions {
   flex-shrink: 0;
 }
+
 @media (max-width: 480px) {
   .header-stats {
     padding: 4px 6px;
@@ -4636,7 +4968,8 @@ button.chat-item {
   }
   .hs-item strong { font-size: 11px; }
   .hs-item span { font-size: 8px; }
-  .hs-sep { height: 20px; }}
+  .hs-sep { height: 20px; }
+}
 
 /* stats section sisa uptime aja — biar rapi */
 #stats {
@@ -4648,6 +4981,11 @@ button.chat-item {
 #stats .stat {
   min-width: 160px;
 }
+
+
+
+
+
 
 /* UID nickname result — selalu kelihatan saat .show */
 #popup .uid-check,
@@ -4735,6 +5073,7 @@ button.chat-item {
   font-size: 13px;
   font-weight: 600;
 }
+
 
 /* ========== Cek Akun FF ========== */
 #cekakun {
@@ -5002,7 +5341,9 @@ button.chat-item {
   .cek-ranks { grid-template-columns: 1fr; }
   .cek-rank-card:not(.cek-rank-dual) { flex-direction: row; text-align: left; }
   .cek-rank-dual { flex-direction: row !important; text-align: center; }
-  .cek-grid { grid-template-columns: 1fr 1fr; }}
+  .cek-grid { grid-template-columns: 1fr 1fr; }
+}
+
 
 /* Cek akun — bio, likes, booyah, credit */
 .cek-bio {
@@ -5037,6 +5378,16 @@ button.chat-item {
   flex-shrink: 0 !important;
   filter: drop-shadow(0 2px 6px rgba(255, 123, 0, 0.25));
 }
+.cek-fa-icon {
+  width: 32px !important;
+  height: 32px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #ffc107;
+  flex-shrink: 0 !important;
+}
 .cek-grid {
   grid-template-columns: repeat(2, 1fr) !important;
 }
@@ -5045,7 +5396,9 @@ button.chat-item {
     flex-direction: row !important;
     text-align: left !important;
   }
-  .cek-clan > div { text-align: left !important; }}
+  .cek-clan > div { text-align: left !important; }
+}
+
 
 /* ===== Icon size match screenshot =====
    Rank BR/CS (merah) = 40px
@@ -5095,6 +5448,7 @@ button.chat-item {
     0 0 30px rgba(255, 123, 0, 0.2) !important;
 }
 
+
 /* ===== Cek Akun — Skin dipakai ===== */
 .cek-skins {
   margin-bottom: 14px;
@@ -5121,8 +5475,8 @@ button.chat-item {
   gap: 8px;
 }
 @media (min-width: 520px) {
-  .cek-skins-grid { grid-template-columns: repeat(5, 1fr); }}
-
+  .cek-skins-grid { grid-template-columns: repeat(5, 1fr); }
+}
 .cek-skin-item {
   display: flex;
   flex-direction: column;
@@ -5161,6 +5515,7 @@ button.chat-item {
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
+
 
 /* ===== SPA page switch ===== */
 .spa-page {
@@ -5231,6 +5586,20 @@ body.spa-faq #faq,
 body.spa-download #download {
   padding-top: 100px;
 }
+
+
+
+/* Cek akun — diamond / badge / title / captain */
+.cek-extra-grid {
+  margin-bottom: 14px;
+}
+.cek-sub {
+  display: block;
+  font-size: 11px;
+  color: #ffc107;
+  margin-top: 2px;
+  font-weight: 600;
+}
 .cek-captain {
   border-color: rgba(255, 193, 7, 0.35) !important;
   background: rgba(255, 193, 7, 0.06) !important;
@@ -5238,6 +5607,7 @@ body.spa-download #download {
 .cek-captain .cek-label {
   color: #ffc107;
 }
+
 
 /* ===== Tombol kartu download: ukuran stabil di semua device ===== */
 .download-card .card-btns .btn-primary,
@@ -5262,6 +5632,7 @@ body.spa-download #download {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 @media (max-width: 1100px) {
   .download-card .card-btns .btn-primary,
   .download-card .card-btns a.btn-primary,
@@ -5278,7 +5649,8 @@ body.spa-download #download {
   .btn-howto {
     min-height: 38px;
     font-size: 11px !important;
-  }}
+  }
+}
 
 @media (max-width: 720px) {
   .download-card .card-btns .btn-primary,
@@ -5291,7 +5663,8 @@ body.spa-download #download {
     min-height: 44px;
     padding: 12px 14px !important;
     font-size: 12.5px !important;
-  }}
+  }
+}
 
 @media (max-width: 400px) {
   .download-card .card-btns .btn-primary,
@@ -5310,7 +5683,9 @@ body.spa-download #download {
     min-height: 38px;
     font-size: 10.5px !important;
     padding: 9px 8px !important;
-  }}
+  }
+}
+
 
 /* ===== Tutorial Streamable embed ===== */
 .tutorial-video-box {
@@ -5348,6 +5723,7 @@ body.spa-download #download {
   margin-top: 8px;
   text-align: center;
 }
+
 
 /* ===== Event Spin ===== */
 #spin {
@@ -5519,9 +5895,11 @@ body.spa-download #download {
 }
 body.spa-spin #spin { display: block; padding-top: 100px; }
 body.spa-spin #home { display: none; }
+
 @media (max-width: 640px) {
   .spin-wrap { flex-direction: column; }
-  .spin-side { max-width: 100%; }}
+  .spin-side { max-width: 100%; }
+}
 
 .spin-refill {
   margin: 12px 0 8px;
@@ -5601,6 +5979,11 @@ body.spa-spin #home { display: none; }
   font-size: 12.5px;
   color: #999;
   line-height: 1.4;
+}
+.spin-refill-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .spin-step-btn {
   display: flex;
@@ -5730,6 +6113,12 @@ body.spa-spin #home { display: none; }
 .spin-step-btn {
   transition: transform 0.25s ease, border-color 0.25s, background 0.25s, opacity 0.25s, box-shadow 0.25s;
 }
+.spin-step-btn.active.unlock-pop {
+  animation: unlockPop 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.spin-step-btn.just-done {
+  animation: unlockDone 0.5s ease;
+}
 .spin-step-btn.active {
   box-shadow: 0 0 0 1px rgba(255, 160, 0, 0.2), 0 0 20px rgba(255, 123, 0, 0.15);
 }
@@ -5844,7 +6233,8 @@ body.spa-spin #home { display: none; }
     min-height: 36px;
     border-radius: 12px;
   }
-  .spin-ticker-item { font-size: 11.5px; }}
+  .spin-ticker-item { font-size: 11.5px; }
+}
 
 /* hadiah baru dari pemain lain — berkedip sebentar */
 .spin-ticker-item.fresh {
@@ -5855,6 +6245,7 @@ body.spa-spin #home { display: none; }
   0% { background: rgba(255, 193, 7, 0.5); }
   100% { background: rgba(255, 193, 7, 0); }
 }
+
 
 /* Tambah putaran: pilihan paket + grid klik */
 .spin-pack-list {
@@ -5896,152 +6287,3 @@ body.spa-spin #home { display: none; }
 .spin-refill-run .buy-btn { width: 100%; }
 .spin-refill-run .btn-howto { display: block; margin: 10px auto 0; }
 .spin-refill-run .btn-howto[hidden] { display: none !important; }
-
-/* ===== FF OLD (menu download terkunci) ===== */
-.ffold-row.ffold-row-ch, .ffold-row.ffold-row-ch:hover { border-left-color: #25d366; }
-.ffold-row-ch .ffold-ico { background: rgba(37, 211, 102, 0.12); color: #25d366; }
-#ffold {
-  padding: 40px 6% 100px;
-  max-width: 760px;
-  margin: 0 auto;
-  min-height: 50vh;
-  text-align: center;
-}
-body.spa-ffold #ffold { display: block; padding-top: 100px; }
-body.spa-ffold #home { display: none; }
-
-#ffold h2 {
-  font-size: clamp(28px, 7vw, 44px);
-  text-align: center;
-  margin-bottom: 10px;
-  background: linear-gradient(90deg, #fff, #ffb100);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.ffold-desc {
-  text-align: center;
-  color: var(--muted, #aaa);
-  font-size: 14px;
-  margin: 0 0 26px;
-}
-.ffold-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.ffold-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: var(--card, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
-  border-left: 3px solid #ff7b00;
-  text-align: left;
-  transition: border-color 0.2s, background 0.2s;
-}
-.ffold-row:hover { border-color: rgba(255, 160, 0, 0.45); border-left-color: #ffb100; }
-.ffold-ico {
-  flex: 0 0 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: rgba(255, 123, 0, 0.12);
-  color: #ffb100;
-  font-size: 20px;
-}
-.ffold-body { flex: 1; min-width: 0; }
-.ffold-body h3 {
-  margin: 0 0 3px;
-  font-family: var(--font-tech);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  color: #fff;
-}
-.ffold-body p {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--muted, #aaa);
-}
-.ffold-steps {
-  display: flex;
-  gap: 4px;
-  margin-top: 9px;
-}
-.ffold-steps i {
-  flex: 1;
-  height: 4px;
-  max-width: 34px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  transition: background 0.25s;
-}
-.ffold-steps i.on { background: linear-gradient(90deg, #ff7b00, #ffb100); }
-
-.ffold-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  text-decoration: none;
-  flex: 0 0 auto;
-  min-width: 150px;
-  padding: 11px 16px;
-  border: 0;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #ff7b00, #ffb100);
-  color: #1a1000;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: transform 0.15s, filter 0.2s, box-shadow 0.2s;
-}
-.ffold-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(255, 123, 0, 0.35);
-}
-.ffold-btn:active:not(:disabled) { transform: translateY(0); }
-.ffold-btn:disabled {
-  cursor: wait;
-  filter: grayscale(0.7) brightness(0.8);
-  box-shadow: none;
-}
-.ffold-btn.ready {
-  background: transparent;
-  color: #ffb100;
-  box-shadow: inset 0 0 0 1.5px #ffb100;
-}
-.ffold-btn.unlocked {
-  background: #00d26a;
-  color: #04200f;
-}
-.ffold-btn.unlocked:hover:not(:disabled) { box-shadow: 0 6px 18px rgba(0, 210, 106, 0.35); }
-@media (max-width: 560px) {
-  .ffold-row { flex-wrap: wrap; }
-  .ffold-body { flex: 1 1 calc(100% - 60px); }
-  .ffold-btn { flex: 1 1 100%; min-width: 0; }}
-
-.ffold-join {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 22px auto 0;
-  max-width: 360px;
-  padding: 13px 18px;
-  border-radius: 12px;
-  background: #25d366;
-  color: #04200f;
-  font-size: 14px;
-  font-weight: 800;
-  text-decoration: none;
-  transition: transform 0.15s, box-shadow 0.2s;
-}
-.ffold-join i { font-size: 20px; }
-.ffold-join:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35); }
