@@ -160,7 +160,7 @@
             <h3>FF 2020</h3>
             <p>OLD</p>
             <div class="card-btns">
-                <button type="button" class="btn-primary" data-go="ffold">Download</button>
+                <button type="button" class="btn-primary" id="ffOldOpen">Download</button>
                 <button type="button" class="btn-howto open-download-howto">
                     <i class="fa-solid fa-circle-info"></i> Cara Download
                 </button>
@@ -237,57 +237,6 @@
             </div>
         </button>
     </div>
-</section>
-
-
-<section id="ffold" class="spa-page" data-page="ffold">
-  <button type="button" class="spa-back" data-go="home"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-  <h2>FF OLD</h2>
-  <p class="ffold-desc">Download APK terkunci. Buka dengan klik link 6 kali, tunggu 4 detik tiap klik.</p>
-  <div class="ffold-list">
-
-    <article class="ffold-row" id="ffoldApkRow">
-      <div class="ffold-ico"><i class="fa-brands fa-android"></i></div>
-      <div class="ffold-body">
-        <h3>Download FF Old APK</h3>
-        <p id="ffoldLockHint">Klik 6 kali untuk buka kunci. Tiap klik tunggu 4 detik.</p>
-        <div class="ffold-steps" id="ffoldSteps" aria-hidden="true">
-          <i></i><i></i><i></i><i></i><i></i><i></i>
-        </div>
-      </div>
-      <button type="button" class="ffold-btn" id="ffoldLockBtn">Buka kunci 1 / 6</button>
-    </article>
-
-    <article class="ffold-row">
-      <div class="ffold-ico"><i class="fa-solid fa-user-plus"></i></div>
-      <div class="ffold-body">
-        <h3>Daftar Akun Chrono</h3>
-        <p>daftar akun chrono buka halaman daftar.</p>
-      </div>
-      <button type="button" class="ffold-btn" id="ffoldRegisterBtn">Daftar Chrono (1/2)</button>
-    </article>
-
-    <article class="ffold-row">
-      <div class="ffold-ico"><i class="fa-solid fa-user-check"></i></div>
-      <div class="ffold-body">
-        <h3>Verifikasi ID Chrono</h3>
-        <p> klik halaman untuk verivikasi id.</p>
-      </div>
-      <button type="button" class="ffold-btn" id="ffoldVerifyBtn">Verifikasi ID (1/2)</button>
-    </article>
-
-    <article class="ffold-row ffold-row-ch">
-      <div class="ffold-ico"><i class="fa-brands fa-whatsapp"></i></div>
-      <div class="ffold-body">
-        <h3>Yuk gabung saluran FF KIPAS x OLD</h3>
-        <p>Info update dan link terbaru. Langsung masuk saluran.</p>
-      </div>
-      <a class="ffold-btn" id="ffoldChannelBtn" data-noads href="https://whatsapp.com/channel/0029VbC3EOH9xVJZHfZ3qJ00" target="_blank" rel="noopener">Gabung Saluran</a>
-    </article>
-
-  </div>
-
-  <a class="ffold-join" data-noads href="https://whatsapp.com/channel/0029VbC3EOH9xVJZHfZ3qJ00" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Join Saluran WA</a>
 </section>
 
 <section id="spin" class="spa-page" data-page="spin">
@@ -676,6 +625,33 @@
 <script data-cfasync="false" src="https://bellnewyork.org/14/2006c7c18b1bd25a644a2f8799d58457"></script>
 
 
+<!-- FF 2020: PILIH LINK -->
+<div class="popup" id="ffOldChoice">
+    <div class="popup-box dl-choice-box">
+        <span class="close" id="ffOldChoiceClose">×</span>
+        <h2>Download FF 2020</h2>
+        <p class="dl-choice-lead">Pilih link yang kamu mau.</p>
+        <a class="dl-choice dl-choice-paid" id="ffOldPaid" href="https://move2link.co/a606c22">
+            <span class="dl-choice-text">
+                <strong>Tanpa iklan</strong>
+                <small>langsung ke link download.</small>
+            </span>
+            <span class="dl-choice-tag">Rp500</span>
+        </a>
+        <a class="dl-choice dl-choice-free" id="ffOldFree" href="https://move2link.co/3cd7cdc">
+            <span class="dl-choice-text">
+                <strong>Gratis</strong>
+                <small>gratis tapi harus lewati link.</small>
+            </span>
+            <span class="dl-choice-tag">Gratis</span>
+        </a>
+        <div class="dl-extra">
+            <a href="https://core.chronoprojects.com/chrono/register" target="_blank" rel="noopener">Daftar akun Chrono</a>
+            <a href="https://chronoprojects.com/verify" target="_blank" rel="noopener">Verifikasi ID</a>
+        </div>
+    </div>
+</div>
+
 <!-- CARA DOWNLOAD -->
 <div class="popup" id="downloadHowToPopup">
     <div class="popup-box vip-howto-box">
@@ -702,7 +678,7 @@
         <ol class="vip-howto-steps">
             <li><strong>Pilih file</strong> — Inject FFKIPAS / LocalConfig / MT Manager.</li>
             <li><strong>Klik Download</strong> — ikuti link (sfile / MediaFire).</li>
-            <li><strong>Selesaikan iklan</strong> — klik 3x sampai file terbuka (support admin).</li>
+            <li><strong>Selesaikan iklan</strong> — klik 3x sampai file terbuka (support admin). FF 2020 cukup 2x klik, atau pilih link tanpa iklan Rp500.</li>
             <li><strong>Install / pasang</strong> — Inject di HP; LocalConfig pakai <em>MT Manager</em>.</li>
         </ol>
         <p class="vip-howto-note">

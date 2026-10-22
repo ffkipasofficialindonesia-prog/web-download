@@ -71,6 +71,7 @@ function unlockPage() {
         ["vipListPopup", "active"],
         ["vipHowToPopup", "active"],
         ["downloadHowToPopup", "active"],
+        ["ffOldChoice", "active"],
         ["vipChatPanel", "show"],
         ["vipChatOverlay", "show"]
     ];
@@ -151,7 +152,6 @@ const SECTION_PATHS = {
     topup: "/topup",
     cekakun: "/cekakun",
     spin: "/spin",
-    ffold: "/ffold",
     history: "/history",
     faq: "/faq"
 };
@@ -165,7 +165,6 @@ const PATH_TO_SECTION = {
     "/cek": "cekakun",
     "/spin": "spin",
     "/event": "spin",
-    "/ffold": "ffold",
     "/history": "history",
     "/riwayat": "history",
     "/faq": "faq"
@@ -5975,14 +5974,10 @@ POPUNDER + SMARTLINK — CPM boost (sering)
       t.closest("#vipJoinIdBtn") ||
       t.closest("#vipCouponBtn") ||
       t.closest("#vipProofBtn") ||
-      t.closest("#vipBackBtn")
+      t.closest("#vipBackBtn") ||
+      t.closest("#ffOldOpen") ||
+      t.closest("#ffOldChoice")
     ) {
-      return;
-    }
-    // FF OLD: smartlink diatur sendiri oleh kunci (biar tidak dobel), popunder tetap jalan
-    // klik tujuan akhir (APK, daftar, verifikasi, saluran) = bersih tanpa iklan
-    if (t.closest("#ffold")) {
-      if (!e.ffNoAds && !t.closest("[data-noads]")) loadPopunder(true);
       return;
     }
     if (
@@ -6033,7 +6028,7 @@ SPA PAGE SWITCH (home kartu → topup/cekakun)
 function setSpaPage(sectionId) {
   const page = sectionId || "home";
   const body = document.body;
-  ["spa-home","spa-download","spa-topup","spa-cekakun","spa-spin","spa-ffold","spa-history","spa-faq"].forEach(c => body.classList.remove(c));
+  ["spa-home","spa-download","spa-topup","spa-cekakun","spa-spin","spa-history","spa-faq"].forEach(c => body.classList.remove(c));
   if (page === "home" || page === "leaderboard") {
     body.classList.add("spa-home");
   } else {
@@ -6087,7 +6082,7 @@ document.addEventListener("click", (e) => {
     } catch (e) {}
     if (sid === "home") {
       const p = (location.pathname || "/").replace(/\/index\.html$/i, "") || "/";
-      const map = { "/download": "download", "/topup": "topup", "/spin": "spin", "/event": "spin", "/cekakun": "cekakun", "/cek": "cekakun", "/ffold": "ffold", "/history": "history", "/riwayat": "history", "/faq": "faq" };
+      const map = { "/download": "download", "/topup": "topup", "/spin": "spin", "/event": "spin", "/cekakun": "cekakun", "/cek": "cekakun", "/history": "history", "/riwayat": "history", "/faq": "faq" };
       const key = p.replace(/\/+$/, "") || "/";
       if (map[key]) sid = map[key];
       else if (location.hash && location.hash.length > 1) {
@@ -6876,144 +6871,80 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
 
 
 /* ===========================
-FF OLD — kunci download (6 klik, jeda 4 detik) + langkah Chrono
-- APK: 6x klik smartlink, tiap klik tunggu 4 detik, setelah itu tombol jadi link APK
-- Daftar / Verifikasi Chrono: klik 1 = smartlink, klik 2 = halaman tujuan
+FF 2020 — pilih link download
+- Tanpa iklan (Rp500): langsung ke link, tidak ada klik iklan dari web
+- Gratis: 1x klik buka iklan, klik berikutnya buka link
 =========================== */
-(function initFfOld() {
-  const APK_URL = "https://move2link.co/3cd7cdc";
-  const REGISTER_URL = "https://core.chronoprojects.com/chrono/register";
-  const VERIFY_URL = "https://chronoprojects.com/verify";
-  const SMARTLINK = "https://ardance.org/4/7390f2d0c006f1597d4c085f2dcf948f";
-  const LOCK_CLICKS = 6;
-  const WAIT_SEC = 4;
-  const STORE_KEY = "ffold_unlock_step";
+(function initFfOldChoice() {
+  const popup = document.getElementById("ffOldChoice");
+  const openBtn = document.getElementById("ffOldOpen");
+  if (!popup || !openBtn) return;
 
-  const lockBtn = document.getElementById("ffoldLockBtn");
-  const hintEl = document.getElementById("ffoldLockHint");
-  const stepsEl = document.getElementById("ffoldSteps");
-  const registerBtn = document.getElementById("ffoldRegisterBtn");
-  const verifyBtn = document.getElementById("ffoldVerifyBtn");
-  if (!lockBtn) return;
+  const closeBtn = document.getElementById("ffOldChoiceClose");
+  const paidLink = document.getElementById("ffOldPaid");
+  const freeLink = document.getElementById("ffOldFree");
+  const freeTag = freeLink ? freeLink.querySelector(".dl-choice-tag") : null;
+  const AD_CLICKS = 1;
+  const FREE_TEXT = freeTag ? freeTag.textContent : "Gratis";
 
-  // Buka tab baru lewat anchor: cuma 1 tab, tidak kena masalah return null dari noopener
-  function openLink(url) {
-    try {
-      const a = document.createElement("a");
-      a.href = url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (e) {
-      try { window.location.href = url; } catch (err) {}
-    }
+  let clicks = 0;
+  let resetTimer = null;
+
+  function resetFree() {
+    clearTimeout(resetTimer);
+    resetTimer = null;
+    clicks = 0;
+    if (freeTag) freeTag.textContent = FREE_TEXT;
   }
 
-  function toast(title, msg, type) {
-    if (typeof showToast === "function") showToast(title, msg, type);
+  function openChoice() {
+    if (typeof closeChatMenu === "function") closeChatMenu();
+    resetFree();
+    popup.classList.add("active");
   }
 
-  /* ---------- Download APK (terkunci) ---------- */
-  let step = 0;
-  let waiting = false;
-  let timer = null;
-
-  // progres cuma di memori halaman: refresh / keluar web = ulang dari 0
-  try { sessionStorage.removeItem(STORE_KEY); } catch (e) {}
-
-  function renderLock(secLeft) {
-    const unlocked = step >= LOCK_CLICKS;
-    if (stepsEl) {
-      stepsEl.querySelectorAll("i").forEach((seg, i) => seg.classList.toggle("on", i < step));
-    }
-    lockBtn.classList.toggle("unlocked", unlocked);
-    lockBtn.disabled = waiting;
-
-    if (unlocked) {
-      lockBtn.textContent = "Download APK";
-      if (hintEl) hintEl.textContent = "Kunci terbuka. Klik tombol untuk download.";
-    } else if (waiting) {
-      lockBtn.textContent = "Tunggu " + secLeft + " detik...";
-      if (hintEl) hintEl.textContent = "Link " + step + " / " + LOCK_CLICKS + " terbuka. Tunggu sebentar.";
-    } else {
-      lockBtn.textContent = "Buka kunci " + (step + 1) + " / " + LOCK_CLICKS;
-      if (hintEl) {
-        hintEl.textContent = step === 0
-          ? "Klik 6 kali untuk buka kunci. Tiap klik tunggu 4 detik."
-          : "Progress " + step + " / " + LOCK_CLICKS + ". Lanjut klik.";
-      }
-    }
+  function closeChoice() {
+    popup.classList.remove("active");
+    resetFree();
   }
 
-  function startWait() {
-    waiting = true;
-    let left = WAIT_SEC;
-    renderLock(left);
-    clearInterval(timer);
-    timer = setInterval(() => {
-      left -= 1;
-      if (left <= 0) {
-        clearInterval(timer);
-        timer = null;
-        waiting = false;
-        renderLock();
-      } else {
-        renderLock(left);
-      }
-    }, 1000);
-  }
-
-  lockBtn.addEventListener("click", (e) => {
-    if (waiting) return;
-
-    if (step >= LOCK_CLICKS) {
-      e.ffNoAds = true;
-      if (typeof bumpDownloadCount === "function") bumpDownloadCount(1);
-      openLink(APK_URL);
-      // sudah download: kunci balik ke awal, harus klik 6x lagi
-      step = 0;
-        renderLock();
-      return;
-    }
-
-    openLink(SMARTLINK);
-    step += 1;
-
-    if (step >= LOCK_CLICKS) {
-      renderLock();
-      toast("Kunci terbuka", "Sekarang kamu bisa download APK.");
-    } else {
-      startWait();
-    }
+  openBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openChoice();
   });
 
-  renderLock();
+  if (closeBtn) closeBtn.addEventListener("click", closeChoice);
+  popup.addEventListener("click", (e) => {
+    if (e.target === popup) closeChoice();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeChoice();
+  });
 
-  /* ---------- Chrono: klik 1 smartlink, klik 2 halaman tujuan ---------- */
-  function twoStep(btn, url, labels) {
-    if (!btn) return;
-    let phase = 0;
-    btn.textContent = labels[0];
-    btn.addEventListener("click", (e) => {
-      if (phase === 0) {
-        openLink(SMARTLINK);
-        phase = 1;
-        btn.textContent = labels[1];
-        btn.classList.add("ready");
-      } else {
-        e.ffNoAds = true;
-        openLink(url);
-        phase = 0;
-        btn.textContent = labels[0];
-        btn.classList.remove("ready");
-      }
+  if (paidLink) {
+    paidLink.addEventListener("click", () => {
+      if (typeof bumpDownloadCount === "function") bumpDownloadCount(1);
     });
   }
 
-  twoStep(registerBtn, REGISTER_URL, ["Daftar Chrono (1/2)", "Lanjut Daftar (2/2)"]);
-  twoStep(verifyBtn, VERIFY_URL, ["Verifikasi ID (1/2)", "Lanjut Verifikasi (2/2)"]);
-})();
+  if (freeLink) {
+    freeLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      clicks += 1;
 
+      if (clicks <= AD_CLICKS) {
+        try { window.open(adLink, "_blank"); } catch (err) {}
+        if (freeTag) freeTag.textContent = "Klik " + (AD_CLICKS + 1 - clicks) + "x lagi";
+        return;
+      }
+
+      if (freeTag) freeTag.textContent = "Membuka...";
+      if (typeof bumpDownloadCount === "function") bumpDownloadCount(1);
+      window.location.href = freeLink.getAttribute("href");
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(resetFree, 4000);
+    });
+  }
+})();
