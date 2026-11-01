@@ -10,11 +10,32 @@
 <meta content="assets/og-image.png" property="og:image"/>
 <meta content="website" property="og:type"/>
 <link href="assets/favicon.png" rel="icon"/>
-<link href="style.css?v=20261101gff4" rel="stylesheet"/>
+<link rel="preload" href="assets/fonts/GFF-Latin-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/GFF-Latin-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/GFF-Latin-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link href="style.css?v=20261101clean2" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body class="spa-home">
 <script src="boot.js"></script>
+
+<!-- POP-UP PENGUMUMAN: JOIN SALURAN (muncul sebelum masuk web) -->
+<div class="join-gate" id="joinGate" role="dialog" aria-modal="true" aria-labelledby="joinGateTitle">
+  <div class="join-gate-box">
+    <button type="button" class="join-gate-x" data-gate-close aria-label="Tutup">×</button>
+    <div class="join-gate-brand">
+      <img src="assets/logo.png" alt="">
+      <span>MUHLIS <b>TOOLS</b></span>
+    </div>
+    <h2 class="join-gate-title" id="joinGateTitle">PENGUMUMAN</h2>
+    <p class="join-gate-text">Join Saluran WhatsApp biar nggak ketinggalan info update dan promo terbaru.</p>
+    <div class="join-gate-actions">
+      <a class="join-gate-join" id="joinGateBtn" href="https://whatsapp.com/channel/0029VbC3EOH9xVJZHfZ3qJ00" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Join Saluran</a>
+      <button type="button" class="join-gate-close" data-gate-close>Tutup</button>
+    </div>
+  </div>
+</div>
+<script src="gate.js"></script>
 
 <header class="header">
     <a href="#" class="logo">
@@ -45,15 +66,6 @@
         </button>
     </div>
 </header>
-
-<!-- Live hadiah gacha — kotak terpisah -->
-<div class="spin-ticker-wrap" id="spinTickerWrap">
-  <div class="spin-ticker" id="spinTicker" aria-live="polite">
-    <div class="spin-ticker-track" id="spinTickerTrack">
-      <span class="spin-ticker-placeholder">daftar player hoki</span>
-    </div>
-  </div>
-</div>
 
 
 <!-- SIDE MENU -->
@@ -89,7 +101,7 @@
                 <i class="fa-solid fa-download"></i>
                 <div>
                     <strong>Download</strong>
-                    <span>Inject FFKIPAS, LocalConfig, MT Manager</span>
+                    <span>FF 2020, FFKIPAS</span>
                 </div>
             </button>
             <button type="button" class="search-item" data-target="topup">
@@ -185,44 +197,6 @@
     </div>
 </section>
 
-<section id="spin" class="spa-page" data-page="spin">
-  <button type="button" class="spa-back" data-go="home"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-  <h2>GACHA VIP</h2>
-  <p class="spin-desc">Putar roda — hadiah utama <strong>FFKIPAS VIP</strong>. Coba keberuntunganmu bre!</p>
-  <div class="spin-wrap">
-    <div class="spin-wheel-box">
-      <div class="spin-pointer" aria-hidden="true"></div>
-      <canvas id="spinCanvas" width="320" height="320"></canvas>
-    </div>
-    <div class="spin-side">
-      <div class="spin-prizes">
-        <div class="spin-prize main"><i class="fa-solid fa-crown"></i> <span>FFKIPAS VIP</span> <small>Hadiah Utama</small></div>
-        <div class="spin-prize"><i class="fa-solid fa-star"></i> <span>Poin: 50 · 20</span></div>
-        <div class="spin-prize"><i class="fa-solid fa-star"></i> <span>Poin: 10 · 9 · 8 · 7 · 6</span></div>
-        <div class="spin-prize"><i class="fa-solid fa-star"></i> <span>Poin: 5 · 4 · 3 · 2 · 1</span></div>
-        <div class="spin-prize miss"><i class="fa-solid fa-xmark"></i> <span>Belum beruntung</span></div>
-      </div>
-      <p class="spin-chance" id="spinChance">Sisa putaran: <strong>3</strong></p>
-      <p class="spin-saldo-total" id="spinSaldoTotal">Poin terkumpul: <strong>0</strong> / 6.000</p>
-      <button type="button" class="buy-btn" id="spinBtn">PUTAR SEKARANG</button>
-            <div class="spin-refill" id="spinRefillWrap" hidden>
-        <p class="spin-refill-hint">Yuk tambah putaran dibawah ini!</p>
-        <button type="button" class="buy-btn" id="spinRefillOpenBtn">TAMBAH PUTARAN</button>
-      </div>
-<p class="spin-note">Kumpulkan poin dulu, minimal 6.000 poin baru bisa ditukar ke FFKIPAS VIP. Makin besar poin makin susah didapat. VIP juga bisa langsung keluar dari roda, klaim ke admin.</p>
-    </div>
-  </div>
-  <div class="spin-result" id="spinResult" hidden>
-    <div class="spin-result-box">
-      <div class="spin-result-icon" id="spinResultIcon">🎉</div>
-      <strong id="spinResultTitle">—</strong>
-      <p id="spinResultMsg">—</p>
-      <button type="button" class="buy-btn is-hidden" id="spinClaimBtn" hidden style="display:none">Klaim</button>
-      <button type="button" class="btn-howto" id="spinResultClose">Tutup</button>
-    </div>
-  </div>
-</section>
-
 <section id="topup" class="spa-page" data-page="topup">
     <button type="button" class="spa-back" data-go="home" id="topupBack"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
     <h2>TOP UP GAME</h2>
@@ -252,13 +226,6 @@
         </div>
     </div>
 </section>
-
-
-
-
-
-
-
 
 <section id="cekakun" class="spa-page" data-page="cekakun">
     <button type="button" class="spa-back" data-go="home" id="cekBack"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
@@ -604,161 +571,15 @@
         </div>
 
         <ol class="vip-howto-steps">
-            <li><strong>Pilih file</strong> — Inject FFKIPAS / LocalConfig / MT Manager.</li>
-            <li><strong>Klik Download</strong> — ikuti link (sfile / MediaFire).</li>
+            <li><strong>Pilih file</strong> — FF 2020 atau FFKIPAS.</li>
+            <li><strong>Klik Download</strong> — ikuti link yang muncul.</li>
             <li><strong>Selesaikan iklan</strong> — klik 3x sampai file terbuka (support admin). FF 2020 cukup 2x klik, atau pilih link tanpa iklan Rp500.</li>
-            <li><strong>Install / pasang</strong> — Inject di HP; LocalConfig pakai <em>MT Manager</em>.</li>
+            <li><strong>Install / pasang</strong> — pasang file yang sudah terunduh di HP.</li>
         </ol>
         <p class="vip-howto-note">
             <strong>Tips:</strong> Aktifkan “Izinkan dari sumber tidak dikenal” di pengaturan HP bila diminta.
-            Butuh akses VIP penuh? Order di kartu <strong>FFKIPAS VIP</strong>.
         </p>
         <button type="button" class="buy-btn" id="downloadHowToCloseBtn">Mengerti</button>
-    </div>
-</div>
-
-<!-- VIP HOW TO ORDER -->
-<div class="popup" id="vipHowToPopup">
-    <div class="popup-box vip-howto-box">
-        <span class="close" id="closeVipHowTo">×</span>
-        <div class="vip-badge"><i class="fa-solid fa-circle-info"></i> Cara Order</div>
-        <h2>Order FFKIPAS VIP</h2>
-        <ol class="vip-howto-steps">
-            <li><strong>Pilih paket</strong> (1–8 hari) & isi nama + kontak.</li>
-            <li><strong>Bayar QRIS</strong> sesuai nominal paket.</li>
-            <li><strong>Upload bukti TF</strong> — wajib, baru order masuk admin.</li>
-            <li><strong>Chat privat terbuka</strong> — tunggu admin verifikasi & proses (biasanya 5–15 menit).</li>
-        </ol>
-        <p class="vip-howto-note">Jam operasional: <strong>09.00 – 23.00 WIB</strong>. Di luar jam tetap bisa order; dibalas saat admin online.</p>
-        <button type="button" class="buy-btn" id="vipHowToBuy">Order Sekarang</button>
-    </div>
-</div>
-
-<!-- VIP ORDER POPUP -->
-<div class="popup" id="vipPopup">
-    <div class="popup-box vip-popup-box">
-        <span class="close" id="closeVipPopup">×</span>
-        <div class="vip-step" id="vipStepForm">
-            <div class="vip-badge"><i class="fa-solid fa-crown"></i> FFKIPAS VIP</div>
-            <h2>Order FFKIPAS VIP</h2>
-            <p class="vip-desc">Pilih paket, isi data, bayar QRIS + upload bukti TF. Chat privat terbuka setelah bukti terkirim.</p>
-            <div class="vip-pack-grid" id="vipPackGrid"></div>
-            <div class="vip-features-box" id="vipFeaturesBox">
-                <strong>Isi paket VIP:</strong>
-                <ul>
-                    <li>Akses FFKIPAS VIP penuh selama masa aktif</li>
-                    <li>Chat privat langsung dengan admin</li>
-                    <li>Prioritas proses & support</li>
-                    <li>Update fitur selama masa paket</li>
-                </ul>
-            </div>
-            <div class="vip-price-tag">Total: Rp<span id="vipPriceLabel">20.000</span></div>
-            <p class="vip-pack-selected" id="vipPackSelectedLabel">Paket: 1 Hari</p>
-            <div class="vip-coupon-row">
-                <input id="vipCouponInput" type="text" maxlength="20" placeholder="Kode kupon (opsional)" autocomplete="off"/>
-                <button type="button" id="vipCouponBtn">Pakai</button>
-            </div>
-            <p class="vip-coupon-msg" id="vipCouponMsg" style="display:none"></p>
-            <input id="vipNameInput" type="text" maxlength="24" placeholder="Nama panggilan kamu" autocomplete="off"/>
-            <input id="vipContactInput" type="text" maxlength="40" placeholder="No. WhatsApp / Telegram" autocomplete="off"/>
-            <input id="vipNoteInput" type="text" maxlength="80" placeholder="Catatan (opsional)" autocomplete="off"/>
-            <button type="button" class="buy-btn" id="vipContinueBtn">Lanjut ke Pembayaran QRIS</button>
-        </div>
-        <div class="vip-step" id="vipStepPay" style="display:none">
-            <div class="vip-badge"><i class="fa-solid fa-qrcode"></i> Pembayaran QRIS</div>
-            <h2>Scan QRIS</h2>
-            <p class="vip-order-meta">Order ID: <strong id="vipOrderIdLabel">-</strong></p>
-            <p class="vip-order-meta">Paket: <strong id="vipPayPackLabel">1 Hari</strong></p>
-            <p class="vip-order-meta">Total: <strong id="vipPayAmount">Rp20.000</strong> · QRIS</p>
-            <div class="vip-qris-wrap">
-                <img src="assets/payment/qris-vip.jpeg" alt="QRIS FFKIPAS VIP" id="vipQrisImg" class="vip-qris-img"/>
-            </div>
-            <p class="vip-pay-hint">Transfer dulu, lalu <strong>wajib upload bukti TF</strong>. Order baru masuk ke admin setelah bukti terkirim.</p>
-            <div class="vip-proof-box">
-                <input type="file" id="vipProofInput" accept="image/*" hidden>
-                <button type="button" class="vip-proof-btn" id="vipProofBtn">
-                    <i class="fa-solid fa-camera"></i>
-                    <span id="vipProofLabel">Upload Bukti Transfer</span>
-                </button>
-                <div class="vip-proof-preview" id="vipProofPreview" style="display:none">
-                    <img id="vipProofImg" src="" alt="Bukti TF">
-                    <button type="button" class="vip-proof-remove" id="vipProofRemove" title="Ganti">×</button>
-                </div>
-            </div>
-            <button type="button" class="buy-btn" id="vipPaidBtn" disabled>Kirim Bukti &amp; Buka Chat</button>
-            <button type="button" class="vip-back-btn" id="vipBackBtn">← Kembali</button>
-        </div>
-    </div>
-</div>
-
-<!-- VIP PRIVATE CHAT (1 room per order) -->
-<div class="group-chat-overlay" id="vipChatOverlay"></div>
-<div class="group-chat-panel vip-chat-panel" id="vipChatPanel">
-    <div class="gc-header">
-        <div class="gc-header-left">
-            <div class="gc-avatar vip-avatar"><i class="fa-solid fa-crown"></i></div>
-            <div>
-                <strong id="vipChatTitle">CHAT VIP</strong>
-                <span id="vipChatSub">Order privat</span>
-            </div>
-        </div>
-        <div class="gc-header-actions">
-            <button type="button" class="gc-close" id="vipChatClose" aria-label="Tutup">×</button>
-        </div>
-    </div>
-    <div class="vip-order-banner" id="vipOrderBanner">
-        <div class="vip-banner-row">
-            <span id="vipBannerText">Order VIP · menunggu verifikasi</span>
-            <button type="button" class="vip-copy-id" id="vipCopyOrderId" title="Salin Order ID">
-                <i class="fa-regular fa-copy"></i> Salin ID
-            </button>
-        </div>
-        <div class="vip-status-track" id="vipStatusTrack" aria-label="Status order">
-            <div class="vst-step" data-step="wait"><span class="vst-dot"></span><span class="vst-label">Menunggu verifikasi</span></div>
-            <div class="vst-line"></div>
-            <div class="vst-step" data-step="process"><span class="vst-dot"></span><span class="vst-label">Diproses</span></div>
-            <div class="vst-line"></div>
-            <div class="vst-step" data-step="done"><span class="vst-dot"></span><span class="vst-label">Selesai</span></div>
-        </div>
-    </div>
-    <div class="vip-admin-actions" id="vipAdminActions" style="display:none">
-        <button type="button" class="vip-act-btn process" id="vipBtnProcess" title="Tandai sedang diproses">
-            <i class="fa-solid fa-spinner"></i> Pesanan diproses
-        </button>
-        <button type="button" class="vip-act-btn done" id="vipBtnDone" title="Tandai selesai">
-            <i class="fa-solid fa-check"></i> Pesanan selesai
-        </button>
-    </div>
-    <div class="gc-messages" id="vipMessages">
-        <div class="gc-empty">Belum ada pesan.</div>
-    </div>
-    <form class="gc-input-bar" id="vipForm">
-        <input type="file" id="vipImageInput" accept="image/*" hidden>
-        <button type="button" id="vipImageBtn" title="Kirim gambar / bukti transfer"><i class="fa-solid fa-image"></i></button>
-        <input type="text" id="vipInput" maxlength="300" placeholder="Tulis pesan ke admin..." autocomplete="off">
-        <button type="submit" id="vipSend"><i class="fa-solid fa-paper-plane"></i></button>
-    </form>
-</div>
-
-<!-- VIP ORDERS LIST (my private rooms) -->
-<div class="popup" id="vipListPopup">
-    <div class="popup-box vip-list-box">
-        <span class="close" id="closeVipList">×</span>
-        <h2 id="vipListTitle"><i class="fa-solid fa-crown"></i> Chat VIP Saya</h2>
-        <p class="vip-desc" id="vipListDesc">Setiap order punya ruang chat sendiri.</p>
-        <div class="vip-filter-bar" id="vipFilterBar" style="display:none">
-            <button type="button" class="vip-filter-btn active" data-filter="all">Aktif</button>
-            <button type="button" class="vip-filter-btn" data-filter="wait">Menunggu</button>
-            <button type="button" class="vip-filter-btn" data-filter="process">Diproses</button>
-            <button type="button" class="vip-filter-btn" data-filter="done">Selesai</button>
-            <button type="button" class="vip-filter-btn" data-filter="archived">Arsip</button>
-        </div>
-        <div id="vipOrdersList" class="vip-orders-list"></div>
-        <div class="vip-join-by-id" id="vipJoinById">
-            <input type="text" id="vipJoinIdInput" maxlength="24" placeholder="Kode Order (opsional)" autocomplete="off"/>
-            <button type="button" id="vipJoinIdBtn">Buka</button>
-        </div>
-        <button type="button" class="buy-btn" id="vipNewOrderFromList">+ Order VIP Baru</button>
     </div>
 </div>
 
@@ -810,12 +631,6 @@
     </form>
 </div>
 
-
-<!-- Notif Saluran WA — simpel, bawah -->
-<div id="waJoinNotif" class="wa-bar" hidden>
-  <a href="https://whatsapp.com/channel/0029VbC3EOH9xVJZHfZ3qJ00" target="_blank" rel="noopener" id="waJoinBtn">Gabung Saluran WhatsApp</a>
-  <button type="button" id="waJoinClose" aria-label="Tutup">×</button>
-</div>
 
 <div class="floating-chat">
     <div class="chat-menu" id="chatMenu">
@@ -895,52 +710,7 @@
 <!-- Social Bar -->
 <script data-cfasync="false" src="https://bellnewyork.org/14/2006c7c18b1bd25a644a2f8799d58457"></script>
 
-<script src="script.js?v=20261010pop1"></script>
-
-<!-- SPIN REFILL STEPS (seperti verifyuid / unlock berurutan) -->
-<div class="spin-refill-modal" id="spinRefillModal" hidden>
-  <div class="spin-refill-panel">
-    <button type="button" class="spin-refill-x" id="spinRefillClose" aria-label="Tutup">×</button>
-    <div class="spin-refill-head">
-      <i class="fa-solid fa-unlock-keyhole"></i>
-      <h3 id="spinRefillTitle">Tambah Putaran</h3>
-      <p id="spinRefillDesc">Pilih paket. Tiap klik membuka smartlink.</p>
-    </div>
-    <div class="spin-pack-list" id="spinPackList">
-      <button type="button" class="spin-step-btn active" data-pack="1">
-        <span class="spin-step-num">1</span>
-        <span class="spin-step-text">
-          <strong>1 Putaran</strong>
-          <small>5 klik</small>
-        </span>
-        <span class="spin-step-status">Pilih</span>
-      </button>
-      <button type="button" class="spin-step-btn active" data-pack="2">
-        <span class="spin-step-num">2</span>
-        <span class="spin-step-text">
-          <strong>2 Putaran</strong>
-          <small>9 klik</small>
-        </span>
-        <span class="spin-step-status">Pilih</span>
-      </button>
-      <button type="button" class="spin-step-btn active" data-pack="3">
-        <span class="spin-step-num">3</span>
-        <span class="spin-step-text">
-          <strong>3 Putaran</strong>
-          <small>14 klik</small>
-        </span>
-        <span class="spin-step-status">Pilih</span>
-      </button>
-    </div>
-    <div class="spin-refill-run" id="spinRefillRun" hidden>
-      <div class="spin-chip-grid" id="spinChipGrid"></div>
-      <button type="button" class="buy-btn" id="spinRunBtn">KLIK 1 / 5</button>
-      <button type="button" class="btn-howto" id="spinPackBack" hidden>Ganti paket</button>
-    </div>
-    <div class="spin-refill-bar"><div class="spin-refill-bar-fill" id="spinRefillBarFill"></div></div>
-    <p class="spin-refill-foot" id="spinRefillFoot">Pilih salah satu paket</p>
-  </div>
-</div>
+<script src="script.js?v=20261101clean1"></script>
 
 </body>
 </html>
