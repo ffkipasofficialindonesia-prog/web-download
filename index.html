@@ -13,7 +13,7 @@
 <link rel="preload" href="assets/fonts/GFF-Latin-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/GFF-Latin-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/GFF-Latin-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link href="style.css?v=20261101clean2" rel="stylesheet"/>
+<link href="style.css?v=20261102fab9" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body class="spa-home">
@@ -28,7 +28,7 @@
       <span>MUHLIS <b>TOOLS</b></span>
     </div>
     <h2 class="join-gate-title" id="joinGateTitle">PENGUMUMAN</h2>
-    <p class="join-gate-text">Join Saluran WhatsApp biar nggak ketinggalan info update dan promo terbaru.</p>
+    <p class="join-gate-text">Join Saluran WhatsApp biar nggak ketinggalan info update terbaru.</p>
     <div class="join-gate-actions">
       <a class="join-gate-join" id="joinGateBtn" href="https://whatsapp.com/channel/0029VbC3EOH9xVJZHfZ3qJ00" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Join Saluran</a>
       <button type="button" class="join-gate-close" data-gate-close>Tutup</button>
@@ -41,22 +41,6 @@
     <a href="#" class="logo">
         <img src="assets/logo.png" alt="MENU">
     </a>
-    <div class="header-stats" id="headerStats" title="Statistik realtime">
-        <div class="hs-item">
-            <strong id="counter">0</strong>
-            <span>Download</span>
-        </div>
-        <div class="hs-sep" aria-hidden="true"></div>
-        <div class="hs-item">
-            <strong id="onlineCounter">—</strong>
-            <span><i class="online-live-dot" aria-hidden="true"></i> Online</span>
-        </div>
-        <div class="hs-sep" aria-hidden="true"></div>
-        <div class="hs-item">
-            <strong>100%</strong>
-            <span>Uptime</span>
-        </div>
-    </div>
     <div class="header-actions">
         <button class="glass-btn" id="searchBtn" title="Cari">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -132,16 +116,23 @@
     </div>
 </div>
 
-<section class="slider" id="home">
-    <video class="slide-video" id="heroVideo"
-        src="assets/slider/banner.mp4"
-        muted
-        playsinline
-        autoplay
-        loop
-        preload="metadata"
-        poster="assets/slider/download.png">
-    </video>
+<section class="slider" id="home" aria-roledescription="carousel" aria-label="Info terbaru">
+    <div class="slider-track" id="sliderTrack">
+        <a class="slide" href="https://whatsapp.com/channel/0029VbC3EOH9xVJZHfZ3qJ00" target="_blank" rel="noopener" aria-label="Join Saluran WhatsApp">
+            <img src="assets/slider/slide-1.webp" alt="Join Saluran WhatsApp" width="1920" height="650" draggable="false">
+        </a>
+        <button type="button" class="slide" id="slideFfOld" aria-label="Download FF Old 2020">
+            <img src="assets/slider/slide-2.webp" alt="Download FF Old 2020" width="1920" height="650" loading="lazy" draggable="false">
+        </button>
+        <button type="button" class="slide" data-go="topup" aria-label="Top Up Free">
+            <img src="assets/slider/slide-3.webp" alt="Top Up Free" width="1920" height="650" loading="lazy" draggable="false">
+        </button>
+    </div>
+    <div class="slider-dots" id="sliderDots">
+        <button type="button" class="active" aria-label="Slide 1"></button>
+        <button type="button" aria-label="Slide 2"></button>
+        <button type="button" aria-label="Slide 3"></button>
+    </div>
 </section>
 
 <section id="download" class="spa-page" data-page="download">
@@ -155,7 +146,7 @@
             <p>OLD</p>
             <div class="card-btns">
                 <button type="button" class="btn-primary" id="ffOldOpen">Download</button>
-                <button type="button" class="btn-howto open-download-howto">
+                <button type="button" class="btn-howto open-download-howto" data-howto="ffold">
                     <i class="fa-solid fa-circle-info"></i> Cara Download
                 </button>
             </div>
@@ -168,7 +159,7 @@
             <p>OB55</p>
             <div class="card-btns">
                 <a class="btn-primary" href="https://move2link.co/muhlis">Download</a>
-                <button type="button" class="btn-howto open-download-howto">
+                <button type="button" class="btn-howto open-download-howto" data-howto="ffkipas">
                     <i class="fa-solid fa-circle-info"></i> Cara Download
                 </button>
             </div>
@@ -531,7 +522,7 @@
                 <strong>Tanpa iklan</strong>
                 <small>langsung ke link download.</small>
             </span>
-            <span class="dl-choice-tag">Rp500</span>
+            <span class="dl-choice-tag">Rp1.000</span>
         </a>
         <a class="dl-choice dl-choice-free" id="ffOldFree" href="https://move2link.co/3cd7cdc">
             <span class="dl-choice-text">
@@ -548,16 +539,28 @@
 </div>
 
 <!-- CARA DOWNLOAD -->
-<div class="popup" id="downloadHowToPopup">
+<div class="popup" id="downloadHowToPopup" data-howto="ffold">
     <div class="popup-box vip-howto-box">
         <span class="close" id="closeDownloadHowTo">×</span>
         <div class="vip-badge"><i class="fa-solid fa-download"></i> Cara Download</div>
-        <h2>Download FFKIPAS</h2>
+        <h2 data-howto-for="ffold">Download FF Old 2020</h2>
+        <h2 data-howto-for="ffkipas">Download FFKIPAS</h2>
 
         <div class="tutorial-video-wrap">
             <p class="tutorial-video-label">Video Tutorial</p>
             <div class="tutorial-video-box" id="tutorialVideoBox">
                 <iframe
+                    data-howto-for="ffold"
+                    class="tutorial-streamable"
+                    src="https://streamable.com/nuwk7u"
+                    title="Tutorial Download FF Old 2020"
+                    frameborder="0"
+                    allowfullscreen
+                    allow="autoplay; fullscreen; encrypted-media"
+                    loading="lazy">
+                </iframe>
+                <iframe
+                    data-howto-for="ffkipas"
                     class="tutorial-streamable"
                     src="https://streamable.com/nuwk7u"
                     title="Tutorial Download FFKIPAS"
@@ -571,11 +574,16 @@
         </div>
 
         <ol class="vip-howto-steps">
-            <li><strong>Pilih file</strong> — FF 2020 atau FFKIPAS.</li>
+            <li data-howto-for="ffold"><strong>Pilih file</strong> — FF Old 2020.</li>
+            <li data-howto-for="ffkipas"><strong>Pilih file</strong> — FFKIPAS.</li>
             <li><strong>Klik Download</strong> — ikuti link yang muncul.</li>
-            <li><strong>Selesaikan iklan</strong> — klik 3x sampai file terbuka (support admin). FF 2020 cukup 2x klik, atau pilih link tanpa iklan Rp500.</li>
+            <li data-howto-for="ffold"><strong>Selesaikan iklan</strong> — klik 2x sampai file terbuka (support admin).</li>
+            <li data-howto-for="ffkipas"><strong>Selesaikan iklan</strong> — klik 3x sampai file terbuka (support admin).</li>
             <li><strong>Install / pasang</strong> — pasang file yang sudah terunduh di HP.</li>
         </ol>
+        <p class="vip-howto-note" data-howto-for="ffold">
+            <strong>Tanpa iklan:</strong> ada pilihan berbayar Rp1.000, langsung ke link download tanpa klik iklan.
+        </p>
         <p class="vip-howto-note">
             <strong>Tips:</strong> Aktifkan “Izinkan dari sumber tidak dikenal” di pengaturan HP bila diminta.
         </p>
@@ -685,6 +693,17 @@
             Respon cepat • 24 jam
         </div>
     </div>
+    <div class="header-stats" id="headerStats" title="Statistik realtime">
+        <div class="hs-item">
+            <strong id="counter">0</strong>
+            <span>Download</span>
+        </div>
+        <div class="hs-sep" aria-hidden="true"></div>
+        <div class="hs-item">
+            <strong id="onlineCounter">—</strong>
+            <span><i class="online-live-dot" aria-hidden="true"></i> Online</span>
+        </div>
+    </div>
     <button id="chatToggle" title="GRUP DISKUSI" type="button">
         <i class="fa-solid fa-comments chat-icon-open"></i>
         <i class="fa-solid fa-xmark chat-icon-close"></i>
@@ -710,7 +729,7 @@
 <!-- Social Bar -->
 <script data-cfasync="false" src="https://bellnewyork.org/14/2006c7c18b1bd25a644a2f8799d58457"></script>
 
-<script src="script.js?v=20261101clean1"></script>
+<script src="script.js?v=20261102fab9"></script>
 
 </body>
 </html>

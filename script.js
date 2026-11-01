@@ -1140,28 +1140,81 @@ function renderTrxHistory() {
 renderTrxHistory();
 
 /* ===========================
-SLIDER (SINGLE VIDEO)
+SLIDER — 2 gambar, geser otomatis, bisa diklik & digeser
 =========================== */
-const heroVideo = document.getElementById("heroVideo");
-if (heroVideo) {
-    heroVideo.muted = true;
-    const tryPlay = () => {
-        const p = heroVideo.play();
-        if (p && p.catch) p.catch(() => {});
-    };
-    tryPlay();
-    document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) tryPlay();
+(function initSlider() {
+    const track = document.getElementById("sliderTrack");
+    const dotsBox = document.getElementById("sliderDots");
+    if (!track) return;
+    const slides = track.querySelectorAll(".slide");
+    const dots = dotsBox ? dotsBox.querySelectorAll("button") : [];
+    const total = slides.length;
+    const DELAY = 4500;
+    let index = 0;
+    let timer = null;
+
+    function go(i) {
+        index = (i + total) % total;
+        track.style.transform = "translateX(" + (-index * 100) + "%)";
+        dots.forEach((d, n) => d.classList.toggle("active", n === index));
+    }
+    function start() {
+        stop();
+        timer = setInterval(() => go(index + 1), DELAY);
+    }
+    function stop() {
+        if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    dots.forEach((d, n) => d.addEventListener("click", () => { go(n); start(); }));
+
+    // geser dengan jari / mouse
+    let startX = 0, startY = 0, dx = 0, dragging = false, moved = false;
+    track.addEventListener("pointerdown", (e) => {
+        dragging = true; moved = false; dx = 0;
+        track.dataset.moved = "0";
+        startX = e.clientX; startY = e.clientY;
+        stop();
     });
-    // unlock autoplay after first tap anywhere (mobile)
-    const unlock = () => {
-        tryPlay();
-        document.removeEventListener("touchstart", unlock);
-        document.removeEventListener("click", unlock);
-    };
-    document.addEventListener("touchstart", unlock, { once: true });
-    document.addEventListener("click", unlock, { once: true });
-}
+    track.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        dx = e.clientX - startX;
+        if (Math.abs(dx) > 8) { moved = true; track.dataset.moved = "1"; }
+    });
+    function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
+        start();
+    }
+    track.addEventListener("pointerup", endDrag);
+    track.addEventListener("pointercancel", endDrag);
+    track.addEventListener("pointerleave", endDrag);
+
+    // klik slide (kalau tadi digeser, jangan dianggap klik)
+    track.addEventListener("click", (e) => {
+        if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+
+    // slide 2: buka pilihan download FF Old 2020
+    const ffOldSlide = document.getElementById("slideFfOld");
+    if (ffOldSlide) {
+        ffOldSlide.addEventListener("click", () => {
+            const btn = document.getElementById("ffOldOpen");
+            if (btn) btn.click();
+        });
+    }
+
+    // hemat baterai: berhenti saat tab disembunyikan / kursor di atas slider
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stop(); else start();
+    });
+    track.addEventListener("mouseenter", stop);
+    track.addEventListener("mouseleave", () => { if (!dragging) start(); });
+
+    go(0);
+    start();
+})();
 
 /* ===========================
 FLOATING CHAT
@@ -2256,9 +2309,12 @@ async function copyTextToClipboard(text) {
 const downloadHowToPopup = document.getElementById("downloadHowToPopup");
 const closeDownloadHowToBtn = document.getElementById("closeDownloadHowTo");
 const downloadHowToCloseBtn = document.getElementById("downloadHowToCloseBtn");
-function openDownloadHowTo() {
+function openDownloadHowTo(kind) {
     if (typeof closeChatMenu === "function") closeChatMenu();
-    if (downloadHowToPopup) downloadHowToPopup.classList.add("active");
+    if (downloadHowToPopup) {
+        downloadHowToPopup.setAttribute("data-howto", kind === "ffkipas" ? "ffkipas" : "ffold");
+        downloadHowToPopup.classList.add("active");
+    }
 }
 function closeDownloadHowTo() {
     if (downloadHowToPopup) downloadHowToPopup.classList.remove("active");
@@ -2267,7 +2323,7 @@ document.querySelectorAll(".open-download-howto").forEach(btn => {
     btn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        openDownloadHowTo();
+        openDownloadHowTo(btn.getAttribute("data-howto"));
     });
 });
 if (closeDownloadHowToBtn) closeDownloadHowToBtn.onclick = closeDownloadHowTo;
@@ -2295,12 +2351,12 @@ setInterval(updateAdminOnlineUI, 60 * 1000);
   if (!box) return;
 
   function pauseTutorial() {
-    const iframe = box.querySelector("iframe");
-    if (iframe && iframe.src) {
+    box.querySelectorAll("iframe").forEach(iframe => {
+      if (!iframe.src) return;
       const src = iframe.src;
       iframe.src = "";
       iframe.src = src;
-    }
+    });
   }
 
   const closeBtn = document.getElementById("closeDownloadHowTo");
@@ -4349,7 +4405,8 @@ POPUNDER + SMARTLINK — CPM boost (sering)
     if (e.target && e.target.closest && e.target.closest(".floating-chat")) return;
     // klik buatan script (anchor hasil openLink dll) jangan dihitung lagi, kalau tidak smartlink kebuka dobel
     if (e.isTrusted === false) return;
-    if (e.target && e.target.closest && e.target.closest("#joinGate")) return;
+    // pop-up Join Saluran & slider banner: tanpa iklan
+    if (e.target && e.target.closest && (e.target.closest("#joinGate") || e.target.closest(".slider"))) return;
     const t = e.target;
     if (!t || !t.closest) return;
     // Cek FF: tanpa smartlink
@@ -4476,7 +4533,7 @@ document.addEventListener("click", (e) => {
 
 /* ===========================
 FF 2020 — pilih link download
-- Tanpa iklan (Rp500): langsung ke link, tidak ada klik iklan dari web
+- Tanpa iklan (Rp1.000): langsung ke link, tidak ada klik iklan dari web
 - Gratis: 1x klik buka iklan, klik berikutnya buka link
 =========================== */
 (function initFfOldChoice() {

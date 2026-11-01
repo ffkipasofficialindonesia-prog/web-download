@@ -2,16 +2,6 @@
 
 @font-face {
   font-family: 'GFF Latin';
-  src: url('assets/fonts/GFF-Latin-Thin.woff2') format('woff2'),
-       url('assets/fonts/GFF-Latin-Thin.woff') format('woff'),
-       url('assets/fonts/GFF-Latin-Thin.ttf') format('truetype');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'GFF Latin';
   src: url('assets/fonts/GFF-Latin-Regular.woff2') format('woff2'),
        url('assets/fonts/GFF-Latin-Regular.woff') format('woff'),
        url('assets/fonts/GFF-Latin-Regular.ttf') format('truetype');
@@ -42,19 +32,12 @@
 
 :root {
   --primary: #ff4d1f;
-  --secondary: #ff6a3d;
-  --accent: #ff4d1f;
   --bg: #262b33;
   --card: rgba(255, 255, 255, 0.045);
   --card-hover: rgba(255, 255, 255, 0.07);
   --border: rgba(255, 255, 255, 0.12);
-  --border-glow: rgba(255, 77, 31, 0.5);
   --text: #ffffff;
   --muted: #9ba4b1;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  --glow: none;
   --font: "GFF Latin", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: var(--font);
   --font-tech: var(--font);
@@ -549,14 +532,59 @@ SLIDER — Single Video
   z-index: 2;
 }
 
-.slider .slide-video {
+.slider-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  touch-action: pan-y;
+}
+
+.slider .slide {
+  flex: 0 0 100%;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: #1f242b;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slider .slide img {
   width: 100%;
   aspect-ratio: 1920 / 650;
   height: auto;
   object-fit: cover;
   display: block;
-  background: #1f242b;
-  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.slider-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 3;
+}
+
+.slider-dots button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: background 0.25s ease, width 0.25s ease;
+}
+
+.slider-dots button.active {
+  width: 22px;
+  border-radius: 8px;
+  background: #ff4d1f;
 }
 
 /*==============================
@@ -2378,10 +2406,10 @@ FLOATING CHAT — Premium
 }
 
 .chat-menu {
-  width: 280px;
+  width: 232px;
   background: linear-gradient(165deg, #2d333c 0%, #232830 100%);
   border: 1.5px solid rgba(255, 77, 31, 0.55) !important;
-  border-radius: 18px;
+  border-radius: 14px;
   overflow: hidden;
   box-shadow:
     0 24px 55px rgba(0, 0, 0, 0.55),
@@ -2402,13 +2430,11 @@ FLOATING CHAT — Premium
 }
 
 .chat-menu-header {
-  padding: 12px 14px;
+  padding: 9px 12px;
   background: transparent;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   position: relative;
 }
-
-/* hapus garis oranye tebal di atas header */
 
 .chat-menu-header::before {
   display: none;
@@ -2418,20 +2444,20 @@ FLOATING CHAT — Premium
 .chat-admin {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
 }
 
 .chat-avatar {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
 }
 
 .chat-avatar img {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   object-fit: cover;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: #2d333c;
@@ -2441,8 +2467,8 @@ FLOATING CHAT — Premium
   position: absolute;
   right: -1px;
   bottom: -1px;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: #00c853;
   border: 2px solid #151515;
@@ -2450,14 +2476,9 @@ FLOATING CHAT — Premium
   animation: none;
 }
 
-@keyframes onlinePulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
-}
-
 .chat-admin-info strong {
   display: block;
-  font-size: 13.5px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
   margin-bottom: 1px;
@@ -2465,26 +2486,26 @@ FLOATING CHAT — Premium
 
 .chat-admin-info span {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   color: #00c853;
   font-weight: 600;
 }
 
 .chat-menu-list {
-  padding: 10px;
+  padding: 7px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .chat-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 11px 12px;
+  gap: 10px;
+  padding: 7px 9px;
   color: #fff;
   text-decoration: none;
-  border-radius: 14px;
+  border-radius: 11px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   background: rgba(255, 255, 255, 0.02);
   transition: all 0.22s ease;
@@ -2497,13 +2518,13 @@ FLOATING CHAT — Premium
 }
 
 .chat-item-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 16px;
   flex-shrink: 0;
   transition: transform 0.25s;
 }
@@ -2516,10 +2537,6 @@ FLOATING CHAT — Premium
   width: 100%;
   cursor: pointer;
   font-family: inherit;
-  text-align: left;
-}
-
-.chat-item-text {
   text-align: left;
 }
 
@@ -2548,25 +2565,26 @@ FLOATING CHAT — Premium
 }
 
 .chat-item-text {
+  text-align: left;
   flex: 1;
   min-width: 0;
 }
 
 .chat-item-text strong {
   display: block;
-  font-size: 13.5px;
+  font-size: 12px;
   font-weight: 700;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .chat-item-text span {
   display: block;
-  font-size: 11.5px;
+  font-size: 10px;
   color: #888;
 }
 
 .chat-arrow {
-  font-size: 11px;
+  font-size: 10px;
   color: #555;
   transition: transform 0.2s, color 0.2s;
 }
@@ -2581,16 +2599,16 @@ FLOATING CHAT — Premium
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 11px 14px 13px;
+  padding: 8px 12px 9px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 11.5px;
+  font-size: 10px;
   color: #777;
   background: rgba(0, 0, 0, 0.2);
 }
 
 .chat-menu-footer i {
   color: #ff4d1f;
-  font-size: 12px;
+  font-size: 10.5px;
 }
 
 /*==============================
@@ -2752,7 +2770,7 @@ RESPONSIVE
   }
 
   .chat-menu {
-    width: min(270px, calc(100vw - 28px));
+    width: min(214px, calc(100vw - 28px));
   }
 }
 
@@ -3890,25 +3908,26 @@ button.chat-item {
 
 .header-stats {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
-  max-width: 340px;
-  margin: 0 auto;
-  padding: 5px 10px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 128px;
+  padding: 9px 14px;
+  border-radius: 14px;
+  background: rgba(36, 41, 49, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .hs-item {
   display: flex;
-  flex-direction: column;
+  flex-direction: row-reverse;
   align-items: center;
-  min-width: 0;
-  line-height: 1.15;
+  justify-content: space-between;
+  gap: 14px;
+  line-height: 1.2;
 }
 
 .hs-item strong {
@@ -3920,22 +3939,20 @@ button.chat-item {
 }
 
 .hs-item span {
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 600;
-  color: #888;
+  color: #9ba4b1;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   white-space: nowrap;
 }
 
 .hs-sep {
-  width: 1px;
-  height: 28px;
-  background: rgba(255, 255, 255, 0.1);
-  flex-shrink: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .header-stats .online-live-dot {
@@ -3943,7 +3960,6 @@ button.chat-item {
   height: 6px;
   border-radius: 50%;
   background: #00c853;
-  box-shadow: 0 0 6px rgba(0, 200, 83, 0.6);
   display: inline-block;
   flex-shrink: 0;
 }
@@ -3958,16 +3974,14 @@ button.chat-item {
 
 @media (max-width: 480px) {
   .header-stats {
-    padding: 4px 6px;
+    min-width: 116px;
+    padding: 8px 12px;
     gap: 5px;
-    max-width: 200px;
   }
 
-  .hs-item strong { font-size: 11px; }
+  .hs-item strong { font-size: 12.5px; }
 
-  .hs-item span { font-size: 8px; }
-
-  .hs-sep { height: 20px; }
+  .hs-item span { font-size: 9px; }
 }
 
 /* stats section sisa uptime aja — biar rapi */
@@ -4486,16 +4500,6 @@ button.chat-item {
   min-height: auto;
 }
 
-/* CHAT MENU OUTER ORANGE BORDER */
-
-.floating-chat .chat-menu,
-.chat-menu {
-  border: 1.5px solid rgba(255, 77, 31, 0.55) !important;
-  box-shadow:
-    0 24px 55px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(0, 0, 0, 0.25) inset,
-    0 0 30px rgba(0, 0, 0, 0.25) !important;
-}
 
 /* ===== Cek Akun — Skin dipakai ===== */
 
@@ -4989,3 +4993,9 @@ html.gate-open { overflow: hidden; }
 }
 
 .join-gate-close:hover { background: rgba(255, 255, 255, 0.07); }
+
+/* Popup Cara Download: isi beda untuk FF Old 2020 vs FFKIPAS */
+#downloadHowToPopup[data-howto="ffold"] [data-howto-for="ffkipas"],
+#downloadHowToPopup[data-howto="ffkipas"] [data-howto-for="ffold"] {
+  display: none;
+}
