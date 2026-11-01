@@ -1636,7 +1636,7 @@ function renderMessages(list) {
             if (target) {
                 target.scrollIntoView({ behavior: "smooth", block: "center" });
                 target.style.transition = "box-shadow 0.3s";
-                target.style.boxShadow = "0 0 0 2px rgba(255,152,0,0.6)";
+                target.style.boxShadow = "0 0 0 2px rgba(255,77,31,0.6)";
                 setTimeout(() => { target.style.boxShadow = ""; }, 1500);
             }
         });
@@ -5112,7 +5112,7 @@ function resolveFfSkill(id) {
 
 function skinPlaceholder(name) {
   const n = String(name || "Item").slice(0, 10);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect fill="#1a1510" width="96" height="96"/><text x="50%" y="50%" fill="#9a8a72" font-family="sans-serif" font-size="11" text-anchor="middle" dy=".3em">${n.replace(/[<>&]/g, "")}</text></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect fill="#2d333c" width="96" height="96"/><text x="50%" y="50%" fill="#9ba4b1" font-family="sans-serif" font-size="11" text-anchor="middle" dy=".3em">${n.replace(/[<>&]/g, "")}</text></svg>`;
   return "data:image/svg+xml," + encodeURIComponent(svg);
 }
 
@@ -6108,20 +6108,20 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
   // Link yang harus dilalui 3x untuk +1 spin (bisa diganti)
   // weight tinggi = lebih sering. VIP sangat kecil.
   const PRIZES = [
-    { id: "vip", label: "FFKIPAS VIP", color: "#ff7b00", weight: 10, icon: "👑", amount: 0 },
-    { id: "poin50", label: "50 Poin", color: "#e0a100", weight: 10, icon: "⭐", amount: 50 },
-    { id: "poin20", label: "20 Poin", color: "#c98f00", weight: 40, icon: "⭐", amount: 20 },
-    { id: "poin10", label: "10 Poin", color: "#b88200", weight: 110, icon: "⭐", amount: 10 },
-    { id: "poin9", label: "9 Poin", color: "#a87700", weight: 150, icon: "⭐", amount: 9 },
-    { id: "poin8", label: "8 Poin", color: "#986d00", weight: 200, icon: "⭐", amount: 8 },
-    { id: "poin7", label: "7 Poin", color: "#8a6400", weight: 280, icon: "⭐", amount: 7 },
-    { id: "poin6", label: "6 Poin", color: "#7d5c05", weight: 380, icon: "⭐", amount: 6 },
-    { id: "poin5", label: "5 Poin", color: "#715409", weight: 520, icon: "⭐", amount: 5 },
-    { id: "poin4", label: "4 Poin", color: "#674e0e", weight: 700, icon: "⭐", amount: 4 },
-    { id: "poin3", label: "3 Poin", color: "#5e4812", weight: 950, icon: "⭐", amount: 3 },
-    { id: "poin2", label: "2 Poin", color: "#564316", weight: 1300, icon: "⭐", amount: 2 },
-    { id: "poin1", label: "1 Poin", color: "#4e3f1a", weight: 1800, icon: "⭐", amount: 1 },
-    { id: "miss", label: "Belum beruntung", color: "#3a3a3a", weight: 3550, icon: "😅", amount: 0 }
+    { id: "vip", label: "FFKIPAS VIP", color: "#ff4d1f", weight: 10, icon: "👑", amount: 0 },
+    { id: "poin50", label: "50 Poin", color: "#e2461f", weight: 10, icon: "⭐", amount: 50 },
+    { id: "poin20", label: "20 Poin", color: "#d44724", weight: 40, icon: "⭐", amount: 20 },
+    { id: "poin10", label: "10 Poin", color: "#c5472a", weight: 110, icon: "⭐", amount: 10 },
+    { id: "poin9", label: "9 Poin", color: "#b7482f", weight: 150, icon: "⭐", amount: 9 },
+    { id: "poin8", label: "8 Poin", color: "#a94834", weight: 200, icon: "⭐", amount: 8 },
+    { id: "poin7", label: "7 Poin", color: "#9a4939", weight: 280, icon: "⭐", amount: 7 },
+    { id: "poin6", label: "6 Poin", color: "#8c493f", weight: 380, icon: "⭐", amount: 6 },
+    { id: "poin5", label: "5 Poin", color: "#7d4a44", weight: 520, icon: "⭐", amount: 5 },
+    { id: "poin4", label: "4 Poin", color: "#6f4a49", weight: 700, icon: "⭐", amount: 4 },
+    { id: "poin3", label: "3 Poin", color: "#614b4e", weight: 950, icon: "⭐", amount: 3 },
+    { id: "poin2", label: "2 Poin", color: "#524b54", weight: 1300, icon: "⭐", amount: 2 },
+    { id: "poin1", label: "1 Poin", color: "#444c59", weight: 1800, icon: "⭐", amount: 1 },
+    { id: "miss", label: "Belum beruntung", color: "#2f353e", weight: 3550, icon: "😅", amount: 0 }
   ];
   // Poin: makin besar makin susah (weight kecil). Total weight = 10.000.
   const POIN_CLAIM_MIN = 6000; // minimal poin untuk tukar ke FFKIPAS VIP
@@ -6314,12 +6314,12 @@ EVENT SPIN — VIP langka + saldo + refill 3 link
     // pusat
     ctx.beginPath();
     ctx.arc(0, 0, 28, 0, Math.PI * 2);
-    ctx.fillStyle = "#141414";
+    ctx.fillStyle = "#232830";
     ctx.fill();
-    ctx.strokeStyle = "#ffb100";
+    ctx.strokeStyle = "#ff4d1f";
     ctx.lineWidth = 3;
     ctx.stroke();
-    ctx.fillStyle = "#ffc107";
+    ctx.fillStyle = "#ff4d1f";
     ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
