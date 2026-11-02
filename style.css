@@ -182,13 +182,11 @@ SIDE MENU
 .menu-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.35);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
   z-index: 10010;
 }
 
@@ -200,137 +198,137 @@ SIDE MENU
 
 .side-menu {
   position: fixed;
-  top: 0;
-  right: 0;
-  width: min(320px, 86vw);
-  height: 100%;
-  background: linear-gradient(180deg, #2c323b 0%, #21262d 100%);
-  border-left: 1px solid rgba(255, 77, 31, 0.25);
-  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.5);
+  top: 92px;
+  right: max(4vw, calc(50vw - 590px));
+  width: 232px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 110px);
+  background: #2b3038;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
   z-index: 10011;
-  transform: translateX(110%);
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
   display: flex;
   flex-direction: column;
-  padding: 0 0 24px;
+  padding: 8px 0 12px;
   overflow-y: auto;
   pointer-events: none; /* kritis: jangan blokir klik kanan saat tertutup */
   visibility: hidden;
 }
 
 .side-menu.open {
-  transform: translateX(0);
+  opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
   visibility: visible;
 }
 
-.side-menu-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 22px 20px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  position: relative;
-}
-
-.side-menu-header img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  
-}
-
-.side-menu-header span {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 18px;
-  letter-spacing: 1.5px;
-  color: #ff6a3d;
-}
-
-.menu-close {
-  margin-left: auto;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.menu-close:hover {
-  background: rgba(255, 77, 31, 0.2);
-  border-color: rgba(255, 77, 31, 0.45);
-  color: #ff4d1f;
-}
-
 .side-link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 15px 22px;
-  color: #ddd;
+  margin: 2px 8px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  color: #b4bcc8;
   text-decoration: none;
   font-family: var(--font-tech);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  transition: all 0.25s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .side-link i {
-  width: 22px;
+  width: 20px;
   text-align: center;
-  color: #ff4d1f;
-  font-size: 16px;
+  color: #7d8796;
+  font-size: 15px;
+  transition: color 0.2s ease;
 }
 
 .side-link:hover {
-  background: rgba(255, 77, 31, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   color: #fff;
-  padding-left: 28px;
+}
+
+/* halaman yang sedang dibuka */
+
+body.spa-home .side-link[href="#home"],
+body.spa-download .side-link[href="#download"],
+body.spa-topup .side-link[href="#topup"],
+body.spa-history .side-link[href="#history"],
+body.spa-cekakun .side-link[href="#cekakun"] {
+  background: rgba(255, 77, 31, 0.13);
+  color: #fff;
+}
+
+body.spa-home .side-link[href="#home"]::before,
+body.spa-download .side-link[href="#download"]::before,
+body.spa-topup .side-link[href="#topup"]::before,
+body.spa-history .side-link[href="#history"]::before,
+body.spa-cekakun .side-link[href="#cekakun"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #ff4d1f;
+}
+
+body.spa-home .side-link[href="#home"] i,
+body.spa-download .side-link[href="#download"] i,
+body.spa-topup .side-link[href="#topup"] i,
+body.spa-history .side-link[href="#history"] i,
+body.spa-cekakun .side-link[href="#cekakun"] i {
+  color: #ff6a3d;
 }
 
 .side-menu-footer {
-  margin-top: auto;
-  padding: 20px 18px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  margin-top: 8px;
+  padding: 12px 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.side-menu-label {
+  grid-column: 1 / -1;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #7d8796;
 }
 
 .side-menu-footer a {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 13px;
-  border-radius: 14px;
+  gap: 8px;
+  padding: 9px 6px;
+  border-radius: 9px;
+  color: #fff;
   text-decoration: none;
   font-weight: 700;
-  font-size: 14px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 12px;
+  transition: filter 0.2s ease;
 }
 
-.side-menu-footer a:first-child {
-  background: linear-gradient(90deg, #25d366, #128c7e);
-  color: #fff;
-}
+.side-menu-footer a:nth-of-type(1) { background: #1fa855; }
 
-.side-menu-footer a:last-child {
-  background: linear-gradient(90deg, #2aabee, #229ed9);
-  color: #fff;
-}
+.side-menu-footer a:nth-of-type(2) { background: #1d8fce; }
 
 .side-menu-footer a:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
 }
 
 /*==============================
@@ -2668,6 +2666,11 @@ RESPONSIVE
     padding: 0 12px 0 14px;
   }
 
+  .side-menu {
+    top: 80px;
+    right: 3vw;
+  }
+
   .logo img {
     width: 36px;
   }
@@ -2867,12 +2870,12 @@ GROUP CHAT ROOM
   position: fixed;
   right: 20px;
   bottom: 96px;
-  width: min(360px, calc(100vw - 24px));
-  height: min(520px, calc(100vh - 120px));
-  background: linear-gradient(180deg, #2d333c, #21262d);
-  border: 1px solid rgba(255, 77, 31, 0.3);
-  border-radius: 22px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 40px rgba(0, 0, 0, 0.25);
+  width: min(380px, calc(100vw - 24px));
+  height: min(560px, calc(100vh - 120px));
+  background: #262b33;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2895,9 +2898,9 @@ GROUP CHAT ROOM
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 14px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  background: linear-gradient(180deg, rgba(255, 77, 31, 0.12), transparent);
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #2c323b;
 }
 
 .gc-header-left {
@@ -2907,11 +2910,11 @@ GROUP CHAT ROOM
 }
 
 .gc-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(255, 140, 0, 0.15);
-  border: 1px solid rgba(255, 170, 0, 0.3);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 77, 31, 0.16);
+  border: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2923,10 +2926,9 @@ GROUP CHAT ROOM
   display: block;
   font-size: 14px;
   font-weight: 800;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.4px;
   text-transform: uppercase;
-  color: #ff6a3d;
-  
+  color: #fff;
 }
 
 .gc-header-left span {
@@ -2944,11 +2946,11 @@ GROUP CHAT ROOM
 
 .gc-rename,
 .gc-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.07);
   color: #fff;
   font-size: 14px;
   line-height: 1;
@@ -2971,11 +2973,14 @@ GROUP CHAT ROOM
 .gc-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 12px;
+  padding: 14px 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: #21262d;
 }
 
 .gc-empty {
@@ -2990,7 +2995,7 @@ GROUP CHAT ROOM
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  max-width: 92%;
+  max-width: 86%;
   align-self: flex-start;
   animation: fadeIn 0.2s ease;
 }
@@ -3021,17 +3026,26 @@ GROUP CHAT ROOM
 }
 
 .gc-msg {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 8px;
   max-width: 100%;
-  padding: 8px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 7px 11px 6px;
+  border-radius: 14px 14px 14px 4px;
+  background: #333a44;
+  border: 0;
   min-width: 0;
 }
 
+.gc-msg > * { grid-column: 1 / -1; }
+
+.gc-msg > .gc-msg-time { grid-column: 1; align-self: end; }
+
+.gc-msg > .gc-msg-actions { grid-column: 2; }
+
 .gc-msg-row.me .gc-msg {
-  background: rgba(255, 77, 31, 0.15);
-  border-color: rgba(255, 77, 31, 0.25);
+  background: #a8361a;
+  border-radius: 14px 14px 4px 14px;
 }
 
 .gc-msg-name {
@@ -3046,7 +3060,7 @@ GROUP CHAT ROOM
   line-height: 1.2;
 }
 
-.gc-msg-row.me .gc-msg-name { color: #ff6a3d; }
+.gc-msg-row.me .gc-msg-name { color: #ffd2c4; }
 
 /* Admin badge — kecil, menempel di samping nama */
 
@@ -3092,16 +3106,16 @@ GROUP CHAT ROOM
 }
 
 .gc-msg-text {
-  font-size: 13.5px;
-  color: #eee;
+  font-size: 14px;
+  color: #f1f1f1;
   word-break: break-word;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .gc-msg-time {
   font-size: 10px;
-  color: #666;
-  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 3px;
   text-align: right;
 }
 
@@ -3156,7 +3170,8 @@ GROUP CHAT ROOM
 .gc-msg-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 4px;
+  align-self: end;
+  margin-top: 0;
   opacity: 0;
   transition: opacity 0.15s;
 }
@@ -3165,15 +3180,19 @@ GROUP CHAT ROOM
   opacity: 1;
 }
 
+@media (hover: none) {
+  .gc-msg-actions { opacity: 0.8; }
+}
+
 .gc-reply-btn {
   border: none;
   background: transparent;
   color: #888;
-  font-size: 11px;
+  font-size: 10px;
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 1px 5px;
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
@@ -3311,21 +3330,21 @@ GROUP CHAT ROOM
   display: flex;
   gap: 8px;
   align-items: center;
-  padding: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(0, 0, 0, 0.25);
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #2c323b;
 }
 
 .gc-name-bar input,
 .gc-input-bar input {
   flex: 1;
   min-width: 0;
-  background: rgba(255, 255, 255, 0.06);
+  background: #21262d;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 11px 14px;
+  border-radius: 22px;
+  padding: 11px 16px;
   color: #fff;
-  font-size: 13.5px;
+  font-size: 14px;
   font-family: inherit;
   outline: none;
 }
@@ -3338,7 +3357,7 @@ GROUP CHAT ROOM
 #gcSaveName,
 #gcSend {
   border: none;
-  border-radius: 12px;
+  border-radius: 22px;
   background: #ff4d1f;
   color: #fff;
   font-weight: 800;
@@ -3353,9 +3372,9 @@ GROUP CHAT ROOM
 #gcImageBtn {
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
   color: #ff6a3d;
   font-size: 16px;
   cursor: pointer;
@@ -3376,9 +3395,10 @@ GROUP CHAT ROOM
 }
 
 #gcSend {
-  width: 46px;
-  min-width: 46px;
+  width: 42px;
+  min-width: 42px;
   height: 42px;
+  border-radius: 50%;
   padding: 0;
   display: flex;
   align-items: center;
@@ -3410,12 +3430,20 @@ GROUP CHAT ROOM
 
 @media (max-width: 480px) {
   .group-chat-panel {
-    right: 12px;
-    left: 12px;
+    right: 8px;
+    left: 8px;
     width: auto;
-    bottom: 88px;
-    height: min(480px, calc(100vh - 110px));
+    bottom: 8px;
+    height: min(640px, calc(100vh - 70px));
+    height: min(640px, calc(100dvh - 70px));
   }
+
+  .gc-name-bar input,
+  .gc-input-bar input {
+    font-size: 16px;
+  }
+
+  .gc-msg-row { max-width: 90%; }
 }
 
 /* Label di samping tombol chat */
