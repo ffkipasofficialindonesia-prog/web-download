@@ -4405,8 +4405,8 @@ POPUNDER + SMARTLINK — CPM boost (sering)
     if (e.target && e.target.closest && e.target.closest(".floating-chat")) return;
     // klik buatan script (anchor hasil openLink dll) jangan dihitung lagi, kalau tidak smartlink kebuka dobel
     if (e.isTrusted === false) return;
-    // pop-up Join Saluran & slider banner: tanpa iklan
-    if (e.target && e.target.closest && (e.target.closest("#joinGate") || e.target.closest(".slider"))) return;
+    // slider banner: tanpa iklan
+    if (e.target && e.target.closest && e.target.closest(".slider")) return;
     const t = e.target;
     if (!t || !t.closest) return;
     // Cek FF: tanpa smartlink
