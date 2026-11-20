@@ -58,12 +58,12 @@
             <input type="text" id="globalSearch" placeholder="Search..." autocomplete="off">
             <button type="button" id="searchClose" class="search-close">×</button>
         </div>
-        <div class="search-results" id="searchResults">
+        <div class="search-results">
             <button type="button" class="search-item" data-target="download">
                 <i class="fa-solid fa-download"></i>
                 <div>
                     <strong>Download</strong>
-                    <span>FF 2020, FFKIPAS</span>
+                    <span>FF 2020, FF 2022, FFKIPAS</span>
                 </div>
             </button>
             <button type="button" class="search-item" data-target="topup">
@@ -123,13 +123,26 @@
             <h3>FF 2020</h3>
             <p>OLD</p>
             <div class="card-btns">
-                <button type="button" class="btn-primary" id="ffOldOpen">Download</button>
-                <button type="button" class="btn-howto open-download-howto" data-howto="ffold">
+                <button type="button" class="btn-primary" id="ffOldOpen" data-title="Download FF 2020">Download</button>
+                <button type="button" class="btn-howto open-download-howto" data-howto="ffold" data-title="Download FF Old 2020">
                     <i class="fa-solid fa-circle-info"></i> Cara Download
                 </button>
             </div>
         </div>
         <div class="download-card">
+            <div class="icon">
+                <img src="assets/icon/ffkipas.png" alt="FF 2022">
+            </div>
+            <h3>FF 2022</h3>
+            <p>OLD</p>
+            <div class="card-btns">
+                <button type="button" class="btn-primary" id="ff22Open" data-title="Download FF 2022">Download</button>
+                <button type="button" class="btn-howto open-download-howto" data-howto="ffold" data-title="Download FF 2022">
+                    <i class="fa-solid fa-circle-info"></i> Cara Download
+                </button>
+            </div>
+        </div>
+        <div class="download-card dl-newrow">
             <div class="icon">
                 <img src="assets/icon/ffkipas.png" alt="FFKIPAS">
             </div>
@@ -167,7 +180,7 @@
 </section>
 
 <section id="topup" class="spa-page" data-page="topup">
-    <button type="button" class="spa-back" data-go="home" id="topupBack"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+    <button type="button" class="spa-back" data-go="home"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
     <h2>TOP UP GAME</h2>
     <p class="topup-desc">
         TOPUP GAME FAVORITMU GRATIS DARI ADMIN.
@@ -197,7 +210,7 @@
 </section>
 
 <section id="cekakun" class="spa-page" data-page="cekakun">
-    <button type="button" class="spa-back" data-go="home" id="cekBack"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+    <button type="button" class="spa-back" data-go="home"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
     <h2>web : muhliskipas.my.id</h2>
     <p class="cek-desc">masukan id yang mau kalian cek, tools ini free ya silahkan pakek sepuasnya.</p>
         <div class="cek-box">
@@ -221,7 +234,7 @@
                     <strong id="cekId">—</strong>
                 </div>
             </div>
-            <div class="cek-bio" id="cekBioBox">
+            <div class="cek-bio">
                 <span class="cek-label">Bio</span>
                 <p id="cekBio">—</p>
             </div>
@@ -336,14 +349,6 @@
     </div>
 </section>
 
-<section id="leaderboard" class="spa-page" data-page="leaderboard">
-    <h2>TOP DOWNLOADER</h2>
-    <p class="lb-desc">Ranking user yang paling sering download (nama dari chat grup / Anonim)</p>
-    <div class="lb-list" id="lbList">
-        <div class="lb-empty">Belum ada data leaderboard.</div>
-    </div>
-</section>
-
 <section id="history" class="spa-page" data-page="history">
     <h2>Riwayat Transaksi</h2>
     <div id="historyList"></div>
@@ -441,7 +446,6 @@
                 <div><span>No. Invoice</span><strong id="invoiceNumber">-</strong></div>
                 <div><span>Tanggal</span><strong id="invoiceDate">-</strong></div>
             </div>
-            <img id="invoiceLogo" src="" class="invoice-logo" alt="" style="display:none"/>
             <div class="inv-divider"><span>DETAIL PESANAN</span></div>
             <div class="inv-rows">
                 <div class="inv-row">
@@ -493,25 +497,25 @@
 <div class="popup" id="ffOldChoice">
     <div class="popup-box dl-choice-box">
         <span class="close" id="ffOldChoiceClose">×</span>
-        <h2>Download FF 2020</h2>
+        <h2 id="ffOldChoiceTitle">Download FF 2020</h2>
         <p class="dl-choice-lead">Pilih link yang kamu mau.</p>
-        <a class="dl-choice dl-choice-paid" id="ffOldPaid" href="https://move2link.co/a606c22">
+        <a class="dl-choice dl-choice-paid" id="ffOldPaid" href="https://move2link.co/2022ERA">
             <span class="dl-choice-text">
-                <strong>Skip iklan</strong>
-                <small>langsung ke link download, skip iklan.</small>
+                <strong>CHEAT FF 2020</strong>
+                <small>Aim Silent + ESP</small>
             </span>
             <span class="dl-choice-tag">Rp1.000</span>
         </a>
-        <a class="dl-choice dl-choice-free" id="ffOldFree" href="https://move2link.co/a606c22">
+        <a class="dl-choice dl-choice-free" id="ffOldFree" href="https://www.mediafire.com/file/x4nq41ngerh5zgn/FFINDIA-x86.apk/file:anibanned:">
             <span class="dl-choice-text">
-                <strong>FF CHRONO OLD</strong>
+                <strong>FF 2022</strong>
                 <small>silahkan download di sini.</small>
             </span>
             <span class="dl-choice-tag">Download</span>
         </a>
         <div class="dl-extra">
-            <a href="https://core.chronoprojects.com/chrono/register" target="_blank" rel="noopener">Daftar akun Chrono</a>
-            <a href="https://chronoprojects.com/verify" target="_blank" rel="noopener">Verifikasi ID</a>
+            <a href="https://register.samosasmobiles.dpdns.org/" target="_blank" rel="noopener">Daftar FF 2022</a>
+            <a href="https://move2link.co/c4d3774" target="_blank" rel="noopener">CHEAT FF 2022 FREE</a>
         </div>
     </div>
 </div>
@@ -552,7 +556,7 @@
         </div>
 
         <ol class="vip-howto-steps">
-            <li data-howto-for="ffold"><strong>Pilih file</strong> — FF Old 2020.</li>
+            <li data-howto-for="ffold"><strong>Pilih file</strong> — FF Old 2020 atau FF 2022.</li>
             <li data-howto-for="ffkipas"><strong>Pilih file</strong> — FFKIPAS.</li>
             <li><strong>Klik Download</strong> — ikuti link yang muncul.</li>
             <li data-howto-for="ffold"><strong>Selesaikan iklan</strong> — klik 2x sampai file terbuka (support admin).</li>
@@ -671,7 +675,7 @@
             Respon cepat • 24 jam
         </div>
     </div>
-    <div class="header-stats" id="headerStats" title="Statistik realtime">
+    <div class="header-stats" title="Statistik realtime">
         <div class="hs-item">
             <strong id="counter">0</strong>
             <span>Download</span>

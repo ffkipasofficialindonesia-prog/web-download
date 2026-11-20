@@ -1888,13 +1888,6 @@ PROCESSING & INVOICE
   word-break: break-all;
 }
 
-.invoice-logo {
-  width: 56px;
-  display: block;
-  margin: 0 auto 12px;
-  
-}
-
 .inv-divider {
   display: flex;
   align-items: center;
@@ -3727,128 +3720,6 @@ button.chat-item {
   max-width: min(520px, 94vw) !important;
 }
 
-/* ========== Leaderboard ========== */
-
-#leaderboard {
-  padding: 40px 6% 70px;
-  text-align: center;
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-#leaderboard > h2 {
-  font-size: clamp(22px, 5vw, 34px);
-  margin-bottom: 8px;
-  background: linear-gradient(90deg, #fff, #fff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.lb-desc {
-  color: #888;
-  font-size: 13px;
-  margin-bottom: 18px;
-}
-
-.lb-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-}
-
-.lb-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.lb-row.top1 {
-  position: relative;
-  border-color: rgba(255, 77, 31, 0.55);
-  background: linear-gradient(135deg, rgba(255, 77, 31, 0.16), rgba(255, 77, 31, 0.06));
-  box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
-}
-
-.lb-rank {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 800;
-  background: rgba(255, 255, 255, 0.08);
-  color: #ccc;
-  flex-shrink: 0;
-}
-
-.lb-row.top1 .lb-rank {
-  background: linear-gradient(145deg, #ff8a63, #ff4d1f);
-  color: #fff;
-  font-size: 13px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
-.lb-name .lb-title {
-  display: block;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: #ff6a3d;
-  margin-bottom: 1px;
-  
-}
-
-.lb-crown {
-  flex-shrink: 0;
-  color: #ff6a3d;
-  font-size: 16px;
-  
-  animation: lbCrownPulse 2s ease-in-out infinite;
-}
-
-@keyframes lbCrownPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.12); opacity: 0.85; }
-}
-
-.lb-row.top2 .lb-rank { background: rgba(200, 200, 210, 0.25); color: #eee; }
-
-.lb-row.top3 .lb-rank { background: rgba(180, 120, 60, 0.35); color: #ffd7a0; }
-
-.lb-name {
-  flex: 1;
-  min-width: 0;
-  font-weight: 700;
-  font-size: 14px;
-  color: #fff;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.lb-count {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #ff6a3d;
-  flex-shrink: 0;
-}
-
-.lb-empty {
-  text-align: center;
-  color: #777;
-  padding: 20px;
-  font-size: 13px;
-}
-
 .gc-msg-row.is-bot .gc-msg-name {
   color: #ff6a3d !important;
 }
@@ -4612,8 +4483,7 @@ button.chat-item {
   display: none;
 }
 
-body.spa-home #download,
-body.spa-home #leaderboard {
+body.spa-home #download {
   display: block;
 }
 
@@ -4907,4 +4777,9 @@ body.spa-download #download {
 #downloadHowToPopup[data-howto="ffold"] [data-howto-for="ffkipas"],
 #downloadHowToPopup[data-howto="ffkipas"] [data-howto-for="ffold"] {
   display: none;
+}
+
+/* kartu FFKIPAS selalu mulai di baris baru, di bawah FF 2020 */
+.card-grid > .dl-newrow {
+  grid-column: 1;
 }

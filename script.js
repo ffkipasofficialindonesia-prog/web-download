@@ -102,7 +102,6 @@ HEADER BUTTONS + SIDE MENU
 const menuBtn = document.getElementById("menuBtn");
 const sideMenu = document.getElementById("sideMenu");
 const menuOverlay = document.getElementById("menuOverlay");
-const menuClose = document.getElementById("menuClose");
 
 function openSideMenu() {
     if (sideMenu) sideMenu.classList.add("open");
@@ -132,7 +131,6 @@ if (menuBtn) {
     };
 }
 
-if (menuClose) menuClose.onclick = closeSideMenu;
 if (menuOverlay) menuOverlay.onclick = closeSideMenu;
 
 /* ===========================
@@ -464,7 +462,6 @@ function bumpDownloadCount(by = 1) {
         const base = (typeof cur === "number" && cur >= 0) ? cur : DOWNLOAD_BASE;
         return base + add;
     }).catch(() => {});
-    if (typeof trackDownloaderHit === "function") trackDownloaderHit();
 }
 
 // Fallback animasi lokal sebelum Firebase siap
@@ -1728,7 +1725,6 @@ function initGroupChat() {
         initSitePresence();
         // Total download realtime
         initDownloadStats();
-        if (typeof initLeaderboard === "function") initLeaderboard();
 
         // Re-klaim nama yang tersimpan di browser ini
         if (gcName) {
@@ -2309,9 +2305,11 @@ async function copyTextToClipboard(text) {
 const downloadHowToPopup = document.getElementById("downloadHowToPopup");
 const closeDownloadHowToBtn = document.getElementById("closeDownloadHowTo");
 const downloadHowToCloseBtn = document.getElementById("downloadHowToCloseBtn");
-function openDownloadHowTo(kind) {
+function openDownloadHowTo(kind, title) {
     if (typeof closeChatMenu === "function") closeChatMenu();
     if (downloadHowToPopup) {
+        const h = downloadHowToPopup.querySelector('h2[data-howto-for="ffold"]');
+        if (h && title && kind !== "ffkipas") h.textContent = title;
         downloadHowToPopup.setAttribute("data-howto", kind === "ffkipas" ? "ffkipas" : "ffold");
         downloadHowToPopup.classList.add("active");
     }
@@ -2323,7 +2321,7 @@ document.querySelectorAll(".open-download-howto").forEach(btn => {
     btn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        openDownloadHowTo(btn.getAttribute("data-howto"));
+        openDownloadHowTo(btn.getAttribute("data-howto"), btn.getAttribute("data-title"));
     });
 });
 if (closeDownloadHowToBtn) closeDownloadHowToBtn.onclick = closeDownloadHowTo;
@@ -2417,85 +2415,6 @@ function maybeGroupAutoReply(userText) {
     }, 700);
     break;
   }
-}
-
-/* ===========================
-LEADERBOARD DOWNLOADER
-=========================== */
-function safeDownloaderKey(name) {
-  return String(name || "anonim")
-    .toLowerCase()
-    .replace(/[.#$\[\]\/]/g, "_")
-    .slice(0, 24) || "anonim";
-}
-
-function trackDownloaderHit() {
-  if (!gcDb || !gcReady) return;
-  let name = "";
-  try {
-    name = (localStorage.getItem("ff_chat_name") || "").trim();
-  } catch (e) {}
-  if (!name) name = "Anonim";
-  name = name.slice(0, 16);
-  const key = safeDownloaderKey(name);
-  const ref = gcDb.ref("ffkipas_stats/downloaders/" + key);
-  ref.transaction((cur) => {
-    if (!cur || typeof cur !== "object") {
-      return { name: name, count: 1, last: Date.now() };
-    }
-    return {
-      name: cur.name || name,
-      count: (Number(cur.count) || 0) + 1,
-      last: Date.now()
-    };
-  }).catch(() => {});
-}
-
-function renderLeaderboard(data) {
-  const box = document.getElementById("lbList");
-  if (!box) return;
-  const esc = (typeof escapeHtml === "function")
-    ? escapeHtml
-    : (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const list = Object.keys(data || {}).map(k => {
-    const v = data[k] || {};
-    return {
-      name: v.name || k,
-      count: Number(v.count) || 0,
-      last: v.last || 0
-    };
-  }).filter(x => x.count > 0)
-    .sort((a, b) => b.count - a.count || b.last - a.last)
-    .slice(0, 6);
-
-  if (!list.length) {
-    box.innerHTML = '<div class="lb-empty">Belum ada data leaderboard.</div>';
-    return;
-  }
-  box.innerHTML = list.map((row, i) => {
-    const rank = i + 1;
-    const cls = rank === 1 ? "top1" : (rank === 2 ? "top2" : (rank === 3 ? "top3" : ""));
-    const crown = rank === 1
-      ? '<span class="lb-crown" title="Top 1"><i class="fa-solid fa-crown"></i></span>'
-      : '';
-    const nameHtml = rank === 1
-      ? `<div class="lb-name"><span class="lb-title">Raja Download</span>${esc(row.name)}</div>`
-      : `<div class="lb-name">${esc(row.name)}</div>`;
-    return `<div class="lb-row ${cls}">
-      <div class="lb-rank">${rank === 1 ? '<i class="fa-solid fa-crown"></i>' : rank}</div>
-      ${nameHtml}
-      <div class="lb-count">${row.count.toLocaleString("id-ID")} DL</div>
-      ${crown}
-    </div>`;
-  }).join("");
-}
-
-function initLeaderboard() {
-  if (!gcDb || !gcReady) return;
-  const ref = gcDb.ref("ffkipas_stats/downloaders");
-  ref.on("value", (snap) => {
-    renderLeaderboard(snap.val() || {});
-  });
 }
 
 /* ===========================
@@ -4415,6 +4334,7 @@ POPUNDER + SMARTLINK — CPM boost (sering)
       t.closest("#cekUidInput") ||
       (t.closest("#cekakun") && t.closest(".buy-btn")) ||
       t.closest("#ffOldOpen") ||
+      t.closest("#ff22Open") ||
       t.closest("#ffOldChoice")
     ) {
       return;
@@ -4463,7 +4383,7 @@ function setSpaPage(sectionId) {
   const page = sectionId || "home";
   const body = document.body;
   ["spa-home","spa-download","spa-topup","spa-cekakun","spa-history"].forEach(c => body.classList.remove(c));
-  if (page === "home" || page === "leaderboard") {
+  if (page === "home") {
     body.classList.add("spa-home");
   } else {
     body.classList.add("spa-" + page);
@@ -4482,7 +4402,7 @@ function setSpaPage(sectionId) {
   if (!_nav) return;
   window.navigateToSection = function (sectionId, opts) {
     const o = opts || {};
-    setSpaPage(sectionId === "leaderboard" ? "home" : sectionId);
+    setSpaPage(sectionId);
     // home: show hub, no need deep scroll
     if (sectionId === "home") {
       if (o.push !== false) {
@@ -4524,7 +4444,7 @@ document.addEventListener("click", (e) => {
         if (document.getElementById(h)) sid = h;
       }
     }
-    setSpaPage(sid === "leaderboard" ? "home" : sid);
+    setSpaPage(sid);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply);
   else apply();
@@ -4532,14 +4452,15 @@ document.addEventListener("click", (e) => {
 })();
 
 /* ===========================
-FF 2020 — pilih link download
+FF 2020 / FF 2022 — pilih link download
 - Tanpa iklan (Rp1.000): langsung ke link, tidak ada klik iklan dari web
 - Gratis: 1x klik buka iklan, klik berikutnya buka link
 =========================== */
 (function initFfOldChoice() {
   const popup = document.getElementById("ffOldChoice");
-  const openBtn = document.getElementById("ffOldOpen");
-  if (!popup || !openBtn) return;
+  const openBtns = ["ffOldOpen", "ff22Open"].map((id) => document.getElementById(id)).filter(Boolean);
+  if (!popup || !openBtns.length) return;
+  const titleEl = document.getElementById("ffOldChoiceTitle");
 
   const closeBtn = document.getElementById("ffOldChoiceClose");
   const paidLink = document.getElementById("ffOldPaid");
@@ -4558,8 +4479,9 @@ FF 2020 — pilih link download
     if (freeTag) freeTag.textContent = FREE_TEXT;
   }
 
-  function openChoice() {
+  function openChoice(title) {
     if (typeof closeChatMenu === "function") closeChatMenu();
+    if (titleEl && title) titleEl.textContent = title;
     resetFree();
     popup.classList.add("active");
   }
@@ -4569,10 +4491,12 @@ FF 2020 — pilih link download
     resetFree();
   }
 
-  openBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openChoice();
+  openBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openChoice(btn.getAttribute("data-title"));
+    });
   });
 
   if (closeBtn) closeBtn.addEventListener("click", closeChoice);
