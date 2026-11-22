@@ -300,15 +300,6 @@ body.spa-cekakun .side-link[href="#cekakun"] i {
   gap: 8px;
 }
 
-.side-menu-label {
-  grid-column: 1 / -1;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: #7d8796;
-}
-
 .side-menu-footer a {
   display: flex;
   align-items: center;
@@ -555,34 +546,6 @@ SLIDER — Single Video
   display: block;
   user-select: none;
   -webkit-user-drag: none;
-}
-
-.slider-dots {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 10px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  z-index: 3;
-}
-
-.slider-dots button {
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition: background 0.25s ease, width 0.25s ease;
-}
-
-.slider-dots button.active {
-  width: 22px;
-  border-radius: 8px;
-  background: #ff4d1f;
 }
 
 /*==============================
@@ -1287,25 +1250,9 @@ PROCESSING & INVOICE
   overflow: hidden;
 }
 
-.processing-box::after {
-  content: "";
-  position: absolute;
-  top: -40%;
-  left: -20%;
-  width: 60%;
-  height: 80%;
-  pointer-events: none;
-  animation: procGlow 3s ease-in-out infinite;
-}
-
 @keyframes procBoxIn {
   from { opacity: 0; transform: scale(0.88) translateY(16px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes procGlow {
-  0%, 100% { opacity: 0.5; transform: translate(0, 0); }
-  50% { opacity: 1; transform: translate(30%, 10%); }
 }
 
 /* dual-ring loader */
@@ -1861,18 +1808,6 @@ TOAST — simple & clean
   pointer-events: auto;
 }
 
-/* no neon / progress / shine */
-
-.toast::before,
-.toast::after {
-  display: none !important;
-  content: none !important;
-}
-
-.toast .toast-shine {
-  display: none !important;
-}
-
 .toast-icon {
   width: 36px;
   height: 36px;
@@ -2065,33 +2000,6 @@ FLOATING CHAT — Premium
   opacity: 1;
   transform: scale(1) rotate(0deg);
   color: #ff4d1f;
-}
-
-/* notification badge */
-
-#chatToggle .chat-badge {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 20px;
-  background: #ff1744;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  font-family: var(--font);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #232830;
-  box-shadow: 0 2px 8px rgba(255, 23, 68, 0.5);
-  z-index: 3;
-}
-
-#chatToggle.active .chat-badge {
-  display: none;
 }
 
 @keyframes chatRing {
@@ -2351,20 +2259,6 @@ ANIMATIONS
   transform: translateY(0);
 }
 
-/*==============================
-RESPONSIVE
-==============================*/
-
-@media (max-width: 1024px) {
-  .card-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .topup-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (max-width: 768px) {
   .header {
     width: 94%;
@@ -2394,67 +2288,6 @@ RESPONSIVE
     border-radius: 18px;
   }
 
-  .card-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .download-card {
-    padding: 22px 14px 18px;
-    border-radius: 18px;
-  }
-
-  .download-card .icon {
-    height: 48px;
-  }
-
-  .download-card .icon img {
-    width: 48px;
-    height: 48px;
-  }
-
-  .download-card h3 {
-    font-size: 14px;
-    min-height: 36px;
-  }
-
-  .download-card p {
-    font-size: 12px;
-    margin-bottom: 14px;
-  }
-
-  .download-card a {
-    padding: 11px;
-    font-size: 13px;
-  }
-
-  .topup-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .game-card {
-    padding: 18px 12px 16px;
-    border-radius: 20px;
-  }
-
-  .game-card img {
-    width: 72px;
-    height: 72px;
-    margin-bottom: 12px;
-  }
-
-  .game-card h3 {
-    font-size: 14px;
-    min-height: 38px;
-    margin-bottom: 12px;
-  }
-
-  .game-card button {
-    padding: 11px;
-    font-size: 13px;
-  }
-
   .popup-box {
     padding: 20px 16px;
     border-radius: 20px;
@@ -2481,16 +2314,6 @@ RESPONSIVE
 
   .chat-menu {
     width: min(214px, calc(100vw - 28px));
-  }
-}
-
-@media (max-width: 420px) {
-  .card-grid {
-    gap: 10px;
-  }
-
-  .download-card h3 {
-    font-size: 13px;
   }
 }
 
@@ -3205,10 +3028,6 @@ GROUP CHAT ROOM
   }
 }
 
-.card-grid {
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
 .vip-badge {
   display: inline-flex;
   align-items: center;
@@ -3226,85 +3045,10 @@ GROUP CHAT ROOM
   margin-bottom: 12px;
 }
 
-@media (max-width: 1024px) {
-  .card-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 button.chat-item {
   width: 100%;
   text-align: left;
   font-family: inherit;
-}
-
-/* Cara order + status track + notif UI */
-
-.btn-howto {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  min-height: 40px;
-  padding: 10px 12px;
-  border-radius: 50px;
-  background: transparent;
-  color: #ff6a3d;
-  font-family: var(--font-tech);
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 1.2;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  border: 1px solid rgba(255, 77, 31, 0.4);
-  cursor: pointer;
-  box-sizing: border-box;
-  transition: background 0.2s, transform 0.2s, border-color 0.2s;
-}
-
-.btn-howto i {
-  font-size: 12px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.btn-howto:hover {
-  background: rgba(255, 77, 31, 0.12);
-  transform: scale(1.02);
-  border-color: rgba(255, 77, 31, 0.65);
-}
-
-/* responsive: teks tombol Cara Download tetap rapi di semua lebar kartu */
-
-@media (max-width: 1100px) {
-  .btn-howto {
-    font-size: 11px;
-    padding: 9px 10px;
-    min-height: 38px;
-    letter-spacing: 0.2px;
-  }
-
-  .btn-howto i { font-size: 11px; }
-}
-
-@media (max-width: 720px) {
-  .btn-howto {
-    font-size: 11px;
-    padding: 10px 12px;
-    min-height: 40px;
-  }
-}
-
-@media (max-width: 400px) {
-  .btn-howto {
-    font-size: 10.5px;
-    gap: 5px;
-    padding: 9px 8px;
-    min-height: 38px;
-  }
-
-  .btn-howto i { font-size: 10.5px; }
 }
 
 .vip-howto-box {
@@ -3347,28 +3091,6 @@ button.chat-item {
 
 #download > h2 {
   margin-bottom: 12px;
-}
-
-.download-card .card-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  align-items: stretch;
-}
-
-.download-card .card-btns .btn-primary,
-.download-card .card-btns .btn-howto,
-.download-card .card-btns a.btn-primary {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  flex-shrink: 0;
-}
-
-.download-card .card-btns .btn-primary {
-  display: block;
-  width: 100%;
 }
 
 /* Admin online / offline */
@@ -3437,8 +3159,6 @@ button.chat-item {
 .gc-msg-row.is-bot .gc-msg-name {
   color: #ff6a3d !important;
 }
-
-/* Notif Saluran WA — bar bawah, simpel */
 
 /* Invoice cooler entrance */
 
@@ -3596,8 +3316,6 @@ button.chat-item {
 
   .hs-item span { font-size: 9px; }
 }
-
-/* stats section sisa uptime aja — biar rapi */
 
 /* UID nickname result — selalu kelihatan saat .show */
 
@@ -4113,7 +3831,6 @@ button.chat-item {
   min-height: auto;
 }
 
-
 /* ===== Cek Akun — Skin dipakai ===== */
 
 .cek-skins {
@@ -4213,23 +3930,6 @@ body.spa-home #home { display: block; }
 
 body:not(.spa-home) #home { display: none; }
 
-/* hub cards di dalam barisan download — tampilan sama kartu download */
-
-button.download-card.hub-card {
-  width: 100%;
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
-  text-align: center;
-}
-
-button.download-card.hub-card .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
 .spa-back {
   display: inline-flex;
   align-items: center;
@@ -4274,78 +3974,6 @@ body.spa-download #download {
 
 .cek-captain .cek-label {
   color: #ff6a3d;
-}
-
-/* ===== Tombol kartu download: ukuran stabil di semua device ===== */
-
-.download-card .card-btns .btn-primary,
-.download-card .card-btns a.btn-primary,
-.download-card .card-btns a,
-.download-card .card-btns span.btn-primary,
-.download-card.hub-card .btn-primary {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  width: 100% !important;
-  max-width: 100%;
-  min-height: 44px;
-  padding: 12px 14px !important;
-  font-size: 13px !important;
-  line-height: 1.2 !important;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@media (max-width: 1100px) {
-  .download-card .card-btns .btn-primary,
-.download-card .card-btns a.btn-primary,
-.download-card .card-btns a,
-.download-card .card-btns span.btn-primary,
-.download-card.hub-card .btn-primary {
-    min-height: 42px;
-    padding: 11px 12px !important;
-    font-size: 12px !important;
-    letter-spacing: 0.4px;
-  }
-
-  .btn-howto {
-    min-height: 38px;
-    font-size: 11px !important;
-  }
-}
-
-@media (max-width: 720px) {
-  .download-card .card-btns .btn-primary,
-.download-card .card-btns a.btn-primary,
-.download-card .card-btns a,
-.download-card .card-btns span.btn-primary,
-.download-card.hub-card .btn-primary {
-    min-height: 44px;
-    padding: 12px 14px !important;
-    font-size: 12.5px !important;
-  }
-}
-
-@media (max-width: 400px) {
-  .download-card .card-btns .btn-primary,
-.download-card .card-btns a.btn-primary,
-.download-card .card-btns a,
-.download-card .card-btns span.btn-primary,
-.download-card.hub-card .btn-primary {
-    min-height: 40px;
-    padding: 10px 10px !important;
-    font-size: 11.5px !important;
-    letter-spacing: 0.3px;
-  }
-
-  .btn-howto {
-    min-height: 38px;
-    font-size: 10.5px !important;
-    padding: 9px 8px !important;
-  }
 }
 
 /* ===== Tutorial Streamable embed ===== */
@@ -4491,11 +4119,6 @@ body.spa-download #download {
 #downloadHowToPopup[data-howto="ffold"] [data-howto-for="ffkipas"],
 #downloadHowToPopup[data-howto="ffkipas"] [data-howto-for="ffold"] {
   display: none;
-}
-
-/* kartu FFKIPAS selalu mulai di baris baru, di bawah FF 2020 */
-.card-grid > .dl-newrow {
-  grid-column: 1;
 }
 
 /*==============================
@@ -5279,7 +4902,6 @@ body.spa-cekakun .side-link[href="#cekakun"] i {
   background: transparent;
 }
 
-
 /* ---------- Logo besar di kartu (gaya SEPASEP) ---------- */
 
 .poster-pic-big {
@@ -5296,12 +4918,7 @@ body.spa-cekakun .side-link[href="#cekakun"] i {
   border-radius: 14%;
 }
 
-/* ---------- Gambar poster: bagian bawah memudar transparan ke dasar kartu ---------- */
-
-.poster-pic img {
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.55) 80%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.55) 80%, transparent 100%);
-}
+/* ---------- Kaki karakter memudar transparan (kartu & ikon Trending) ---------- */
 
 .poster-pic {
   height: 54%;
@@ -5309,4 +4926,26 @@ body.spa-cekakun .side-link[href="#cekakun"] i {
 
 .poster-pic-big {
   height: 58%;
+}
+
+.poster-pic-big img,
+.trend-art img {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.55) 80%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.55) 80%, transparent 100%);
+}
+
+
+/* ---------- Banner lebih besar di HP ---------- */
+
+@media (max-width: 700px) {
+  .slider {
+    width: calc(100% - 24px);
+    margin-top: 76px !important;
+    border-radius: 18px;
+  }
+
+  .slider .slide img {
+    aspect-ratio: 2.65 / 1;
+    object-position: 50% 50%;
+  }
 }

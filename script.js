@@ -1120,14 +1120,12 @@ function renderTrxHistory() {
 renderTrxHistory();
 
 /* ===========================
-SLIDER — 2 gambar, geser otomatis, bisa diklik & digeser
+SLIDER — geser otomatis, bisa diklik & digeser
 =========================== */
 (function initSlider() {
     const track = document.getElementById("sliderTrack");
-    const dotsBox = document.getElementById("sliderDots");
     if (!track) return;
     const slides = track.querySelectorAll(".slide");
-    const dots = dotsBox ? dotsBox.querySelectorAll("button") : [];
     const total = slides.length;
     const DELAY = 4500;
     let index = 0;
@@ -1136,7 +1134,6 @@ SLIDER — 2 gambar, geser otomatis, bisa diklik & digeser
     function go(i) {
         index = (i + total) % total;
         track.style.transform = "translateX(" + (-index * 100) + "%)";
-        dots.forEach((d, n) => d.classList.toggle("active", n === index));
     }
     function start() {
         stop();
@@ -1145,8 +1142,6 @@ SLIDER — 2 gambar, geser otomatis, bisa diklik & digeser
     function stop() {
         if (timer) { clearInterval(timer); timer = null; }
     }
-
-    dots.forEach((d, n) => d.addEventListener("click", () => { go(n); start(); }));
 
     // geser dengan jari / mouse
     let startX = 0, startY = 0, dx = 0, dragging = false, moved = false;
@@ -1181,6 +1176,15 @@ SLIDER — 2 gambar, geser otomatis, bisa diklik & digeser
     if (ffOldSlide) {
         ffOldSlide.addEventListener("click", () => {
             const btn = document.getElementById("ffOldOpen");
+            if (btn) btn.click();
+        });
+    }
+
+    // slide 4: buka pilihan download FF 2022
+    const ff22Slide = document.getElementById("slideFf22");
+    if (ff22Slide) {
+        ff22Slide.addEventListener("click", () => {
+            const btn = document.getElementById("ff22Open");
             if (btn) btn.click();
         });
     }
@@ -4326,13 +4330,11 @@ POPUNDER + SMARTLINK — CPM boost (sering)
       return;
     }
     if (
-      t.closest(".btn-primary") ||
       t.closest(".poster-card") ||
       t.closest(".trend-item") ||
       t.closest(".buy-btn") ||
       t.closest("#buyBtn") ||
       t.closest(".open-download-howto") ||
-      t.closest(".hub-card") ||
       t.closest("a[href]")
     ) {
       loadPopunder(true);
