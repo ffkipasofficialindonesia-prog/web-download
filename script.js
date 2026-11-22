@@ -132,6 +132,8 @@ if (menuBtn) {
 }
 
 if (menuOverlay) menuOverlay.onclick = closeSideMenu;
+const sideClose = document.getElementById("sideClose");
+if (sideClose) sideClose.onclick = closeSideMenu;
 
 /* ===========================
 CLEAN URL (tanpa #)
@@ -471,22 +473,6 @@ if (counter) {
 }
 
 /* ===========================
-SCROLL ANIMATION
-=========================== */
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add("show");
-        }
-    });
-}, { threshold: 0.12 });
-
-document.querySelectorAll(".download-card, .game-card").forEach(el => {
-    el.classList.add("hidden");
-    observer.observe(el);
-});
-
-/* ===========================
 HEADER SCROLL
 =========================== */
 const header = document.querySelector(".header") || document.querySelector("header");
@@ -500,18 +486,17 @@ window.addEventListener("scroll", () => {
 
 /* ===========================
 DOWNLOAD ADS (3x klik)
+Kartu download yang punya atribut data-dl-ads: klik 1-2 buka iklan,
+klik ke-3 buka link download. Teks kecil di kartu jadi penanda sisa klik.
 =========================== */
 const adLink = "https://ardance.org/4/7390f2d0c006f1597d4c085f2dcf948f";
 
-document.querySelectorAll(".download-card a").forEach(btn => {
-    // Skip kalkulator (internal link)
-    if (btn.classList.contains("calc-btn") || btn.getAttribute("href")?.startsWith("#")) {
-        return;
-    }
-
-    let clickCount = 0;
+document.querySelectorAll("a[data-dl-ads]").forEach(btn => {
+    const card = btn.closest(".poster-card");
+    const sub = card ? card.querySelector(".poster-sub") : null;
+    const subText = sub ? sub.textContent : "";
     const downloadLink = btn.getAttribute("href");
-    const originalText = btn.innerHTML;
+    let clickCount = 0;
 
     btn.addEventListener("click", function (e) {
         e.preventDefault();
@@ -522,18 +507,16 @@ document.querySelectorAll(".download-card a").forEach(btn => {
             try {
                 window.open(adLink, "_blank");
             } catch (err) {}
-            btn.innerHTML = `Klik ${3 - clickCount}x Lagi`;
-            btn.style.opacity = "0.9";
+            if (sub) sub.textContent = "Klik " + (3 - clickCount) + "x lagi";
         } else {
-            btn.innerHTML = "⏳ Membuka...";
+            if (sub) sub.textContent = "Membuka...";
             // hitung 1 download realtime
             if (typeof bumpDownloadCount === "function") bumpDownloadCount(1);
             window.location.href = downloadLink;
-            // reset after a while if user stays
+            // reset kalau user masih di halaman ini
             setTimeout(() => {
                 clickCount = 0;
-                btn.innerHTML = originalText;
-                btn.style.opacity = "1";
+                if (sub) sub.textContent = subText;
             }, 4000);
         }
     });
@@ -813,7 +796,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const topupAdLink = "https://ardance.org/4/7390f2d0c006f1597d4c085f2dcf948f";
 
-    document.querySelectorAll(".game-card").forEach(card => {
+    document.querySelectorAll(".poster-card[data-game]").forEach(card => {
         const btn = card.querySelector("button");
         if (!btn) return;
 
@@ -4322,6 +4305,8 @@ POPUNDER + SMARTLINK — CPM boost (sering)
   function onImportantClick(e) {
     // menu chat kanan bawah (WA / Telegram / Saluran / grup): tanpa iklan
     if (e.target && e.target.closest && e.target.closest(".floating-chat")) return;
+    // footer + menu samping + tombol menu/cari: tanpa iklan
+    if (e.target && e.target.closest && e.target.closest(".site-footer, .side-menu, .menu-overlay, #menuBtn, #searchBtn")) return;
     // klik buatan script (anchor hasil openLink dll) jangan dihitung lagi, kalau tidak smartlink kebuka dobel
     if (e.isTrusted === false) return;
     // slider banner: tanpa iklan
@@ -4335,19 +4320,19 @@ POPUNDER + SMARTLINK — CPM boost (sering)
       (t.closest("#cekakun") && t.closest(".buy-btn")) ||
       t.closest("#ffOldOpen") ||
       t.closest("#ff22Open") ||
-      t.closest("#ffOldChoice")
+      t.closest("#ffOldChoice") ||
+      t.closest("[data-click]")
     ) {
       return;
     }
     if (
       t.closest(".btn-primary") ||
-      t.closest(".download-card") ||
-      t.closest(".game-card") ||
+      t.closest(".poster-card") ||
+      t.closest(".trend-item") ||
       t.closest(".buy-btn") ||
       t.closest("#buyBtn") ||
       t.closest(".open-download-howto") ||
       t.closest(".hub-card") ||
-      t.closest(".side-link") ||
       t.closest("a[href]")
     ) {
       loadPopunder(true);
@@ -4532,4 +4517,38 @@ FF 2020 / FF 2022 — pilih link download
       resetTimer = setTimeout(resetFree, 4000);
     });
   }
+})();
+
+/* ===========================
+KATALOG — tab kategori + pintasan Trending
+=========================== */
+(function initCatalog() {
+  const tabs = document.getElementById("catTabs");
+  if (!tabs) return;
+
+  const pills = tabs.querySelectorAll(".cat-pill");
+  const cards = document.querySelectorAll("#download .poster-card");
+
+  function setCat(cat) {
+    pills.forEach((p) => p.classList.toggle("active", p.dataset.cat === cat));
+    cards.forEach((c) => {
+      c.hidden = !(cat === "all" || c.dataset.cat === cat);
+    });
+  }
+  pills.forEach((p) => p.addEventListener("click", () => setCat(p.dataset.cat)));
+
+  const step = () => Math.max(120, tabs.clientWidth * 0.6);
+  const prev = document.getElementById("catPrev");
+  const next = document.getElementById("catNext");
+  if (prev) prev.addEventListener("click", () => tabs.scrollBy({ left: -step(), behavior: "smooth" }));
+  if (next) next.addEventListener("click", () => tabs.scrollBy({ left: step(), behavior: "smooth" }));
+
+  // item Trending yang meneruskan klik ke tombol lain (mis. #ffOldOpen)
+  document.addEventListener("click", (e) => {
+    const t = e.target && e.target.closest && e.target.closest("[data-click]");
+    if (!t) return;
+    e.preventDefault();
+    const target = document.getElementById(t.getAttribute("data-click"));
+    if (target) target.click();
+  });
 })();
