@@ -66,7 +66,8 @@ function unlockPage() {
         ["groupChatPanel", "show"],
         ["groupChatOverlay", "show"],
         ["downloadHowToPopup", "active"],
-        ["ffOldChoice", "active"]
+        ["ffOldChoice", "active"],
+        ["ff22Choice", "active"]
     ];
     ids.forEach(([id, cls]) => {
         const el = document.getElementById(id);
@@ -4324,7 +4325,7 @@ POPUNDER + SMARTLINK — CPM boost (sering)
       (t.closest("#cekakun") && t.closest(".buy-btn")) ||
       t.closest("#ffOldOpen") ||
       t.closest("#ff22Open") ||
-      t.closest("#ffOldChoice") ||
+      t.closest(".dl-choice-popup") ||
       t.closest("[data-click]")
     ) {
       return;
@@ -4444,81 +4445,80 @@ FF 2020 / FF 2022 — pilih link download
 - Gratis: 1x klik buka iklan, klik berikutnya buka link
 =========================== */
 (function initFfOldChoice() {
-  const popup = document.getElementById("ffOldChoice");
-  const openBtns = ["ffOldOpen", "ff22Open"].map((id) => document.getElementById(id)).filter(Boolean);
-  if (!popup || !openBtns.length) return;
-  const titleEl = document.getElementById("ffOldChoiceTitle");
-
-  const closeBtn = document.getElementById("ffOldChoiceClose");
-  const paidLink = document.getElementById("ffOldPaid");
-  const freeLink = document.getElementById("ffOldFree");
-  const freeTag = freeLink ? freeLink.querySelector(".dl-choice-tag") : null;
+  // tiap popup (.dl-choice-popup) punya link sendiri di index.html;
+  // data-open = id tombol yang membuka popup itu
   const AD_CLICKS = 1;
-  const FREE_TEXT = freeTag ? freeTag.textContent : "Gratis";
 
-  let clicks = 0;
-  let resetTimer = null;
+  document.querySelectorAll(".dl-choice-popup").forEach((popup) => {
+    const openBtn = document.getElementById(popup.getAttribute("data-open"));
+    if (!openBtn) return;
+    const closeBtn = popup.querySelector("[data-choice-close]");
+    const paidLink = popup.querySelector(".dl-choice-paid");
+    const freeLink = popup.querySelector(".dl-choice-free");
+    const freeTag = freeLink ? freeLink.querySelector(".dl-choice-tag") : null;
+    const FREE_TEXT = freeTag ? freeTag.textContent : "Gratis";
 
-  function resetFree() {
-    clearTimeout(resetTimer);
-    resetTimer = null;
-    clicks = 0;
-    if (freeTag) freeTag.textContent = FREE_TEXT;
-  }
+    let clicks = 0;
+    let resetTimer = null;
 
-  function openChoice(title) {
-    if (typeof closeChatMenu === "function") closeChatMenu();
-    if (titleEl && title) titleEl.textContent = title;
-    resetFree();
-    popup.classList.add("active");
-  }
-
-  function closeChoice() {
-    popup.classList.remove("active");
-    resetFree();
-  }
-
-  openBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      openChoice(btn.getAttribute("data-title"));
-    });
-  });
-
-  if (closeBtn) closeBtn.addEventListener("click", closeChoice);
-  popup.addEventListener("click", (e) => {
-    if (e.target === popup) closeChoice();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeChoice();
-  });
-
-  if (paidLink) {
-    paidLink.addEventListener("click", () => {
-      if (typeof bumpDownloadCount === "function") bumpDownloadCount(1);
-    });
-  }
-
-  if (freeLink) {
-    freeLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      clicks += 1;
-
-      if (clicks <= AD_CLICKS) {
-        try { window.open(adLink, "_blank"); } catch (err) {}
-        if (freeTag) freeTag.textContent = "Klik " + (AD_CLICKS + 1 - clicks) + "x lagi";
-        return;
-      }
-
-      if (freeTag) freeTag.textContent = "Membuka...";
-      if (typeof bumpDownloadCount === "function") bumpDownloadCount(1);
-      window.location.href = freeLink.getAttribute("href");
+    function resetFree() {
       clearTimeout(resetTimer);
-      resetTimer = setTimeout(resetFree, 4000);
+      resetTimer = null;
+      clicks = 0;
+      if (freeTag) freeTag.textContent = FREE_TEXT;
+    }
+
+    function openChoice() {
+      if (typeof closeChatMenu === "function") closeChatMenu();
+      resetFree();
+      popup.classList.add("active");
+    }
+
+    function closeChoice() {
+      popup.classList.remove("active");
+      resetFree();
+    }
+
+    openBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openChoice();
     });
-  }
+
+    if (closeBtn) closeBtn.addEventListener("click", closeChoice);
+    popup.addEventListener("click", (e) => {
+      if (e.target === popup) closeChoice();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeChoice();
+    });
+
+    if (paidLink) {
+      paidLink.addEventListener("click", () => {
+        if (typeof bumpDownloadCount === "function") bumpDownloadCount(1);
+      });
+    }
+
+    if (freeLink) {
+      freeLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        clicks += 1;
+
+        if (clicks <= AD_CLICKS) {
+          try { window.open(adLink, "_blank"); } catch (err) {}
+          if (freeTag) freeTag.textContent = "Klik " + (AD_CLICKS + 1 - clicks) + "x lagi";
+          return;
+        }
+
+        if (freeTag) freeTag.textContent = "Membuka...";
+        if (typeof bumpDownloadCount === "function") bumpDownloadCount(1);
+        window.location.href = freeLink.getAttribute("href");
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(resetFree, 4000);
+      });
+    }
+  });
 })();
 
 /* ===========================
